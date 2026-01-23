@@ -2,53 +2,59 @@
 import 'package:flutter/material.dart';
 import '../colors/colors.dart';
 
-class MetricCards extends StatelessWidget {
-  final bool isTablet;
 
-  const MetricCards({Key? key, required this.isTablet}) : super(key: key);
+class MetricCards extends StatelessWidget {
+  const MetricCards({Key? key, required bool isTablet}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = MediaQuery.of(context).size.width >= 768;
+    final isDesktop = MediaQuery.of(context).size.width >= 1024;
+
     final metrics = [
       {
         'title': 'Heart Rate',
         'value': '72',
         'unit': 'BPM',
-        'icon': Icons.favorite,
-        'color': AppColors.dangerColor,
-        'trend': Icons.arrow_upward,
+        'icon': Icons.favorite_border,
+        'color': AppColors.coral,
+        'trend': Icons.trending_flat,
         'status': 'Normal',
-        'bgColor': AppColors.lightIndigo,
+        'trendValue': '+0.5',
+        'description': 'Resting heart rate',
       },
       {
         'title': 'Blood Pressure',
-        'value': '120/80',
-        'unit': 'mmHg',
-        'icon': Icons.monitor_heart,
-        'color': AppColors.warningColor,
-        'trend': Icons.trending_flat,
+        'value': '120',
+        'unit': '/80 mmHg',
+        'icon': Icons.monitor_heart_outlined,
+        'color': AppColors.amber,
+        'trend': Icons.trending_down,
         'status': 'Ideal',
-        'bgColor': const Color(0xFFFCE7F3),
+        'trendValue': '-2.3',
+        'description': 'Systolic / Diastolic',
       },
       {
         'title': 'Blood Sugar',
         'value': '98',
         'unit': 'mg/dL',
-        'icon': Icons.water_drop,
-        'color': AppColors.successColor,
-        'trend': Icons.arrow_downward,
+        'icon': Icons.water_drop_outlined,
+        'color': AppColors.teal,
+        'trend': Icons.trending_up,
         'status': 'Normal',
-        'bgColor': const Color(0xFFCCFBF1),
+        'trendValue': '+1.2',
+        'description': 'Fasting glucose',
       },
       {
-        'title': 'Oxygen',
-        'value': '98%',
-        'unit': 'SpO2',
-        'icon': Icons.air,
-        'color': AppColors.infoColor,
-        'trend': Icons.arrow_upward,
+        'title': 'Oxygen Level',
+        'value': '98',
+        'unit': '% SpO2',
+        'icon': Icons.air_outlined,
+        'color': AppColors.modernBlue,
+        'trend': Icons.trending_flat,
         'status': 'Excellent',
-        'bgColor': AppColors.lightIndigo,
+        'trendValue': '+0.2',
+        'description': 'Oxygen saturation',
       },
     ];
 
@@ -56,127 +62,194 @@ class MetricCards extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: isTablet ? 4 : 2,
-        crossAxisSpacing: isTablet ? 20 : 16,
-        mainAxisSpacing: isTablet ? 20 : 16,
-        childAspectRatio: 1.0,
+        crossAxisCount: isDesktop ? 4 : (isTablet ? 2 : 2),
+        crossAxisSpacing: isDesktop ? 24 : (isTablet ? 20 : 16),
+        mainAxisSpacing: isDesktop ? 24 : (isTablet ? 20 : 16),
+        childAspectRatio: isDesktop ? 1.0 : 1.2,
       ),
       itemCount: metrics.length,
       itemBuilder: (context, index) {
-        return _buildMetricCard(metrics[index]);
+        return _buildModernMetricCard(metrics[index], isTablet, isDesktop);
       },
     );
   }
 
-  Widget _buildMetricCard(Map<String, dynamic> metric) {
-    return Container(
-      decoration: BoxDecoration(
-        color: metric['bgColor'] as Color,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 12,
-            spreadRadius: 1,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
-        child: InkWell(
-          onTap: () {},
+  Widget _buildModernMetricCard(Map<String, dynamic> metric, bool isTablet, bool isDesktop) {
+    final Color metricColor = metric['color'] as Color;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          color: AppColors.cardColor,
           borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: EdgeInsets.all(isTablet ? 20 : 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: isTablet ? 44 : 40,
-                      height: isTablet ? 44 : 40,
-                      decoration: BoxDecoration(
-                        color: (metric['color'] as Color).withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        metric['icon'] as IconData,
-                        color: metric['color'] as Color,
-                        size: isTablet ? 22 : 20,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        metric['trend'] as IconData,
-                        size: 16,
-                        color: metric['color'] as Color,
-                      ),
-                    ),
-                  ],
-                ),
-
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      metric['value'] as String,
-                      style: TextStyle(
-                        fontSize: isTablet ? 28 : 24,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      metric['unit'] as String,
-                      style: TextStyle(
-                        fontSize: isTablet ? 13 : 12,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      metric['title'] as String,
-                      style: TextStyle(
-                        fontSize: isTablet ? 14 : 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        metric['status'] as String,
-                        style: TextStyle(
-                          fontSize: isTablet ? 12 : 10,
-                          fontWeight: FontWeight.w700,
-                          color: metric['color'] as Color,
+          boxShadow: HospitalColors.getModernCardShadow(elevation: 4),
+          border: Border.all(
+            color: AppColors.borderColor,
+            width: 1.5,
+          ),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          child: InkWell(
+            onTap: () {},
+            borderRadius: BorderRadius.circular(20),
+            hoverColor: metricColor.withOpacity(0.05),
+            splashColor: metricColor.withOpacity(0.1),
+            child: Padding(
+              padding: EdgeInsets.all(isDesktop ? 24 : (isTablet ? 20 : 16)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Header with icon and trend
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Modern icon with gradient
+                      Container(
+                        width: isDesktop ? 52 : (isTablet ? 48 : 44),
+                        height: isDesktop ? 52 : (isTablet ? 48 : 44),
+                        decoration: BoxDecoration(
+                          gradient: HospitalColors.getModernGradient(metricColor),
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [
+                            BoxShadow(
+                              color: metricColor.withOpacity(0.2),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          metric['icon'] as IconData,
+                          color: Colors.white,
+                          size: isDesktop ? 26 : (isTablet ? 24 : 22),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+
+                      // Trend indicator with value
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: metricColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: metricColor.withOpacity(0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              metric['trend'] as IconData,
+                              size: 14,
+                              color: metricColor,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              metric['trendValue'] as String,
+                              style: HospitalColors.getModernTextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: metricColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Metric value and unit
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Main value
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            metric['value'] as String,
+                            style: TextStyle(
+                              fontSize: isDesktop ? 36 : (isTablet ? 32 : 28),
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textPrimary,
+                              letterSpacing: -1,
+                              height: 0.9,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            metric['unit'] as String,
+                            style: HospitalColors.getModernTextStyle(
+                              fontSize: isDesktop ? 15 : (isTablet ? 14 : 13),
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  // Footer with title and status
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Title
+                      Expanded(
+                        child: Text(
+                          metric['title'] as String,
+                          style: HospitalColors.getModernTextStyle(
+                            fontSize: isDesktop ? 16 : (isTablet ? 15 : 14),
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+
+                      const SizedBox(width: 8),
+
+                      // Status badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: metricColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: metricColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              metric['status'] as String,
+                              style: HospitalColors.getModernTextStyle(
+                                fontSize: isDesktop ? 13 : (isTablet ? 12 : 11),
+                                fontWeight: FontWeight.w600,
+                                color: metricColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

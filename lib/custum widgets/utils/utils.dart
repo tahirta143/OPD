@@ -1,11 +1,12 @@
 // lib/widgets/shared/utils.dart
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../colors/colors.dart';
 
 class AppUtils {
   static String formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
+    return DateFormat('dd MMM yy').format(date);
   }
 
   static IconData getShiftIcon(String shift) {
@@ -45,5 +46,23 @@ class AppUtils {
       default:
         return '9:00 AM - 12:00 PM';
     }
+  }
+  static DateTime getStartOfWeek(DateTime date) {
+    return date.subtract(Duration(days: date.weekday - 1));
+  }
+
+  // Get end of week
+  static DateTime getEndOfWeek(DateTime date) {
+    return date.add(Duration(days: DateTime.daysPerWeek - date.weekday));
+  }
+
+  // Get start of month
+  static DateTime getStartOfMonth(DateTime date) {
+    return DateTime(date.year, date.month, 1);
+  }
+
+  // Get end of month
+  static DateTime getEndOfMonth(DateTime date) {
+    return DateTime(date.year, date.month + 1, 0);
   }
 }
