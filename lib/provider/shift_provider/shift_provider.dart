@@ -33,66 +33,113 @@ class ShiftProvider extends ChangeNotifier {
   }
 
   // Fetch shift by date and type
+  // Future<void> fetchShiftByDateAndType(DateTime date, String shiftType) async {
+  //   _isLoading = true;
+  //   _error = null;
+  //   notifyListeners();
+  //
+  //   try {
+  //     final formattedDate = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  //
+  //     print('Fetching shift for $formattedDate - $shiftType');
+  //
+  //     final url = Uri.parse('$_baseUrl/shifts/by?date=$formattedDate&type=$shiftType');
+  //     final response = await http.get(
+  //       url,
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Accept': 'application/json',
+  //       },
+  //     );
+  //
+  //     print('Response status: ${response.statusCode}');
+  //
+  //     if (response.statusCode == 200) {
+  //       final Map<String, dynamic> data = json.decode(response.body);
+  //
+  //       if (data['success'] == true) {
+  //         final shift = ShiftModel.fromJson({
+  //           ...data['shift'],
+  //           'rows': data['rows'] ?? [],
+  //         });
+  //
+  //         _shifts = [shift];
+  //         _applyFilters(); // Apply filters after loading
+  //         _error = null;
+  //         print('Successfully loaded shift with ${shift.rows.length} rows');
+  //       } else {
+  //         _error = 'API returned unsuccessful response';
+  //         _shifts = [];
+  //         _filteredShifts = [];
+  //       }
+  //     } else if (response.statusCode == 404) {
+  //       _error = 'No shift data found for selected date and shift';
+  //       _shifts = [];
+  //       _filteredShifts = [];
+  //     } else {
+  //       _error = 'Failed to load shift: ${response.statusCode}';
+  //       _shifts = [];
+  //       _filteredShifts = [];
+  //     }
+  //   } catch (e) {
+  //     _error = e.toString();
+  //     _shifts = [];
+  //     _filteredShifts = [];
+  //     print('Error fetching shift: $e');
+  //   } finally {
+  //     _isLoading = false;
+  //     notifyListeners();
+  //   }
+  // }
+
+  // Apply filters method
   Future<void> fetchShiftByDateAndType(DateTime date, String shiftType) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final formattedDate = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      final formattedDate =
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
-      print('Fetching shift for $formattedDate - $shiftType');
+      List<String> shiftTypes =
+      shiftType == 'All' ? ['Morning', 'Evening', 'Night'] : [shiftType];
 
-      final url = Uri.parse('$_baseUrl/shifts/by?date=$formattedDate&type=$shiftType');
-      final response = await http.get(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      );
+      List<ShiftModel> loadedShifts = [];
 
-      print('Response status: ${response.statusCode}');
+      for (final type in shiftTypes) {
+        final url = Uri.parse('$_baseUrl/shifts/by?date=$formattedDate&type=$type');
+        final response = await http.get(url);
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-
-        if (data['success'] == true) {
-          final shift = ShiftModel.fromJson({
-            ...data['shift'],
-            'rows': data['rows'] ?? [],
-          });
-
-          _shifts = [shift];
-          _applyFilters(); // Apply filters after loading
-          _error = null;
-          print('Successfully loaded shift with ${shift.rows.length} rows');
-        } else {
-          _error = 'API returned unsuccessful response';
-          _shifts = [];
-          _filteredShifts = [];
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          if (data['success'] == true) {
+            loadedShifts.add(
+              ShiftModel.fromJson({
+                ...data['shift'],
+                'rows': data['rows'] ?? [],
+              }),
+            );
+          }
         }
-      } else if (response.statusCode == 404) {
-        _error = 'No shift data found for selected date and shift';
+      }
+
+      if (loadedShifts.isEmpty) {
+        _error = 'No shift data found';
         _shifts = [];
-        _filteredShifts = [];
       } else {
-        _error = 'Failed to load shift: ${response.statusCode}';
-        _shifts = [];
-        _filteredShifts = [];
+        _shifts = loadedShifts;
+        _applyFilters();
       }
     } catch (e) {
       _error = e.toString();
       _shifts = [];
-      _filteredShifts = [];
-      print('Error fetching shift: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  // Apply filters method
   void _applyFilters() {
     if (_shifts.isEmpty) {
       _filteredShifts = [];
@@ -192,8 +239,10 @@ class ShiftProvider extends ChangeNotifier {
       return {
         'stats': stats,
         'currentShift': currentShift,
-        'opdRows': currentShift?.opdRows ?? [],
-        'expenseRows': currentShift?.expenseRows ?? [],
+        // 'opdRows': currentShift?.opdRows ?? [],
+        // 'expenseRows': currentShift?.expenseRows ?? [],
+        'opdRows': _filteredShifts.expand((s) => s.opdRows).toList(),
+        'expenseRows': _filteredShifts.expand((s) => s.expenseRows).toList(),
         'opdTotal': currentShift?.getSectionTotal('opd') ?? 0.0,
         'expensesTotal': currentShift?.getSectionTotal('expenses') ?? 0.0,
         'opdPaid': currentShift?.getSectionPaid('opd') ?? 0.0,

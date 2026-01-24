@@ -53,22 +53,22 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   void _login() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      _showSnackBar('Please fill in all fields', Colors.red.shade400);
-      return;
-    }
-
-    if (!_emailController.text.contains('@')) {
-      _showSnackBar('Please enter a valid email', Colors.orange.shade400);
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() => _isLoading = false);
+    // if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    //   _showSnackBar('Please fill in all fields', Colors.red.shade400);
+    //   return;
+    // }
+    //
+    // if (!_emailController.text.contains('@')) {
+    //   _showSnackBar('Please enter a valid email', Colors.orange.shade400);
+    //   return;
+    // }
+    //
+    // setState(() => _isLoading = true);
+    //
+    // // Simulate API call
+    // await Future.delayed(const Duration(seconds: 2));
+    //
+    // setState(() => _isLoading = false);
 
     // Navigate to home screen
     Navigator.pushReplacement(

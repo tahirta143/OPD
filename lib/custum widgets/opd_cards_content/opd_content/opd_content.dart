@@ -354,12 +354,16 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
                   if (newValue != null) {
                     widget.shiftProvider.setSelectedShift(newValue);
                     widget.onShiftChanged(newValue);
+
+                    // Always pass both arguments
                     shiftProvider.fetchShiftByDateAndType(
                       widget.selectedDate,
-                      newValue,
+                      newValue, // "All" or specific shift
                     );
                   }
                 },
+
+
               ),
             ),
           ),
