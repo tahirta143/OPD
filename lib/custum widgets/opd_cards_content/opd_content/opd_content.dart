@@ -26,6 +26,12 @@ class OPDTabsWithContent extends StatefulWidget {
   final ShiftProvider shiftProvider;
   final bool isTablet;
 
+  // Add new properties for date range filters
+  final DateTime? fromDate;
+  final DateTime? toDate;
+  final Function(DateTime?) onFromDateChanged;
+  final Function(DateTime?) onToDateChanged;
+
   const OPDTabsWithContent({
     Key? key,
     required this.opdContentIndex,
@@ -42,6 +48,10 @@ class OPDTabsWithContent extends StatefulWidget {
     required this.consultantsData,
     required this.shiftProvider,
     required this.isTablet,
+    this.fromDate,
+    this.toDate,
+    required this.onFromDateChanged,
+    required this.onToDateChanged,
   }) : super(key: key);
 
   @override
@@ -55,17 +65,13 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.shiftProvider.fetchShiftByDateAndType(
-        widget.selectedDate,
-        widget.selectedShift,
-      );
+      widget.shiftProvider.fetchData();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final spacing = widget.isTablet ? 20.0 : 16.0;
-    final cardPadding = widget.isTablet ? 24.0 : 16.0;
 
     return Consumer<ShiftProvider>(
       builder: (context, shiftProvider, child) {
@@ -112,8 +118,8 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
                   ),
                   SizedBox(height: widget.isTablet ? 16 : 12),
 
-                  // Modern Filter Row
-                  _buildModernFilterRow(shiftProvider),
+                  // Modern Filter Grid
+                  _buildModernFilterGrid(shiftProvider),
                 ],
               ),
             ),
@@ -133,7 +139,7 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
 
                   // Show content based on selected card
                   if (widget.opdContentIndex >= 0)
-                    _buildModernContentSection(cardPadding, shiftProvider),
+                    _buildModernContentSection(shiftProvider),
                 ],
               ),
           ],
@@ -187,10 +193,7 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
           ),
           SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () => shiftProvider.fetchShiftByDateAndType(
-              widget.selectedDate,
-              widget.selectedShift,
-            ),
+            onPressed: () => shiftProvider.fetchData(),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.modernBlue,
               shape: RoundedRectangleBorder(
@@ -211,7 +214,7 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
     );
   }
 
-  Widget _buildModernFilterRow(ShiftProvider shiftProvider) {
+  Widget _buildModernFilterGrid(ShiftProvider shiftProvider) {
     return Container(
       padding: EdgeInsets.all(widget.isTablet ? 16 : 12),
       decoration: BoxDecoration(
@@ -220,26 +223,122 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
         boxShadow: HospitalColors.getModernCardShadow(elevation: 2),
         border: Border.all(color: AppColors.borderColor, width: 1.5),
       ),
-      child: Row(
+      child: Column(
         children: [
-          // Date Filter
-          Expanded(
-            child: _buildModernDateFilter(shiftProvider),
-          ),
-          SizedBox(width: widget.isTablet ? 20 : 12),
+          // First row with 3 filters
+          Row(
+            children: [
+              // Date Filter
+              Expanded(
+                child: _buildModernDateFilter(shiftProvider),
+              ),
+              SizedBox(width: widget.isTablet ? 20 : 12),
 
-          // Shift Filter
-          Expanded(
-            child: _buildModernShiftFilter(shiftProvider),
-          ),
-          SizedBox(width: widget.isTablet ? 20 : 12),
+              // Shift Filter
+              Expanded(
+                child: _buildModernShiftFilter(shiftProvider),
+              ),
+              SizedBox(width: widget.isTablet ? 20 : 12),
 
-          // Time Range Filter
-          Expanded(
-            child: _buildModernTimeFilter(shiftProvider),
+              // Time Range Filter
+              Expanded(
+                child: _buildModernTimeFilter(shiftProvider),
+              ),
+            ],
+          ),
+
+          SizedBox(height: widget.isTablet ? 16 : 12),
+
+          // Second row with 2 filters (From Date and To Date)
+          Row(
+            children: [
+              // From Date Filter
+              Expanded(
+                child: _buildModernDateRangeFilter(
+                  label: 'From Date',
+                  date: widget.fromDate,
+                  onDateChanged: widget.onFromDateChanged,
+                  shiftProvider: shiftProvider,
+                ),
+              ),
+              SizedBox(width: widget.isTablet ? 20 : 12),
+
+              // To Date Filter
+              Expanded(
+                child: _buildModernDateRangeFilter(
+                  label: 'To Date',
+                  date: widget.toDate,
+                  onDateChanged: widget.onToDateChanged,
+                  shiftProvider: shiftProvider,
+                ),
+              ),
+
+              // Clear Filters Button
+              Expanded(
+                child: _buildClearFiltersButton(shiftProvider),
+              ),
+            ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildClearFiltersButton(ShiftProvider shiftProvider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 6), // Match the label height from other filters
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.bgColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.borderColor),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            child: InkWell(
+              onTap: () {
+                // Clear all filters
+                shiftProvider.clearAllFilters();
+                widget.onTimeFilterChanged('All');
+                widget.onFromDateChanged(null);
+                widget.onToDateChanged(null);
+                widget.onShiftChanged('All');
+                widget.onDateChanged(DateTime.now());
+
+                // Fetch fresh data
+                shiftProvider.fetchData();
+              },
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.clear_all,
+                      size: 16,
+                      color: AppColors.coral,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'Clear Filters',
+                      style: HospitalColors.getModernTextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.coral,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -288,6 +387,98 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
                         ),
                       ),
                     ),
+                    // Clear button if date range or time filter is active
+                    if (shiftProvider.isDateRangeActive || shiftProvider.isTimeFilterActive)
+                      IconButton(
+                        icon: Icon(Icons.clear, size: 16, color: AppColors.coral),
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
+                        onPressed: () {
+                          // Clear other filters and reset to single date
+                          widget.onTimeFilterChanged('All');
+                          widget.onFromDateChanged(null);
+                          widget.onToDateChanged(null);
+                          shiftProvider.fetchData();
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModernDateRangeFilter({
+    required String label,
+    required DateTime? date,
+    required Function(DateTime?) onDateChanged,
+    required ShiftProvider shiftProvider,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: HospitalColors.getModernTextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        SizedBox(height: 6),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.bgColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.borderColor),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            child: InkWell(
+              onTap: () => _selectDateRange(context, label, date, onDateChanged, shiftProvider),
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.date_range,
+                      size: 16,
+                      color: AppColors.primaryColor,
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        date != null
+                            ? _formatDate(date)
+                            : 'Select $label',
+                        style: HospitalColors.getModernTextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: date != null ? AppColors.textPrimary : AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                    if (date != null)
+                      IconButton(
+                        icon: Icon(Icons.clear, size: 16, color: AppColors.coral),
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
+                        onPressed: () {
+                          onDateChanged(null);
+                          // If clearing one date, clear both and switch to single date mode
+                          if (label == 'From Date') {
+                            widget.onToDateChanged(null);
+                          } else if (label == 'To Date') {
+                            widget.onFromDateChanged(null);
+                          }
+                          shiftProvider.fetchData();
+                        },
+                      ),
                   ],
                 ),
               ),
@@ -355,15 +546,10 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
                     widget.shiftProvider.setSelectedShift(newValue);
                     widget.onShiftChanged(newValue);
 
-                    // Always pass both arguments
-                    shiftProvider.fetchShiftByDateAndType(
-                      widget.selectedDate,
-                      newValue, // "All" or specific shift
-                    );
+                    // If shift is changed, fetch new data
+                    shiftProvider.fetchData();
                   }
                 },
-
-
               ),
             ),
           ),
@@ -446,8 +632,15 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
                 }).toList(),
                 onChanged: (String? newValue) {
                   if (newValue != null) {
+                    // Clear date range when selecting time filter
+                    widget.onFromDateChanged(null);
+                    widget.onToDateChanged(null);
+
                     widget.shiftProvider.setSelectedTimeFilter(newValue);
                     widget.onTimeFilterChanged(newValue);
+
+                    // Fetch data with time filter
+                    shiftProvider.fetchData();
                   }
                 },
               ),
@@ -460,29 +653,10 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
 
   Widget _buildModernSummaryCardsGrid(ShiftProvider shiftProvider) {
     final summary = shiftProvider.getShiftSummary();
-    final currentShift = summary['currentShift'] as ShiftModel?;
-
-    if (currentShift == null) {
-      return GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: widget.isTablet ? 4 : 2,
-          crossAxisSpacing: widget.isTablet ? 16 : 12,
-          mainAxisSpacing: widget.isTablet ? 16 : 12,
-          childAspectRatio: widget.isTablet ? 1.4 : 1.3,
-        ),
-        itemCount: 4,
-        itemBuilder: (context, index) {
-          return _buildEmptyMetricCard(index);
-        },
-      );
-    }
-
-    final opdTotal = currentShift.getSectionTotal('opd');
-    final expensesTotal = currentShift.getSectionTotal('expenses');
-    final opdPaid = currentShift.getSectionPaid('opd');
-    final opdBalance = currentShift.getSectionBalance('opd');
+    final opdTotal = summary['opdTotal'] as double;
+    final expensesTotal = summary['expensesTotal'] as double;
+    final opdPaid = summary['opdPaid'] as double;
+    final opdBalance = summary['opdBalance'] as double;
 
     final summaryCards = [
       {
@@ -491,7 +665,9 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
         'color': AppColors.modernBlue,
         'contentType': 'opd',
         'figure': 'PKR ${_formatAmount(opdTotal)}',
-        'description': 'OPD Total',
+        'description': shiftProvider.isDateRangeActive || shiftProvider.isTimeFilterActive
+            ? 'Total OPD'
+            : 'OPD Total',
       },
       {
         'title': 'Consultation',
@@ -499,7 +675,9 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
         'color': AppColors.teal,
         'contentType': 'consultation',
         'figure': 'PKR ${_formatAmount(opdPaid)}',
-        'description': 'OPD Paid',
+        'description': shiftProvider.isDateRangeActive || shiftProvider.isTimeFilterActive
+            ? 'Total Paid'
+            : 'OPD Paid',
       },
       {
         'title': 'Admissions',
@@ -507,7 +685,9 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
         'color': AppColors.amber,
         'contentType': 'admissions',
         'figure': 'PKR ${_formatAmount(opdBalance)}',
-        'description': 'OPD Balance',
+        'description': shiftProvider.isDateRangeActive || shiftProvider.isTimeFilterActive
+            ? 'Total Balance'
+            : 'OPD Balance',
       },
       {
         'title': 'Expenses',
@@ -515,7 +695,9 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
         'color': AppColors.coral,
         'contentType': 'expenses',
         'figure': 'PKR ${_formatAmount(expensesTotal)}',
-        'description': 'Total Expenses',
+        'description': shiftProvider.isDateRangeActive || shiftProvider.isTimeFilterActive
+            ? 'Total Expenses'
+            : 'Total Expenses',
       },
     ];
 
@@ -539,67 +721,6 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
           contentType: summaryCards[index]['contentType'] as String,
         );
       },
-    );
-  }
-
-  Widget _buildEmptyMetricCard(int index) {
-    final colors = [
-      AppColors.modernBlue,
-      AppColors.teal,
-      AppColors.amber,
-      AppColors.coral,
-    ];
-    final titles = ['OPD', 'Consultation', 'Admissions', 'Expenses'];
-    final icons = [
-      Icons.local_hospital_outlined,
-      Icons.medical_services_outlined,
-      Icons.night_shelter_outlined,
-      Icons.monetization_on_outlined,
-    ];
-
-    return Container(
-      padding: EdgeInsets.all(widget.isTablet ? 16 : 12),
-      decoration: BoxDecoration(
-        color: AppColors.cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderColor, width: 1.5),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: widget.isTablet ? 52 : 44,
-            height: widget.isTablet ? 52 : 44,
-            decoration: BoxDecoration(
-              color: colors[index].withOpacity(0.1),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(
-              icons[index],
-              size: widget.isTablet ? 26 : 22,
-              color: colors[index],
-            ),
-          ),
-          SizedBox(height: widget.isTablet ? 14 : 10),
-          Text(
-            titles[index],
-            style: HospitalColors.getModernTextStyle(
-              fontSize: widget.isTablet ? 15 : 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          SizedBox(height: widget.isTablet ? 6 : 4),
-          Text(
-            'No data',
-            style: HospitalColors.getModernTextStyle(
-              fontSize: widget.isTablet ? 11 : 9,
-              color: AppColors.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
     );
   }
 
@@ -719,47 +840,34 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
     );
   }
 
-  Widget _buildModernContentSection(double cardPadding, ShiftProvider shiftProvider) {
+  Widget _buildModernContentSection(ShiftProvider shiftProvider) {
     switch (_selectedCategory) {
       case 'OPD':
-        return _buildModernOPDContent(cardPadding, shiftProvider);
+        return _buildModernOPDContent(shiftProvider);
       case 'Consultation':
-        return _buildModernConsultationContent(cardPadding, shiftProvider);
+        return _buildModernConsultationContent(shiftProvider);
       case 'Admissions':
-        return _buildModernAdmissionsContent(cardPadding, shiftProvider);
+        return _buildModernAdmissionsContent(shiftProvider);
       case 'Expenses':
-        return _buildModernExpensesContent(cardPadding, shiftProvider);
+        return _buildModernExpensesContent(shiftProvider);
       default:
-        return _buildModernOPDContent(cardPadding, shiftProvider);
+        return _buildModernOPDContent(shiftProvider);
     }
   }
 
-  String _getCategoryTitle() {
-    if (widget.opdContentIndex >= 0) {
-      switch (widget.opdContentIndex) {
-        case 0: return 'OPD';
-        case 1: return 'Consultation';
-        case 2: return 'Admissions';
-        case 3: return 'Expenses';
-        default: return 'OPD';
-      }
-    }
-    return 'OPD';
-  }
-
-  Widget _buildModernOPDContent(double cardPadding, ShiftProvider shiftProvider) {
+  Widget _buildModernOPDContent(ShiftProvider shiftProvider) {
     final summary = shiftProvider.getShiftSummary();
-    final currentShift = summary['currentShift'] as ShiftModel?;
     final opdRows = summary['opdRows'] as List<ShiftRow>;
     final opdTotal = summary['opdTotal'] as double;
     final opdPaid = summary['opdPaid'] as double;
     final opdBalance = summary['opdBalance'] as double;
-    final totalPatients = currentShift?.getPatientCount() ?? 0;
+    final stats = summary['stats'] as Map<String, dynamic>;
+    final totalPatients = stats['totalPatients'] as int;
 
-    if (currentShift == null) return _buildEmptyState('No OPD data available');
+    if (shiftProvider.filteredShifts.isEmpty) return _buildEmptyState('No OPD data available');
 
     return Container(
-      padding: EdgeInsets.all(cardPadding),
+      padding: EdgeInsets.all(widget.isTablet ? 24 : 16),
       decoration: BoxDecoration(
         color: AppColors.cardColor,
         borderRadius: BorderRadius.circular(20),
@@ -772,26 +880,28 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'OPD Summary',
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: widget.isTablet ? 20 : 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'OPD Summary',
+                      style: HospitalColors.getModernTextStyle(
+                        fontSize: widget.isTablet ? 20 : 18,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    '${_formatDate(widget.selectedDate)} • ${widget.selectedShift} Shift',
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
+                    SizedBox(height: 6),
+                    Text(
+                      _getDisplayDateRange(shiftProvider),
+                      style: HospitalColors.getModernTextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -824,6 +934,30 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
             ],
           ),
           SizedBox(height: widget.isTablet ? 24 : 20),
+
+          // Show shift count when date range is active
+          if (shiftProvider.isDateRangeActive || shiftProvider.isTimeFilterActive)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.modernBlue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${shiftProvider.filteredShifts.length} Shifts',
+                      style: TextStyle(
+                        color: AppColors.modernBlue,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
           // OPD Statistics
           SingleChildScrollView(
@@ -860,14 +994,15 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
                     ),
                   ),
                 ),
-                Text(
-                  'Receipts: ${currentShift.receiptFrom}-${currentShift.receiptTo}',
-                  style: HospitalColors.getModernTextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.modernBlue,
+                if (!shiftProvider.isDateRangeActive && !shiftProvider.isTimeFilterActive && shiftProvider.filteredShifts.isNotEmpty)
+                  Text(
+                    'Receipts: ${shiftProvider.filteredShifts.first.receiptFrom}-${shiftProvider.filteredShifts.first.receiptTo}',
+                    style: HospitalColors.getModernTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.modernBlue,
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -882,164 +1017,15 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
     );
   }
 
-  Widget _buildModernConsultationContent(double cardPadding, ShiftProvider shiftProvider) {
-    return Container(
-      padding: EdgeInsets.all(cardPadding),
-      decoration: BoxDecoration(
-        color: AppColors.cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: HospitalColors.getModernCardShadow(elevation: 6),
-        border: Border.all(color: AppColors.borderColor, width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Consultation Summary',
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: widget.isTablet ? 20 : 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    '${_formatDate(widget.selectedDate)} • ${widget.selectedShift} Shift',
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.teal.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.teal.withOpacity(0.2)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.medical_services_outlined, size: 16, color: AppColors.teal),
-                    SizedBox(width: 6),
-                    Text(
-                      'Consultation',
-                      style: HospitalColors.getModernTextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.teal,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: widget.isTablet ? 24 : 20),
-
-          // Show only "No Data Available" message
-          _buildNoDataAvailableSection(
-            title: 'Consultation Data Not Available',
-            subtitle: 'Consultation data is currently not available for this shift',
-            icon: Icons.medical_services_outlined,
-            color: AppColors.teal,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildModernAdmissionsContent(double cardPadding, ShiftProvider shiftProvider) {
-    return Container(
-      padding: EdgeInsets.all(cardPadding),
-      decoration: BoxDecoration(
-        color: AppColors.cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: HospitalColors.getModernCardShadow(elevation: 6),
-        border: Border.all(color: AppColors.borderColor, width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Admissions Summary',
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: widget.isTablet ? 20 : 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    '${_formatDate(widget.selectedDate)}',
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.amber.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.amber.withOpacity(0.2)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.analytics_outlined, size: 16, color: AppColors.amber),
-                    SizedBox(width: 6),
-                    Text(
-                      'Admissions',
-                      style: HospitalColors.getModernTextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.amber,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: widget.isTablet ? 24 : 20),
-
-          // Show only "No Data Available" message
-          _buildNoDataAvailableSection(
-            title: 'Admissions Data Not Available',
-            subtitle: 'Admissions data is currently not available for this shift',
-            icon: Icons.night_shelter_outlined,
-            color: AppColors.amber,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildModernExpensesContent(double cardPadding, ShiftProvider shiftProvider) {
+  Widget _buildModernExpensesContent(ShiftProvider shiftProvider) {
     final summary = shiftProvider.getShiftSummary();
-    final currentShift = summary['currentShift'] as ShiftModel?;
     final expenseRows = summary['expenseRows'] as List<ShiftRow>;
     final expensesTotal = summary['expensesTotal'] as double;
 
-    if (currentShift == null) return _buildEmptyState('No expense data available');
+    if (shiftProvider.filteredShifts.isEmpty) return _buildEmptyState('No expense data available');
 
     return Container(
-      padding: EdgeInsets.all(cardPadding),
+      padding: EdgeInsets.all(widget.isTablet ? 24 : 16),
       decoration: BoxDecoration(
         color: AppColors.cardColor,
         borderRadius: BorderRadius.circular(20),
@@ -1065,7 +1051,7 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
                   ),
                   SizedBox(height: 6),
                   Text(
-                    '${_formatDate(widget.selectedDate)}',
+                    _getDisplayDateRange(shiftProvider),
                     style: HospitalColors.getModernTextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary,
@@ -1107,7 +1093,7 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
               _buildModernStatCard('No. of Expenses', _formatNumber(expenseRows.length),
                   Icons.list_outlined, AppColors.amber),
               if (widget.isTablet)
-                _buildModernStatCard('Shift Total', 'PKR ${_formatAmount(currentShift.totalAmount)}',
+                _buildModernStatCard('Shift Count', '${shiftProvider.filteredShifts.length}',
                     Icons.attach_money_outlined, AppColors.infoColor),
             ],
           ),
@@ -1171,77 +1157,6 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNoDataAvailableSection({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color color,
-  }) {
-    return Container(
-      padding: EdgeInsets.all(widget.isTablet ? 40 : 30),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: widget.isTablet ? 80 : 60,
-            height: widget.isTablet ? 80 : 60,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              size: widget.isTablet ? 40 : 32,
-              color: color,
-            ),
-          ),
-          SizedBox(height: widget.isTablet ? 24 : 16),
-          Text(
-            title,
-            style: HospitalColors.getModernTextStyle(
-              fontSize: widget.isTablet ? 18 : 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: widget.isTablet ? 12 : 8),
-          Text(
-            subtitle,
-            style: HospitalColors.getModernTextStyle(
-              fontSize: widget.isTablet ? 14 : 12,
-              color: AppColors.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: widget.isTablet ? 24 : 16),
-          Container(
-            padding: EdgeInsets.all(widget.isTablet ? 12 : 8),
-            decoration: BoxDecoration(
-              color: AppColors.bgColor,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.borderColor),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.info_outline, size: 16, color: AppColors.infoColor),
-                SizedBox(width: 8),
-                Text(
-                  'This feature is currently under development',
-                  style: HospitalColors.getModernTextStyle(
-                    fontSize: widget.isTablet ? 12 : 10,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
           ),
         ],
       ),
@@ -1409,9 +1324,50 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
     );
 
     if (picked != null && picked != widget.selectedDate) {
+      // Clear date range and time filter when selecting single date
+      widget.onTimeFilterChanged('All');
+      widget.onFromDateChanged(null);
+      widget.onToDateChanged(null);
+
       widget.shiftProvider.setSelectedDate(picked);
       widget.onDateChanged(picked);
-      shiftProvider.fetchShiftByDateAndType(picked, widget.selectedShift);
+
+      // Fetch data with new date
+      shiftProvider.fetchData();
+    }
+  }
+
+  Future<void> _selectDateRange(
+      BuildContext context,
+      String label,
+      DateTime? currentDate,
+      Function(DateTime?) onDateChanged,
+      ShiftProvider shiftProvider,
+      ) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: currentDate ?? widget.selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: AppColors.modernBlue,
+            colorScheme: ColorScheme.light(primary: AppColors.modernBlue),
+            buttonTheme: const ButtonThemeData(
+              textTheme: ButtonTextTheme.primary,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      onDateChanged(picked);
+
+      // Auto-fetch will be triggered by the setter in ShiftProvider
+      // when both dates are set
     }
   }
 
@@ -1428,5 +1384,249 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
       default:
         return 0;
     }
+  }
+
+  String _getDisplayDateRange(ShiftProvider shiftProvider) {
+    String dateInfo;
+    String shiftInfo = widget.selectedShift == 'All' ? 'All Shifts' : '${widget.selectedShift} Shift';
+
+    if (shiftProvider.isDateRangeActive) {
+      dateInfo = '${_formatDate(shiftProvider.fromDate!)} - ${_formatDate(shiftProvider.toDate!)}';
+    } else if (shiftProvider.isTimeFilterActive) {
+      dateInfo = '${widget.selectedTimeFilter} (${_formatDate(shiftProvider.fromDate!)} - ${_formatDate(shiftProvider.toDate!)})';
+    } else {
+      dateInfo = _formatDate(widget.selectedDate);
+    }
+
+    return '$dateInfo • $shiftInfo';
+  }
+
+  String _getCategoryTitle() {
+    if (widget.opdContentIndex >= 0) {
+      switch (widget.opdContentIndex) {
+        case 0: return 'OPD';
+        case 1: return 'Consultation';
+        case 2: return 'Admissions';
+        case 3: return 'Expenses';
+        default: return 'OPD';
+      }
+    }
+    return 'OPD';
+  }
+
+  // These methods remain the same as in your original code
+  Widget _buildModernConsultationContent(ShiftProvider shiftProvider) {
+    return Container(
+      padding: EdgeInsets.all(widget.isTablet ? 24 : 16),
+      decoration: BoxDecoration(
+        color: AppColors.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: HospitalColors.getModernCardShadow(elevation: 6),
+        border: Border.all(color: AppColors.borderColor, width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Consultation Summary',
+                    style: HospitalColors.getModernTextStyle(
+                      fontSize: widget.isTablet ? 20 : 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    _getDisplayDateRange(shiftProvider),
+                    style: HospitalColors.getModernTextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.teal.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.teal.withOpacity(0.2)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.medical_services_outlined, size: 16, color: AppColors.teal),
+                    SizedBox(width: 6),
+                    Text(
+                      'Consultation',
+                      style: HospitalColors.getModernTextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.teal,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: widget.isTablet ? 24 : 20),
+          _buildNoDataAvailableSection(
+            title: 'Consultation Data Not Available',
+            subtitle: 'Consultation data is currently not available for this shift',
+            icon: Icons.medical_services_outlined,
+            color: AppColors.teal,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModernAdmissionsContent(ShiftProvider shiftProvider) {
+    return Container(
+      padding: EdgeInsets.all(widget.isTablet ? 24 : 16),
+      decoration: BoxDecoration(
+        color: AppColors.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: HospitalColors.getModernCardShadow(elevation: 6),
+        border: Border.all(color: AppColors.borderColor, width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Admissions Summary',
+                    style: HospitalColors.getModernTextStyle(
+                      fontSize: widget.isTablet ? 20 : 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    _getDisplayDateRange(shiftProvider),
+                    style: HospitalColors.getModernTextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.amber.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.amber.withOpacity(0.2)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.analytics_outlined, size: 16, color: AppColors.amber),
+                    SizedBox(width: 6),
+                    Text(
+                      'Admissions',
+                      style: HospitalColors.getModernTextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.amber,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: widget.isTablet ? 24 : 20),
+          _buildNoDataAvailableSection(
+            title: 'Admissions Data Not Available',
+            subtitle: 'Admissions data is currently not available for this shift',
+            icon: Icons.night_shelter_outlined,
+            color: AppColors.amber,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNoDataAvailableSection({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(widget.isTablet ? 40 : 30),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: widget.isTablet ? 80 : 60,
+            height: widget.isTablet ? 80 : 60,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: widget.isTablet ? 40 : 32,
+              color: color,
+            ),
+          ),
+          SizedBox(height: widget.isTablet ? 24 : 16),
+          Text(
+            title,
+            style: HospitalColors.getModernTextStyle(
+              fontSize: widget.isTablet ? 18 : 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: widget.isTablet ? 12 : 8),
+          Text(
+            subtitle,
+            style: HospitalColors.getModernTextStyle(
+              fontSize: widget.isTablet ? 14 : 12,
+              color: AppColors.textSecondary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: widget.isTablet ? 24 : 16),
+          Container(
+            padding: EdgeInsets.all(widget.isTablet ? 12 : 8),
+            decoration: BoxDecoration(
+              color: AppColors.bgColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.borderColor),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.info_outline, size: 16, color: AppColors.infoColor),
+                SizedBox(width: 8),
+                Text(
+                  'This feature is currently under development',
+                  style: HospitalColors.getModernTextStyle(
+                    fontSize: widget.isTablet ? 12 : 10,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
