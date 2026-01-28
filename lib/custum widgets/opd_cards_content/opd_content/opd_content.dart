@@ -248,37 +248,37 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
           ),
 
           SizedBox(height: widget.isTablet ? 16 : 12),
-
-          // Second row with 2 filters (From Date and To Date)
-          Row(
-            children: [
-              // From Date Filter
-              Expanded(
-                child: _buildModernDateRangeFilter(
-                  label: 'From Date',
-                  date: widget.fromDate,
-                  onDateChanged: widget.onFromDateChanged,
-                  shiftProvider: shiftProvider,
-                ),
-              ),
-              SizedBox(width: widget.isTablet ? 20 : 12),
-
-              // To Date Filter
-              Expanded(
-                child: _buildModernDateRangeFilter(
-                  label: 'To Date',
-                  date: widget.toDate,
-                  onDateChanged: widget.onToDateChanged,
-                  shiftProvider: shiftProvider,
-                ),
-              ),
-
-              // Clear Filters Button
-              Expanded(
-                child: _buildClearFiltersButton(shiftProvider),
-              ),
-            ],
-          ),
+          //
+          // // Second row with 2 filters (From Date and To Date)
+          // Row(
+          //   children: [
+          //     // From Date Filter
+          //     Expanded(
+          //       child: _buildModernDateRangeFilter(
+          //         label: 'From Date',
+          //         date: widget.fromDate,
+          //         onDateChanged: widget.onFromDateChanged,
+          //         shiftProvider: shiftProvider,
+          //       ),
+          //     ),
+          //     SizedBox(width: widget.isTablet ? 20 : 12),
+          //
+          //     // To Date Filter
+          //     Expanded(
+          //       child: _buildModernDateRangeFilter(
+          //         label: 'To Date',
+          //         date: widget.toDate,
+          //         onDateChanged: widget.onToDateChanged,
+          //         shiftProvider: shiftProvider,
+          //       ),
+          //     ),
+          //
+          //     // Clear Filters Button
+          //     Expanded(
+          //       child: _buildClearFiltersButton(shiftProvider),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );
@@ -288,7 +288,7 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 6), // Match the label height from other filters
+        SizedBox(height: 6),
         Container(
           decoration: BoxDecoration(
             color: AppColors.bgColor,
@@ -341,7 +341,6 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
       ],
     );
   }
-
   Widget _buildModernDateFilter(ShiftProvider shiftProvider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1366,8 +1365,12 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
     if (picked != null) {
       onDateChanged(picked);
 
-      // Auto-fetch will be triggered by the setter in ShiftProvider
-      // when both dates are set
+      // Manually fetch data when both dates are set
+      if (label == 'From Date' && widget.toDate != null) {
+        shiftProvider.fetchData();
+      } else if (label == 'To Date' && widget.fromDate != null) {
+        shiftProvider.fetchData();
+      }
     }
   }
 
