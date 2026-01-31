@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ShiftProvider()),
+        ChangeNotifierProvider(create: (_) => ShiftReportProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

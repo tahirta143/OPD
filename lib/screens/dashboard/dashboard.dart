@@ -68,7 +68,7 @@ class _AttractiveHealthDashboardState extends State<AttractiveHealthDashboard> {
   @override
   Widget build(BuildContext context) {
     final isTablet = MediaQuery.of(context).size.width > 768;
-    final shiftProvider = Provider.of<ShiftProvider>(context); // Get the provider
+    final shiftProvider = Provider.of<ShiftReportProvider>(context); // Get the provider
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -89,92 +89,93 @@ class _AttractiveHealthDashboardState extends State<AttractiveHealthDashboard> {
                     print('$title tapped');
                   },
                   onOPDTap: () {
-                    setState(() {
-                      _showOPDContent = true;
-                      _selectedOPDCard = 'opd';
-                      _opdContentIndex = -1;
-                    });
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ShiftReportPage()));
+                    // setState(() {
+                    //   // _showOPDContent = true;
+                    //   // _selectedOPDCard = 'opd';
+                    //   // _opdContentIndex = -1;
+                    // });
                   },
                 ),
 
-                SizedBox(height: isTablet ? 24 : 16),
-
-              // Add these variables to your state class
-
-
-// Update your OPDTabsWithContent widget call with the new parameters:
-              if (_showOPDContent && _selectedOPDCard == 'opd')
-          OPDTabsWithContent(
-          isTablet: isTablet,
-          fromDate: _fromDate, // Use your state variable
-          toDate: _toDate, // Use your state variable
-          opdContentIndex: _opdContentIndex,
-          selectedDate: _selectedDate,
-          selectedShift: _selectedShift,
-          selectedTimeFilter: _selectedTimeFilter,
-          shifts: _shifts,
-          timeFilters: _timeFilters,
-          onTabSelected: (index) {
-            setState(() {
-              _opdContentIndex = index;
-            });
-          },
-          onClose: () {
-            setState(() {
-              _showOPDContent = false;
-              _selectedOPDCard = null;
-              _opdContentIndex = -1;
-              // Optionally clear date range when closing
-              _fromDate = null;
-              _toDate = null;
-            });
-          },
-          onDateChanged: (date) {
-            setState(() {
-              _selectedDate = date;
-            });
-            shiftProvider.setSelectedDate(date); // Update provider
-          },
-          onShiftChanged: (shift) {
-            setState(() {
-              _selectedShift = shift;
-            });
-            shiftProvider.setSelectedShift(shift); // Update provider
-          },
-          onTimeFilterChanged: (filter) {
-            setState(() {
-              _selectedTimeFilter = filter;
-            });
-            shiftProvider.setSelectedTimeFilter(filter); // Update provider
-          },
-          onFromDateChanged: (date) {
-            setState(() {
-              _fromDate = date;
-            });
-            // You might want to add provider update here if needed
-            // shiftProvider.setFromDate(date);
-          },
-          onToDateChanged: (date) {
-            setState(() {
-              _toDate = date;
-            });
-            // You might want to add provider update here if needed
-            // shiftProvider.setToDate(date);
-          },
-          consultantsData: _consultantsData,
-          shiftProvider: shiftProvider,
-        ),
+//                 SizedBox(height: isTablet ? 24 : 16),
+//
+//                 // Add these variables to your state class
+//
+//
+// // Update your OPDTabsWithContent widget call with the new parameters:
+//                 if (_showOPDContent && _selectedOPDCard == 'opd')
+//                   OPDTabsWithContent(
+//                     isTablet: isTablet,
+//                     fromDate: _fromDate, // Use your state variable
+//                     toDate: _toDate, // Use your state variable
+//                     opdContentIndex: _opdContentIndex,
+//                     selectedDate: _selectedDate,
+//                     selectedShift: _selectedShift,
+//                     selectedTimeFilter: _selectedTimeFilter,
+//                     shifts: _shifts,
+//                     timeFilters: _timeFilters,
+//                     onTabSelected: (index) {
+//                       setState(() {
+//                         _opdContentIndex = index;
+//                       });
+//                     },
+//                     onClose: () {
+//                       setState(() {
+//                         _showOPDContent = false;
+//                         _selectedOPDCard = null;
+//                         _opdContentIndex = -1;
+//                         // Optionally clear date range when closing
+//                         _fromDate = null;
+//                         _toDate = null;
+//                       });
+//                     },
+//                     onDateChanged: (date) {
+//                       setState(() {
+//                         _selectedDate = date;
+//                       });
+//                       shiftProvider.setSelectedDate(date); // Update provider
+//                     },
+//                     onShiftChanged: (shift) {
+//                       setState(() {
+//                         _selectedShift = shift;
+//                       });
+//                       // shiftProvider.setSelectedShift(shift); // Update provider
+//                     },
+//                     onTimeFilterChanged: (filter) {
+//                       setState(() {
+//                         _selectedTimeFilter = filter;
+//                       });
+//                       // shiftProvider.setSelectedTimeFilter(filter); // Update provider
+//                     },
+//                     onFromDateChanged: (date) {
+//                       setState(() {
+//                         _fromDate = date;
+//                       });
+//                       // You might want to add provider update here if needed
+//                       // shiftProvider.setFromDate(date);
+//                     },
+//                     onToDateChanged: (date) {
+//                       setState(() {
+//                         _toDate = date;
+//                       });
+//                       // You might want to add provider update here if needed
+//                       // shiftProvider.setToDate(date);
+//                     },
+//                     consultantsData: _consultantsData,
+//                     shiftProvider: shiftProvider,
+//                   ),
 
 // If not showing OPD content, show the rest of the dashboard
-          if (!_showOPDContent) ...[
-        MetricCards(isTablet: isTablet),
-    SizedBox(height: isTablet ? 24 : 16),
-    ActivitySleepSection(isTablet: isTablet),
-    SizedBox(height: isTablet ? 24 : 16),
-    HealthInsights(isTablet: isTablet),
-    SizedBox(height: isTablet ? 24 : 16),
-    QuickStats(isTablet: isTablet),
-    ],
+                if (!_showOPDContent) ...[
+                  MetricCards(isTablet: isTablet),
+                  SizedBox(height: isTablet ? 24 : 16),
+                  ActivitySleepSection(isTablet: isTablet),
+                  SizedBox(height: isTablet ? 24 : 16),
+                  HealthInsights(isTablet: isTablet),
+                  SizedBox(height: isTablet ? 24 : 16),
+                  QuickStats(isTablet: isTablet),
+                ],
                 SizedBox(height: 80),
               ],
             ),

@@ -1,408 +1,909 @@
+// import 'package:flutter/material.dart';
+// import 'package:provider/provider.dart';
+// import 'package:intl/intl.dart';
+// import '../../../provider/shift_provider/shift_provider.dart';
+//
+// class ShiftReportPage extends StatefulWidget {
+//   const ShiftReportPage({Key? key}) : super(key: key);
+//
+//   @override
+//   State<ShiftReportPage> createState() => _ShiftReportPageState();
+// }
+//
+// class _ShiftReportPageState extends State<ShiftReportPage> {
+//   final NumberFormat _numberFormat = NumberFormat("#,##0", "en_US");
+//
+//   String _formatAmount(double amount) => _numberFormat.format(amount);
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       final provider = context.read<ShiftReportProvider>();
+//       provider.fetchAvailableShifts().then((_) {
+//         provider.fetchData();
+//       });
+//     });
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: const Color(0xFFF9FAFB),
+//       body: SafeArea(
+//         child: SingleChildScrollView(
+//           padding: const EdgeInsets.all(16),
+//           child: Consumer<ShiftReportProvider>(
+//             builder: (context, provider, child) {
+//               return Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   // Header
+//                   _buildHeader(),
+//                   const SizedBox(height: 16),
+//
+//                   // Filters
+//                   _buildFiltersCard(provider),
+//                   const SizedBox(height: 16),
+//
+//                   // Summary Cards
+//                   _buildSummaryCards(provider),
+//                   const SizedBox(height: 16),
+//
+//                   // Consultation Table
+//                   _buildConsultationTable(provider),
+//                   const SizedBox(height: 16),
+//
+//                   // Other Services Table
+//                   _buildOtherServicesTable(provider),
+//                   const SizedBox(height: 16),
+//
+//                   // Expenses Table
+//                   _buildExpensesTable(provider),
+//                 ],
+//               );
+//             },
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+//
+//   Widget _buildHeader() {
+//     return Container(
+//       decoration: BoxDecoration(
+//         gradient: const LinearGradient(
+//           colors: [Color(0xFF037389), Color(0xFF14B8A6)],
+//           begin: Alignment.centerLeft,
+//           end: Alignment.centerRight,
+//         ),
+//         borderRadius: BorderRadius.circular(10),
+//       ),
+//       padding: const EdgeInsets.all(16),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           const Row(
+//             children: [
+//               Icon(Icons.description, color: Colors.white),
+//               SizedBox(width: 8),
+//               Text(
+//                 'Shift Report',
+//                 style: TextStyle(
+//                   color: Colors.white,
+//                   fontSize: 18,
+//                   fontWeight: FontWeight.w600,
+//                 ),
+//               ),
+//             ],
+//           ),
+//           const SizedBox(height: 4),
+//           Text(
+//             'Shift-based financial summary',
+//             style: TextStyle(
+//               color: Colors.white.withOpacity(0.85),
+//               fontSize: 12,
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   Widget _buildFiltersCard(ShiftReportProvider provider) {
+//     return Container(
+//       padding: const EdgeInsets.all(14),
+//       decoration: BoxDecoration(
+//         color: Colors.white,
+//         borderRadius: BorderRadius.circular(10),
+//         border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.black.withOpacity(0.06),
+//             blurRadius: 3,
+//             offset: const Offset(0, 1),
+//           ),
+//         ],
+//       ),
+//       child: Column(
+//         children: [
+//           Row(
+//             children: [
+//               // Date Filter
+//               Expanded(
+//                 child: _buildDateFilter(provider),
+//               ),
+//               const SizedBox(width: 12),
+//
+//               // Shift Filter
+//               Expanded(
+//                 child: _buildShiftFilter(provider),
+//               ),
+//             ],
+//           ),
+//           const SizedBox(height: 12),
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.end,
+//             children: [
+//               // Print Button
+//               ElevatedButton.icon(
+//                 onPressed: provider.opdRecords.isEmpty ? null : () {
+//                   // TODO: Implement print functionality
+//                   ScaffoldMessenger.of(context).showSnackBar(
+//                     const SnackBar(content: Text('Print functionality coming soon')),
+//                   );
+//                 },
+//                 icon: const Icon(Icons.print, size: 16),
+//                 label: const Text('Print'),
+//                 style: ElevatedButton.styleFrom(
+//                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+//                   textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+//                 ),
+//               ),
+//               const SizedBox(width: 8),
+//
+//               // Refresh Button
+//               ElevatedButton.icon(
+//                 onPressed: provider.isLoading ? null : () {
+//                   provider.refresh();
+//                 },
+//                 icon: provider.isLoading
+//                     ? const SizedBox(
+//                   width: 16,
+//                   height: 16,
+//                   child: CircularProgressIndicator(strokeWidth: 2),
+//                 )
+//                     : const Icon(Icons.refresh, size: 16),
+//                 label: const Text('Refresh'),
+//                 style: ElevatedButton.styleFrom(
+//                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+//                   textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   Widget _buildDateFilter(ShiftReportProvider provider) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         const Text(
+//           'Date',
+//           style: TextStyle(
+//             fontSize: 13,
+//             fontWeight: FontWeight.w600,
+//             color: Color(0xFF374151),
+//           ),
+//         ),
+//         const SizedBox(height: 4),
+//         InkWell(
+//           onTap: () => _selectDate(context, provider),
+//           child: Container(
+//             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+//             decoration: BoxDecoration(
+//               color: const Color(0xFFF9FAFB),
+//               borderRadius: BorderRadius.circular(8),
+//               border: Border.all(color: const Color(0xFFE5E7EB)),
+//             ),
+//             child: Row(
+//               children: [
+//                 const Icon(Icons.calendar_today, size: 16, color: Color(0xFF037389)),
+//                 const SizedBox(width: 8),
+//                 Expanded(
+//                   child: Text(
+//                     DateFormat('dd/MM/yyyy').format(provider.selectedDate),
+//                     style: const TextStyle(
+//                       fontSize: 14,
+//                       fontWeight: FontWeight.w600,
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+//
+//   Widget _buildShiftFilter(ShiftReportProvider provider) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         const Text(
+//           'Shift',
+//           style: TextStyle(
+//             fontSize: 13,
+//             fontWeight: FontWeight.w600,
+//             color: Color(0xFF374151),
+//           ),
+//         ),
+//         const SizedBox(height: 4),
+//         Container(
+//           padding: const EdgeInsets.symmetric(horizontal: 8),
+//           decoration: BoxDecoration(
+//             color: const Color(0xFFF9FAFB),
+//             borderRadius: BorderRadius.circular(8),
+//             border: Border.all(color: const Color(0xFFE5E7EB)),
+//           ),
+//           child: DropdownButtonHideUnderline(
+//             child: DropdownButton<String>(
+//               value: provider.selectedShiftId ?? 'All',
+//               isExpanded: true,
+//               items: [
+//                 const DropdownMenuItem(
+//                   value: 'All',
+//                   child: Text('All Shifts', style: TextStyle(fontSize: 14)),
+//                 ),
+//                 ...provider.availableShifts.map((shift) {
+//                   return DropdownMenuItem(
+//                     value: shift.shiftId.toString(),
+//                     child: Text(
+//                       '${shift.shiftType} (ID: ${shift.shiftId})',
+//                       style: const TextStyle(fontSize: 14),
+//                     ),
+//                   );
+//                 }),
+//               ],
+//               onChanged: (value) {
+//                 if (value != null) {
+//                   provider.setSelectedShiftId(value);
+//                   provider.fetchData();
+//                 }
+//               },
+//             ),
+//           ),
+//         ),
+//         if (provider.availableShifts.isEmpty && !provider.isLoading)
+//           const Padding(
+//             padding: EdgeInsets.only(top: 2),
+//             child: Text(
+//               'No shifts found',
+//               style: TextStyle(fontSize: 11, color: Colors.grey),
+//             ),
+//           ),
+//       ],
+//     );
+//   }
+//
+//   Widget _buildSummaryCards(ShiftReportProvider provider) {
+//     if (provider.isLoading && provider.opdRecords.isEmpty) {
+//       return const Center(
+//         child: Padding(
+//           padding: EdgeInsets.all(40),
+//           child: CircularProgressIndicator(),
+//         ),
+//       );
+//     }
+//
+//     final financial = provider.financialSummary;
+//
+//     return Row(
+//       children: [
+//         // Total Revenue Card
+//         Expanded(
+//           child: _buildSummaryCard(
+//             title: 'Total Revenue',
+//             value: 'Rs ${_formatAmount(financial.totalRevenue)}',
+//             subtitle: 'All services',
+//             icon: Icons.attach_money,
+//             color: const Color(0xFF3B82F6),
+//           ),
+//         ),
+//         const SizedBox(width: 12),
+//
+//         // Total Expenses Card
+//         Expanded(
+//           child: _buildSummaryCard(
+//             title: 'Total Expenses',
+//             value: 'Rs ${_formatAmount(financial.totalExpensesWithDocShare)}',
+//             subtitle: 'Incl. doctor share',
+//             icon: Icons.shopping_cart,
+//             color: const Color(0xFFEF4444),
+//           ),
+//         ),
+//         const SizedBox(width: 12),
+//
+//         // Net Revenue Card
+//         Expanded(
+//           child: _buildSummaryCard(
+//             title: 'Net Revenue',
+//             value: 'Rs ${_formatAmount(financial.netHospitalRevenue)}',
+//             subtitle: 'After expenses',
+//             icon: Icons.account_balance_wallet,
+//             color: const Color(0xFF10B981),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+//
+//   Widget _buildSummaryCard({
+//     required String title,
+//     required String value,
+//     required String subtitle,
+//     required IconData icon,
+//     required Color color,
+//   }) {
+//     return Container(
+//       padding: const EdgeInsets.all(14),
+//       decoration: BoxDecoration(
+//         gradient: LinearGradient(
+//           colors: [
+//             color.withOpacity(0.05),
+//             color.withOpacity(0.1),
+//           ],
+//           begin: Alignment.topLeft,
+//           end: Alignment.bottomRight,
+//         ),
+//         borderRadius: BorderRadius.circular(10),
+//         border: Border.all(color: color.withOpacity(0.3)),
+//         boxShadow: [
+//           BoxShadow(
+//             color: color.withOpacity(0.1),
+//             blurRadius: 3,
+//             offset: const Offset(0, 1),
+//           ),
+//         ],
+//       ),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Row(
+//             children: [
+//               Container(
+//                 width: 32,
+//                 height: 32,
+//                 decoration: BoxDecoration(
+//                   gradient: LinearGradient(
+//                     colors: [color, color.withOpacity(0.8)],
+//                   ),
+//                   borderRadius: BorderRadius.circular(8),
+//                 ),
+//                 child: Icon(icon, color: Colors.white, size: 16),
+//               ),
+//               const SizedBox(width: 10),
+//               Expanded(
+//                 child: Text(
+//                   title,
+//                   style: TextStyle(
+//                     fontSize: 13,
+//                     fontWeight: FontWeight.w600,
+//                     color: color.withOpacity(0.8),
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//           const SizedBox(height: 10),
+//           Text(
+//             value,
+//             style: TextStyle(
+//               fontSize: 18,
+//               fontWeight: FontWeight.w700,
+//               color: color,
+//             ),
+//           ),
+//           const SizedBox(height: 4),
+//           Text(
+//             subtitle,
+//             style: const TextStyle(
+//               fontSize: 11,
+//               color: Colors.grey,
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   Widget _buildConsultationTable(ShiftReportProvider provider) {
+//     final consultations = provider.consultationSummaries;
+//
+//     return Container(
+//       padding: const EdgeInsets.all(12),
+//       decoration: BoxDecoration(
+//         color: Colors.white,
+//         borderRadius: BorderRadius.circular(10),
+//         border: Border.all(color: const Color(0xFFE5E7EB)),
+//       ),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           const Row(
+//             children: [
+//               Icon(Icons.description, color: Color(0xFF037389), size: 14),
+//               SizedBox(width: 6),
+//               Text(
+//                 'Consultation (Doctors)',
+//                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+//               ),
+//             ],
+//           ),
+//           const SizedBox(height: 12),
+//           if (consultations.isEmpty)
+//             const Center(
+//               child: Padding(
+//                 padding: EdgeInsets.all(20),
+//                 child: Text('No consultation data available'),
+//               ),
+//             )
+//           else
+//             SingleChildScrollView(
+//               scrollDirection: Axis.horizontal,
+//               child: DataTable(
+//                 columnSpacing: 20,
+//                 headingRowHeight: 40,
+//                 dataRowHeight: 40,
+//                 columns: const [
+//                   DataColumn(label: Text('Doctor Name', style: TextStyle(fontWeight: FontWeight.bold))),
+//                   DataColumn(label: Text('Total Service Amount', style: TextStyle(fontWeight: FontWeight.bold))),
+//                   DataColumn(label: Text('Dr. Share', style: TextStyle(fontWeight: FontWeight.bold))),
+//                   DataColumn(label: Text('Hospital Received', style: TextStyle(fontWeight: FontWeight.bold))),
+//                 ],
+//                 rows: [
+//                   ...consultations.map((consultation) {
+//                     return DataRow(cells: [
+//                       DataCell(Text(consultation.doctorName, style: const TextStyle(fontWeight: FontWeight.w600))),
+//                       DataCell(Text(_formatAmount(consultation.totalAmount))),
+//                       DataCell(Text(_formatAmount(consultation.drShare))),
+//                       DataCell(Text(_formatAmount(consultation.hospitalShare), style: const TextStyle(color: Colors.green, fontWeight: FontWeight.w600))),
+//                     ]);
+//                   }),
+//                   // Total row
+//                   DataRow(
+//                     color: MaterialStateProperty.all(Colors.grey[100]),
+//                     cells: [
+//                       const DataCell(Text('Total', style: TextStyle(fontWeight: FontWeight.bold))),
+//                       DataCell(Text(
+//                         _formatAmount(consultations.fold(0.0, (sum, c) => sum + c.totalAmount)),
+//                         style: const TextStyle(fontWeight: FontWeight.bold),
+//                       )),
+//                       DataCell(Text(
+//                         _formatAmount(consultations.fold(0.0, (sum, c) => sum + c.drShare)),
+//                         style: const TextStyle(fontWeight: FontWeight.bold),
+//                       )),
+//                       DataCell(Text(
+//                         _formatAmount(consultations.fold(0.0, (sum, c) => sum + c.hospitalShare)),
+//                         style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+//                       )),
+//                     ],
+//                   ),
+//                 ],
+//               ),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   Widget _buildOtherServicesTable(ShiftReportProvider provider) {
+//     final services = provider.serviceSummaries;
+//
+//     return Container(
+//       padding: const EdgeInsets.all(12),
+//       decoration: BoxDecoration(
+//         color: Colors.white,
+//         borderRadius: BorderRadius.circular(10),
+//         border: Border.all(color: const Color(0xFFE5E7EB)),
+//       ),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           const Row(
+//             children: [
+//               Icon(Icons.description, color: Color(0xFF037389), size: 14),
+//               SizedBox(width: 6),
+//               Text(
+//                 'Other Services',
+//                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+//               ),
+//             ],
+//           ),
+//           const SizedBox(height: 12),
+//           if (services.isEmpty)
+//             const Center(
+//               child: Padding(
+//                 padding: EdgeInsets.all(20),
+//                 child: Text('No other services data available'),
+//               ),
+//             )
+//           else
+//             SingleChildScrollView(
+//               scrollDirection: Axis.horizontal,
+//               child: DataTable(
+//                 columnSpacing: 20,
+//                 headingRowHeight: 40,
+//                 dataRowHeight: 40,
+//                 columns: const [
+//                   DataColumn(label: Text('Service Name', style: TextStyle(fontWeight: FontWeight.bold))),
+//                   DataColumn(label: Text('Total Amount', style: TextStyle(fontWeight: FontWeight.bold))),
+//                   DataColumn(label: Text('Dr. Share', style: TextStyle(fontWeight: FontWeight.bold))),
+//                   DataColumn(label: Text('Hospital Received', style: TextStyle(fontWeight: FontWeight.bold))),
+//                 ],
+//                 rows: [
+//                   ...services.map((service) {
+//                     return DataRow(cells: [
+//                       DataCell(Text(service.serviceName, style: const TextStyle(fontWeight: FontWeight.w600))),
+//                       DataCell(Text(_formatAmount(service.totalAmount))),
+//                       DataCell(Text(_formatAmount(service.drShare))),
+//                       DataCell(Text(_formatAmount(service.hospitalShare), style: const TextStyle(color: Colors.green, fontWeight: FontWeight.w600))),
+//                     ]);
+//                   }),
+//                   // Total row
+//                   DataRow(
+//                     color: MaterialStateProperty.all(Colors.grey[100]),
+//                     cells: [
+//                       const DataCell(Text('Total Services', style: TextStyle(fontWeight: FontWeight.bold))),
+//                       DataCell(Text(
+//                         _formatAmount(services.fold(0.0, (sum, s) => sum + s.totalAmount)),
+//                         style: const TextStyle(fontWeight: FontWeight.bold),
+//                       )),
+//                       DataCell(Text(
+//                         _formatAmount(services.fold(0.0, (sum, s) => sum + s.drShare)),
+//                         style: const TextStyle(fontWeight: FontWeight.bold),
+//                       )),
+//                       DataCell(Text(
+//                         _formatAmount(services.fold(0.0, (sum, s) => sum + s.hospitalShare)),
+//                         style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+//                       )),
+//                     ],
+//                   ),
+//                 ],
+//               ),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   Widget _buildExpensesTable(ShiftReportProvider provider) {
+//     final expenses = provider.expenses;
+//
+//     return Container(
+//       padding: const EdgeInsets.all(12),
+//       decoration: BoxDecoration(
+//         color: Colors.white,
+//         borderRadius: BorderRadius.circular(10),
+//         border: Border.all(color: const Color(0xFFE5E7EB)),
+//       ),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           const Row(
+//             children: [
+//               Icon(Icons.shopping_cart, color: Color(0xFFD97706), size: 14),
+//               SizedBox(width: 6),
+//               Text(
+//                 'Expenses',
+//                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+//               ),
+//             ],
+//           ),
+//           const SizedBox(height: 12),
+//           if (expenses.isEmpty)
+//             const Center(
+//               child: Padding(
+//                 padding: EdgeInsets.all(20),
+//                 child: Text('No expenses data available'),
+//               ),
+//             )
+//           else
+//             SingleChildScrollView(
+//               scrollDirection: Axis.horizontal,
+//               child: DataTable(
+//                 columnSpacing: 20,
+//                 headingRowHeight: 40,
+//                 dataRowHeight: 40,
+//                 columns: const [
+//                   DataColumn(label: Text('Expense Head', style: TextStyle(fontWeight: FontWeight.bold))),
+//                   DataColumn(label: Text('Description', style: TextStyle(fontWeight: FontWeight.bold))),
+//                   DataColumn(label: Text('Amount', style: TextStyle(fontWeight: FontWeight.bold))),
+//                 ],
+//                 rows: [
+//                   ...expenses.map((expense) {
+//                     return DataRow(cells: [
+//                       DataCell(Text(expense.expenseHead ?? '-', style: const TextStyle(fontWeight: FontWeight.w600))),
+//                       DataCell(Text(expense.expenseDescription ?? '-')),
+//                       DataCell(Text(_formatAmount(expense.expenseAmount))),
+//                     ]);
+//                   }),
+//                   // Total row
+//                   DataRow(
+//                     color: MaterialStateProperty.all(const Color(0xFFFFFBEB)),
+//                     cells: [
+//                       const DataCell(Text('Total Expenses', style: TextStyle(fontWeight: FontWeight.bold))),
+//                       const DataCell(Text('')),
+//                       DataCell(Text(
+//                         _formatAmount(expenses.fold(0.0, (sum, e) => sum + e.expenseAmount)),
+//                         style: const TextStyle(color: Color(0xFFD97706), fontWeight: FontWeight.bold),
+//                       )),
+//                     ],
+//                   ),
+//                 ],
+//               ),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   Future<void> _selectDate(BuildContext context, ShiftReportProvider provider) async {
+//     final DateTime? picked = await showDatePicker(
+//       context: context,
+//       initialDate: provider.selectedDate,
+//       firstDate: DateTime(2020),
+//       lastDate: DateTime(2030),
+//     );
+//
+//     if (picked != null && picked != provider.selectedDate) {
+//       provider.setSelectedDate(picked);
+//       provider.fetchAvailableShifts().then((_) {
+//         provider.fetchData();
+//       });
+//     }
+//   }
+// }
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../../models/shift_model/shift_model.dart';
+import 'package:intl/intl.dart';
 import '../../../provider/shift_provider/shift_provider.dart';
-import '../../colors/colors.dart';
 
-final NumberFormat _numberFormat = NumberFormat("#,##0", "en_US");
 
-String _formatAmount(double amount) => _numberFormat.format(amount);
-String _formatNumber(int number) => _numberFormat.format(number);
-
-class OPDTabsWithContent extends StatefulWidget {
-  final int opdContentIndex;
-  final DateTime selectedDate;
-  final String selectedShift;
-  final String selectedTimeFilter;
-  final List<String> shifts;
-  final List<String> timeFilters;
-  final Function(int) onTabSelected;
-  final Function() onClose;
-  final Function(DateTime) onDateChanged;
-  final Function(String) onShiftChanged;
-  final Function(String) onTimeFilterChanged;
-  final List<Map<String, dynamic>> consultantsData;
-  final ShiftProvider shiftProvider;
-  final bool isTablet;
-
-  // Add new properties for date range filters
-  final DateTime? fromDate;
-  final DateTime? toDate;
-  final Function(DateTime?) onFromDateChanged;
-  final Function(DateTime?) onToDateChanged;
-
-  const OPDTabsWithContent({
-    Key? key,
-    required this.opdContentIndex,
-    required this.selectedDate,
-    required this.selectedShift,
-    required this.selectedTimeFilter,
-    required this.shifts,
-    required this.timeFilters,
-    required this.onTabSelected,
-    required this.onClose,
-    required this.onDateChanged,
-    required this.onShiftChanged,
-    required this.onTimeFilterChanged,
-    required this.consultantsData,
-    required this.shiftProvider,
-    required this.isTablet,
-    this.fromDate,
-    this.toDate,
-    required this.onFromDateChanged,
-    required this.onToDateChanged,
-  }) : super(key: key);
+class ShiftReportPage extends StatefulWidget {
+  const ShiftReportPage({Key? key}) : super(key: key);
 
   @override
-  State<OPDTabsWithContent> createState() => _OPDTabsWithContentState();
+  State<ShiftReportPage> createState() => _ShiftReportPageState();
 }
 
-class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
-  String _selectedCategory = 'OPD';
+class _ShiftReportPageState extends State<ShiftReportPage> {
+  final NumberFormat _numberFormat = NumberFormat("#,##0", "en_US");
+  int _selectedTabIndex = -1; // -1 means no tab selected
+
+  String _formatAmount(double amount) => _numberFormat.format(amount);
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.shiftProvider.fetchData();
+      final provider = context.read<ShiftReportProvider>();
+      provider.fetchAvailableShifts().then((_) {
+        provider.fetchData();
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final spacing = widget.isTablet ? 20.0 : 16.0;
-
-    return Consumer<ShiftProvider>(
-      builder: (context, shiftProvider, child) {
-        return Column(
-          children: [
-            // Modern Header with Filter
-            Padding(
-              padding: EdgeInsets.only(bottom: spacing),
-              child: Column(
+    return Scaffold(
+      backgroundColor: const Color(0xFFF9FAFB),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Consumer<ShiftReportProvider>(
+            builder: (context, provider, child) {
+              return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '${_getCategoryTitle()} Summary',
-                        style: HospitalColors.getModernTextStyle(
-                          fontSize: widget.isTablet ? 22 : 20,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          if (shiftProvider.isLoading)
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              child: SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: AppColors.modernBlue,
-                                ),
-                              ),
-                            ),
-                          IconButton(
-                            onPressed: widget.onClose,
-                            icon: Icon(Icons.close, color: AppColors.textSecondary),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: widget.isTablet ? 16 : 12),
+                  // Header
+                  _buildHeader(),
+                  const SizedBox(height: 16),
 
-                  // Modern Filter Grid
-                  _buildModernFilterGrid(shiftProvider),
+                  // Filters
+                  _buildFiltersCard(provider),
+                  const SizedBox(height: 16),
+
+                  // Summary Cards (Tabs)
+                  _buildSummaryCardsTabs(provider),
+                  const SizedBox(height: 24),
+
+                  // Show selected tab content
+                  if (_selectedTabIndex >= 0)
+                    _buildTabContent(provider, _selectedTabIndex),
                 ],
-              ),
-            ),
-
-            // Loading/Error States
-            if (shiftProvider.isLoading && shiftProvider.shifts.isEmpty)
-              _buildLoadingState()
-            else if (shiftProvider.error != null && shiftProvider.shifts.isEmpty)
-              _buildErrorState(shiftProvider)
-            else
-              Column(
-                children: [
-                  // Modern Summary Cards Grid
-                  _buildModernSummaryCardsGrid(shiftProvider),
-
-                  SizedBox(height: widget.isTablet ? 24 : 16),
-
-                  // Show content based on selected card
-                  if (widget.opdContentIndex >= 0)
-                    _buildModernContentSection(shiftProvider),
-                ],
-              ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildLoadingState() {
-    return Container(
-      height: 200,
-      alignment: Alignment.center,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(
-            color: AppColors.modernBlue,
-            strokeWidth: 3,
+              );
+            },
           ),
-          SizedBox(height: 16),
-          Text(
-            'Loading shifts data...',
-            style: HospitalColors.getModernTextStyle(
-              color: AppColors.textSecondary,
-              fontSize: widget.isTablet ? 16 : 14,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildErrorState(ShiftProvider shiftProvider) {
+  Widget _buildHeader() {
     return Container(
-      padding: EdgeInsets.all(widget.isTablet ? 40 : 20),
-      child: Column(
-        children: [
-          Icon(
-            Icons.error_outline,
-            color: AppColors.coral,
-            size: 48,
-          ),
-          SizedBox(height: 16),
-          Text(
-            shiftProvider.error ?? 'Error loading data',
-            style: HospitalColors.getModernTextStyle(
-              color: AppColors.coral,
-              fontSize: widget.isTablet ? 16 : 14,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () => shiftProvider.fetchData(),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.modernBlue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-            child: Text(
-              'Retry',
-              style: HospitalColors.getModernTextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildModernFilterGrid(ShiftProvider shiftProvider) {
-    return Container(
-      padding: EdgeInsets.all(widget.isTablet ? 16 : 12),
       decoration: BoxDecoration(
-        color: AppColors.cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: HospitalColors.getModernCardShadow(elevation: 2),
-        border: Border.all(color: AppColors.borderColor, width: 1.5),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF037389), Color(0xFF14B8A6)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.description, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text(
+                    'Shift Report',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Shift-based financial summary',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.85),
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+          if (_selectedTabIndex >= 0)
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _selectedTabIndex = -1;
+                });
+              },
+              icon: const Icon(Icons.close, color: Colors.white),
+              tooltip: 'Close details',
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFiltersCard(ShiftReportProvider provider) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 3,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          // First row with 3 filters
           Row(
             children: [
               // Date Filter
               Expanded(
-                child: _buildModernDateFilter(shiftProvider),
+                child: _buildDateFilter(provider),
               ),
-              SizedBox(width: widget.isTablet ? 20 : 12),
+              const SizedBox(width: 12),
 
               // Shift Filter
               Expanded(
-                child: _buildModernShiftFilter(shiftProvider),
-              ),
-              SizedBox(width: widget.isTablet ? 20 : 12),
-
-              // Time Range Filter
-              Expanded(
-                child: _buildModernTimeFilter(shiftProvider),
+                child: _buildShiftFilter(provider),
               ),
             ],
           ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              // Print Button
+              ElevatedButton.icon(
+                onPressed: provider.opdRecords.isEmpty ? null : () {
+                  // TODO: Implement print functionality
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Print functionality coming soon')),
+                  );
+                },
+                icon: const Icon(Icons.print, size: 16),
+                label: const Text('Print'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                ),
+              ),
+              const SizedBox(width: 8),
 
-          SizedBox(height: widget.isTablet ? 16 : 12),
-          //
-          // // Second row with 2 filters (From Date and To Date)
-          // Row(
-          //   children: [
-          //     // From Date Filter
-          //     Expanded(
-          //       child: _buildModernDateRangeFilter(
-          //         label: 'From Date',
-          //         date: widget.fromDate,
-          //         onDateChanged: widget.onFromDateChanged,
-          //         shiftProvider: shiftProvider,
-          //       ),
-          //     ),
-          //     SizedBox(width: widget.isTablet ? 20 : 12),
-          //
-          //     // To Date Filter
-          //     Expanded(
-          //       child: _buildModernDateRangeFilter(
-          //         label: 'To Date',
-          //         date: widget.toDate,
-          //         onDateChanged: widget.onToDateChanged,
-          //         shiftProvider: shiftProvider,
-          //       ),
-          //     ),
-          //
-          //     // Clear Filters Button
-          //     Expanded(
-          //       child: _buildClearFiltersButton(shiftProvider),
-          //     ),
-          //   ],
-          // ),
+              // Refresh Button
+              ElevatedButton.icon(
+                onPressed: provider.isLoading ? null : () {
+                  provider.refresh();
+                },
+                icon: provider.isLoading
+                    ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+                    : const Icon(Icons.refresh, size: 16),
+                label: const Text('Refresh'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildClearFiltersButton(ShiftProvider shiftProvider) {
+  Widget _buildDateFilter(ShiftReportProvider provider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 6),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.bgColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderColor),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            child: InkWell(
-              onTap: () {
-                // Clear all filters
-                shiftProvider.clearAllFilters();
-                widget.onTimeFilterChanged('All');
-                widget.onFromDateChanged(null);
-                widget.onToDateChanged(null);
-                widget.onShiftChanged('All');
-                widget.onDateChanged(DateTime.now());
-
-                // Fetch fresh data
-                shiftProvider.fetchData();
-              },
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.clear_all,
-                      size: 16,
-                      color: AppColors.coral,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Clear Filters',
-                      style: HospitalColors.getModernTextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.coral,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-  Widget _buildModernDateFilter(ShiftProvider shiftProvider) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
+        const Text(
           'Date',
-          style: HospitalColors.getModernTextStyle(
-            fontSize: 12,
+          style: TextStyle(
+            fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
+            color: Color(0xFF374151),
           ),
         ),
-        SizedBox(height: 6),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.bgColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderColor),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            child: InkWell(
-              onTap: () => _selectDate(context, shiftProvider),
-              borderRadius: BorderRadius.circular(12),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.calendar_today,
-                      size: 16,
-                      color: AppColors.primaryColor,
+        const SizedBox(height: 4),
+        InkWell(
+          onTap: () => _selectDate(context, provider),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF9FAFB),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.calendar_today, size: 16, color: Color(0xFF037389)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    DateFormat('dd/MM/yyyy').format(provider.selectedDate),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        _formatDate(widget.selectedDate),
-                        style: HospitalColors.getModernTextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ),
-                    // Clear button if date range or time filter is active
-                    if (shiftProvider.isDateRangeActive || shiftProvider.isTimeFilterActive)
-                      IconButton(
-                        icon: Icon(Icons.clear, size: 16, color: AppColors.coral),
-                        padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(),
-                        onPressed: () {
-                          // Clear other filters and reset to single date
-                          widget.onTimeFilterChanged('All');
-                          widget.onFromDateChanged(null);
-                          widget.onToDateChanged(null);
-                          shiftProvider.fetchData();
-                        },
-                      ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ),
@@ -410,1219 +911,447 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
     );
   }
 
-  Widget _buildModernDateRangeFilter({
-    required String label,
-    required DateTime? date,
-    required Function(DateTime?) onDateChanged,
-    required ShiftProvider shiftProvider,
-  }) {
+  Widget _buildShiftFilter(ShiftReportProvider provider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: HospitalColors.getModernTextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
-          ),
-        ),
-        SizedBox(height: 6),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.bgColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderColor),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            child: InkWell(
-              onTap: () => _selectDateRange(context, label, date, onDateChanged, shiftProvider),
-              borderRadius: BorderRadius.circular(12),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.date_range,
-                      size: 16,
-                      color: AppColors.primaryColor,
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        date != null
-                            ? _formatDate(date)
-                            : 'Select $label',
-                        style: HospitalColors.getModernTextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: date != null ? AppColors.textPrimary : AppColors.textSecondary,
-                        ),
-                      ),
-                    ),
-                    if (date != null)
-                      IconButton(
-                        icon: Icon(Icons.clear, size: 16, color: AppColors.coral),
-                        padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(),
-                        onPressed: () {
-                          onDateChanged(null);
-                          // If clearing one date, clear both and switch to single date mode
-                          if (label == 'From Date') {
-                            widget.onToDateChanged(null);
-                          } else if (label == 'To Date') {
-                            widget.onFromDateChanged(null);
-                          }
-                          shiftProvider.fetchData();
-                        },
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildModernShiftFilter(ShiftProvider shiftProvider) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
+        const Text(
           'Shift',
-          style: HospitalColors.getModernTextStyle(
-            fontSize: 12,
+          style: TextStyle(
+            fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
+            color: Color(0xFF374151),
           ),
         ),
-        SizedBox(height: 6),
+        const SizedBox(height: 4),
         Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
-            color: AppColors.bgColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderColor),
+            color: const Color(0xFFF9FAFB),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: const Color(0xFFE5E7EB)),
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: widget.selectedShift,
-                isExpanded: true,
-                icon: Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
-                items: widget.shifts.map((String shift) {
-                  return DropdownMenuItem<String>(
-                    value: shift,
-                    child: Row(
-                      children: [
-                        Icon(
-                          HospitalColors.getShiftIcon(shift),
-                          size: 14,
-                          color: HospitalColors.getShiftColor(shift),
-                        ),
-                        SizedBox(width: 3),
-                        Flexible(
-                          child: Text(
-                            shift,
-                            style: HospitalColors.getModernTextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: provider.selectedShiftId ?? 'All',
+              isExpanded: true,
+              items: [
+                const DropdownMenuItem(
+                  value: 'All',
+                  child: Text('All Shifts', style: TextStyle(fontSize: 14)),
+                ),
+                ...provider.availableShifts.map((shift) {
+                  return DropdownMenuItem(
+                    value: shift.shiftId.toString(),
+                    child: Text(
+                      '${shift.shiftType} (ID: ${shift.shiftId})',
+                      style: const TextStyle(fontSize: 14),
                     ),
                   );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    widget.shiftProvider.setSelectedShift(newValue);
-                    widget.onShiftChanged(newValue);
-
-                    // If shift is changed, fetch new data
-                    shiftProvider.fetchData();
-                  }
-                },
-              ),
+                }),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  provider.setSelectedShiftId(value);
+                  provider.fetchData();
+                }
+              },
             ),
           ),
         ),
+        if (provider.availableShifts.isEmpty && !provider.isLoading)
+          const Padding(
+            padding: EdgeInsets.only(top: 2),
+            child: Text(
+              'No shifts found',
+              style: TextStyle(fontSize: 11, color: Colors.grey),
+            ),
+          ),
       ],
     );
   }
 
-  Widget _buildModernTimeFilter(ShiftProvider shiftProvider) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Time Range',
-          style: HospitalColors.getModernTextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
-          ),
+  Widget _buildSummaryCardsTabs(ShiftReportProvider provider) {
+    if (provider.isLoading && provider.opdRecords.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(40),
+          child: CircularProgressIndicator(),
         ),
-        SizedBox(height: 6),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.bgColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderColor),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: widget.selectedTimeFilter,
-                isExpanded: true,
-                icon: Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
-                items: widget.timeFilters.map((String filter) {
-                  IconData icon;
-                  Color color = AppColors.primaryColor;
+      );
+    }
 
-                  switch (filter) {
-                    case 'All':
-                      icon = Icons.all_inclusive;
-                      color = AppColors.infoColor;
-                      break;
-                    case 'Month':
-                      icon = Icons.calendar_month;
-                      color = AppColors.successColor;
-                      break;
-                    case 'Week':
-                      icon = Icons.calendar_view_week;
-                      color = AppColors.warningColor;
-                      break;
-                    default:
-                      icon = Icons.filter_alt;
-                  }
+    final financial = provider.financialSummary;
 
-                  return DropdownMenuItem<String>(
-                    value: filter,
-                    child: Row(
-                      children: [
-                        Icon(
-                          icon,
-                          size: 16,
-                          color: color,
-                        ),
-                        SizedBox(width: 10),
-                        Flexible(
-                          child: Text(
-                            filter,
-                            style: HospitalColors.getModernTextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    // Clear date range when selecting time filter
-                    widget.onFromDateChanged(null);
-                    widget.onToDateChanged(null);
-
-                    widget.shiftProvider.setSelectedTimeFilter(newValue);
-                    widget.onTimeFilterChanged(newValue);
-
-                    // Fetch data with time filter
-                    shiftProvider.fetchData();
-                  }
-                },
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildModernSummaryCardsGrid(ShiftProvider shiftProvider) {
-    final summary = shiftProvider.getShiftSummary();
-    final opdTotal = summary['opdTotal'] as double;
-    final expensesTotal = summary['expensesTotal'] as double;
-    final opdPaid = summary['opdPaid'] as double;
-    final opdBalance = summary['opdBalance'] as double;
-
-    final summaryCards = [
+    final tabs = [
       {
-        'title': 'OPD',
-        'icon': Icons.local_hospital_outlined,
-        'color': AppColors.modernBlue,
-        'contentType': 'opd',
-        'figure': 'PKR ${_formatAmount(opdTotal)}',
-        'description': shiftProvider.isDateRangeActive || shiftProvider.isTimeFilterActive
-            ? 'Total OPD'
-            : 'OPD Total',
+        'title': 'Total Revenue',
+        'value': 'Rs ${_formatAmount(financial.totalRevenue)}',
+        'subtitle': 'All services',
+        'icon': Icons.attach_money,
+        'color': const Color(0xFF3B82F6),
       },
       {
-        'title': 'Consultation',
-        'icon': Icons.medical_services_outlined,
-        'color': AppColors.teal,
-        'contentType': 'consultation',
-        'figure': 'PKR ${_formatAmount(opdPaid)}',
-        'description': shiftProvider.isDateRangeActive || shiftProvider.isTimeFilterActive
-            ? 'Total Paid'
-            : 'OPD Paid',
+        'title': 'Total Expenses',
+        'value': 'Rs ${_formatAmount(financial.totalExpensesWithDocShare)}',
+        'subtitle': 'Incl. doctor share',
+        'icon': Icons.shopping_cart,
+        'color': const Color(0xFFEF4444),
       },
       {
-        'title': 'Admissions',
-        'icon': Icons.night_shelter_outlined,
-        'color': AppColors.amber,
-        'contentType': 'admissions',
-        'figure': 'PKR ${_formatAmount(opdBalance)}',
-        'description': shiftProvider.isDateRangeActive || shiftProvider.isTimeFilterActive
-            ? 'Total Balance'
-            : 'OPD Balance',
+        'title': 'Net Revenue',
+        'value': 'Rs ${_formatAmount(financial.netHospitalRevenue)}',
+        'subtitle': 'After expenses',
+        'icon': Icons.account_balance_wallet,
+        'color': const Color(0xFF10B981),
       },
       {
-        'title': 'Expenses',
-        'icon': Icons.monetization_on_outlined,
-        'color': AppColors.coral,
-        'contentType': 'expenses',
-        'figure': 'PKR ${_formatAmount(expensesTotal)}',
-        'description': shiftProvider.isDateRangeActive || shiftProvider.isTimeFilterActive
-            ? 'Total Expenses'
-            : 'Total Expenses',
+        'title': 'Consultations',
+        'value': '${provider.consultationSummaries.length}',
+        'subtitle': 'Doctors',
+        'icon': Icons.medical_services,
+        'color': const Color(0xFF14B8A6),
       },
     ];
 
     return GridView.builder(
-      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: widget.isTablet ? 4 : 2,
-        crossAxisSpacing: widget.isTablet ? 16 : 12,
-        mainAxisSpacing: widget.isTablet ? 16 : 12,
-        childAspectRatio: widget.isTablet ? 1.4 : 1.3,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 1.4,
       ),
-      itemCount: summaryCards.length,
+      itemCount: tabs.length,
       itemBuilder: (context, index) {
-        return _buildModernOPDSummaryCard(
-          title: summaryCards[index]['title'] as String,
-          icon: summaryCards[index]['icon'] as IconData,
-          color: summaryCards[index]['color'] as Color,
-          figure: summaryCards[index]['figure'] as String,
-          description: summaryCards[index]['description'] as String,
-          contentType: summaryCards[index]['contentType'] as String,
+        final tab = tabs[index];
+        final isSelected = _selectedTabIndex == index;
+
+        return _buildSummaryCardTab(
+          title: tab['title'] as String,
+          value: tab['value'] as String,
+          subtitle: tab['subtitle'] as String,
+          icon: tab['icon'] as IconData,
+          color: tab['color'] as Color,
+          isSelected: isSelected,
+          onTap: () {
+            setState(() {
+              _selectedTabIndex = isSelected ? -1 : index;
+            });
+          },
         );
       },
     );
   }
 
-  Widget _buildModernOPDSummaryCard({
+  Widget _buildSummaryCardTab({
     required String title,
-    required IconData icon,
-    required Color color,
-    required String figure,
-    required String description,
-    required String contentType,
-  }) {
-    final int index = _getIndexForContentType(contentType);
-    final isSelected = widget.opdContentIndex == index;
-
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : AppColors.cardColor,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: HospitalColors.getModernCardShadow(elevation: isSelected ? 6 : 4),
-          border: Border.all(
-            color: isSelected ? color : AppColors.borderColor,
-            width: isSelected ? 2 : 1.5,
-          ),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-          child: InkWell(
-            onTap: () {
-              setState(() {
-                _selectedCategory = title;
-              });
-              widget.onTabSelected(index);
-            },
-            borderRadius: BorderRadius.circular(16),
-            hoverColor: color.withOpacity(0.05),
-            child: Container(
-              padding: EdgeInsets.all(widget.isTablet ? 16 : 12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Stack(
-                    alignment: Alignment.topRight,
-                    children: [
-                      Container(
-                        width: widget.isTablet ? 52 : 44,
-                        height: widget.isTablet ? 52 : 44,
-                        decoration: BoxDecoration(
-                          gradient: HospitalColors.getModernGradient(color),
-                          borderRadius: BorderRadius.circular(14),
-                          boxShadow: [
-                            BoxShadow(
-                              color: color.withOpacity(0.2),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          icon,
-                          size: widget.isTablet ? 26 : 22,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: color,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: FittedBox(
-                          child: Text(
-                            figure,
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: widget.isTablet ? 14 : 10),
-                  Text(
-                    title,
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: widget.isTablet ? 15 : 13,
-                      fontWeight: FontWeight.w600,
-                      color: isSelected ? color : AppColors.textPrimary,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: widget.isTablet ? 6 : 4),
-                  Text(
-                    description,
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: widget.isTablet ? 11 : 9,
-                      color: AppColors.textSecondary,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildModernContentSection(ShiftProvider shiftProvider) {
-    switch (_selectedCategory) {
-      case 'OPD':
-        return _buildModernOPDContent(shiftProvider);
-      case 'Consultation':
-        return _buildModernConsultationContent(shiftProvider);
-      case 'Admissions':
-        return _buildModernAdmissionsContent(shiftProvider);
-      case 'Expenses':
-        return _buildModernExpensesContent(shiftProvider);
-      default:
-        return _buildModernOPDContent(shiftProvider);
-    }
-  }
-
-  Widget _buildModernOPDContent(ShiftProvider shiftProvider) {
-    final summary = shiftProvider.getShiftSummary();
-    final opdRows = summary['opdRows'] as List<ShiftRow>;
-    final opdTotal = summary['opdTotal'] as double;
-    final opdPaid = summary['opdPaid'] as double;
-    final opdBalance = summary['opdBalance'] as double;
-    final stats = summary['stats'] as Map<String, dynamic>;
-    final totalPatients = stats['totalPatients'] as int;
-
-    if (shiftProvider.filteredShifts.isEmpty) return _buildEmptyState('No OPD data available');
-
-    return Container(
-      padding: EdgeInsets.all(widget.isTablet ? 24 : 16),
-      decoration: BoxDecoration(
-        color: AppColors.cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: HospitalColors.getModernCardShadow(elevation: 6),
-        border: Border.all(color: AppColors.borderColor, width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'OPD Summary',
-                      style: HospitalColors.getModernTextStyle(
-                        fontSize: widget.isTablet ? 20 : 18,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      _getDisplayDateRange(shiftProvider),
-                      style: HospitalColors.getModernTextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: HospitalColors.getShiftColor(widget.selectedShift).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: HospitalColors.getShiftColor(widget.selectedShift).withOpacity(0.2),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      HospitalColors.getShiftIcon(widget.selectedShift),
-                      size: 16,
-                      color: HospitalColors.getShiftColor(widget.selectedShift),
-                    ),
-                    SizedBox(width: 6),
-                    Text(
-                      widget.selectedShift,
-                      style: HospitalColors.getModernTextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: HospitalColors.getShiftColor(widget.selectedShift),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: widget.isTablet ? 24 : 20),
-
-          // Show shift count when date range is active
-          if (shiftProvider.isDateRangeActive || shiftProvider.isTimeFilterActive)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.modernBlue.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      '${shiftProvider.filteredShifts.length} Shifts',
-                      style: TextStyle(
-                        color: AppColors.modernBlue,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-          // OPD Statistics
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildModernStatCard('Total Patients', _formatNumber(totalPatients),
-                    Icons.group_outlined, AppColors.modernBlue),
-                _buildModernStatCard('OPD Total', 'PKR ${_formatAmount(opdTotal)}',
-                    Icons.attach_money_outlined, AppColors.teal),
-                _buildModernStatCard('OPD Paid', 'PKR ${_formatAmount(opdPaid)}',
-                    Icons.payment_outlined, Colors.green),
-                if (widget.isTablet)
-                  _buildModernStatCard('OPD Balance', 'PKR ${_formatAmount(opdBalance)}',
-                      Icons.account_balance_wallet_outlined, Colors.orange),
-              ],
-            ),
-          ),
-          SizedBox(height: widget.isTablet ? 28 : 20),
-
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    'OPD Services Breakdown',
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                ),
-                if (!shiftProvider.isDateRangeActive && !shiftProvider.isTimeFilterActive && shiftProvider.filteredShifts.isNotEmpty)
-                  Text(
-                    'Receipts: ${shiftProvider.filteredShifts.first.receiptFrom}-${shiftProvider.filteredShifts.first.receiptTo}',
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.modernBlue,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          SizedBox(height: 14),
-
-          if (opdRows.isEmpty)
-            _buildEmptyState('No OPD services found')
-          else
-            _buildOPDDataTable(opdRows),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildModernExpensesContent(ShiftProvider shiftProvider) {
-    final summary = shiftProvider.getShiftSummary();
-    final expenseRows = summary['expenseRows'] as List<ShiftRow>;
-    final expensesTotal = summary['expensesTotal'] as double;
-
-    if (shiftProvider.filteredShifts.isEmpty) return _buildEmptyState('No expense data available');
-
-    return Container(
-      padding: EdgeInsets.all(widget.isTablet ? 24 : 16),
-      decoration: BoxDecoration(
-        color: AppColors.cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: HospitalColors.getModernCardShadow(elevation: 6),
-        border: Border.all(color: AppColors.borderColor, width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Expenses Summary',
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: widget.isTablet ? 20 : 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    _getDisplayDateRange(shiftProvider),
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.coral.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.coral.withOpacity(0.2)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.trending_up_outlined, size: 16, color: AppColors.coral),
-                    SizedBox(width: 6),
-                    Text(
-                      'PKR ${_formatAmount(expensesTotal)}',
-                      style: HospitalColors.getModernTextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.coral,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: widget.isTablet ? 24 : 20),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildModernStatCard('Total Expenses', 'PKR ${_formatAmount(expensesTotal)}',
-                  Icons.monetization_on_outlined, AppColors.coral),
-              _buildModernStatCard('No. of Expenses', _formatNumber(expenseRows.length),
-                  Icons.list_outlined, AppColors.amber),
-              if (widget.isTablet)
-                _buildModernStatCard('Shift Count', '${shiftProvider.filteredShifts.length}',
-                    Icons.attach_money_outlined, AppColors.infoColor),
-            ],
-          ),
-          SizedBox(height: widget.isTablet ? 28 : 20),
-
-          Text(
-            'Expenses Breakdown',
-            style: HospitalColors.getModernTextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          SizedBox(height: 14),
-
-          if (expenseRows.isEmpty)
-            _buildEmptyState('No expenses found')
-          else
-            _buildExpensesTable(expenseRows),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildModernStatCard(String label, String value, IconData icon, Color color) {
-    return Container(
-      constraints: BoxConstraints(
-        minWidth: widget.isTablet ? 140 : 120,
-        maxWidth: widget.isTablet ? 180 : 150,
-      ),
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      padding: EdgeInsets.all(widget.isTablet ? 16 : 12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withOpacity(0.1)),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: widget.isTablet ? 26 : 22, color: color),
-          SizedBox(height: widget.isTablet ? 10 : 8),
-          FittedBox(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: widget.isTablet ? 20 : 16,
-                fontWeight: FontWeight.w800,
-                color: color,
-                letterSpacing: -0.5,
-              ),
-            ),
-          ),
-          SizedBox(height: widget.isTablet ? 6 : 4),
-          Text(
-            label,
-            style: HospitalColors.getModernTextStyle(
-              fontSize: widget.isTablet ? 12 : 10,
-              color: AppColors.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOPDDataTable(List<ShiftRow> rows) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.bgColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderColor),
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          columnSpacing: 20,
-          horizontalMargin: 16,
-          columns: [
-            DataColumn(label: _buildTableHeader('Sr#')),
-            DataColumn(label: _buildTableHeader('Service')),
-            DataColumn(label: _buildTableHeader('Qty')),
-            DataColumn(label: _buildTableHeader('Total')),
-            DataColumn(label: _buildTableHeader('Paid')),
-            DataColumn(label: _buildTableHeader('Balance')),
-          ],
-          rows: rows.map((row) {
-            return DataRow(cells: [
-              DataCell(Text(row.sr.toString())),
-              DataCell(Text(row.service)),
-              DataCell(Text(_formatNumber(row.qty))),
-              DataCell(Text('PKR ${_formatAmount(row.total)}')),
-              DataCell(Text('PKR ${_formatAmount(row.paid)}')),
-              DataCell(Text('PKR ${_formatAmount(row.balance)}')),
-            ]);
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildExpensesTable(List<ShiftRow> rows) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.bgColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderColor),
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          columnSpacing: 20,
-          horizontalMargin: 16,
-          columns: [
-            DataColumn(label: _buildTableHeader('Sr#')),
-            DataColumn(label: _buildTableHeader('Expense Description')),
-            DataColumn(label: _buildTableHeader('Amount')),
-            DataColumn(label: _buildTableHeader('Status')),
-          ],
-          rows: rows.map((row) {
-            final isPaid = row.paid == row.total;
-            return DataRow(cells: [
-              DataCell(Text(row.sr.toString())),
-              DataCell(Text(row.service)),
-              DataCell(Text('PKR ${_formatAmount(row.total)}')),
-              DataCell(
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: isPaid ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: isPaid ? Colors.green : Colors.orange,
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    isPaid ? 'Paid' : 'Pending',
-                    style: TextStyle(
-                      color: isPaid ? Colors.green : Colors.orange,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ),
-            ]);
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTableHeader(String text) {
-    return Text(
-      text,
-      style: HospitalColors.getModernTextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w700,
-        color: AppColors.textPrimary,
-      ),
-    );
-  }
-
-  Widget _buildEmptyState(String message) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.bgColor,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.borderColor),
-      ),
-      child: Column(
-        children: [
-          Icon(Icons.inbox_outlined, color: AppColors.textSecondary, size: 48),
-          SizedBox(height: 12),
-          Text(
-            message,
-            style: HospitalColors.getModernTextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Helper Methods
-
-  String _formatDate(DateTime date) {
-    final day = date.day;
-    final month = _getMonthAbbreviation(date.month);
-    final year = date.year.toString().substring(2);
-    return '$day $month $year';
-  }
-
-  String _getMonthAbbreviation(int month) {
-    final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    return months[month - 1];
-  }
-
-  Future<void> _selectDate(BuildContext context, ShiftProvider shiftProvider) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: widget.selectedDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: AppColors.modernBlue,
-            colorScheme: ColorScheme.light(primary: AppColors.modernBlue),
-            buttonTheme: const ButtonThemeData(
-              textTheme: ButtonTextTheme.primary,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null && picked != widget.selectedDate) {
-      // Clear date range and time filter when selecting single date
-      widget.onTimeFilterChanged('All');
-      widget.onFromDateChanged(null);
-      widget.onToDateChanged(null);
-
-      widget.shiftProvider.setSelectedDate(picked);
-      widget.onDateChanged(picked);
-
-      // Fetch data with new date
-      shiftProvider.fetchData();
-    }
-  }
-
-  Future<void> _selectDateRange(
-      BuildContext context,
-      String label,
-      DateTime? currentDate,
-      Function(DateTime?) onDateChanged,
-      ShiftProvider shiftProvider,
-      ) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: currentDate ?? widget.selectedDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: AppColors.modernBlue,
-            colorScheme: ColorScheme.light(primary: AppColors.modernBlue),
-            buttonTheme: const ButtonThemeData(
-              textTheme: ButtonTextTheme.primary,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null) {
-      onDateChanged(picked);
-
-      // Manually fetch data when both dates are set
-      if (label == 'From Date' && widget.toDate != null) {
-        shiftProvider.fetchData();
-      } else if (label == 'To Date' && widget.fromDate != null) {
-        shiftProvider.fetchData();
-      }
-    }
-  }
-
-  int _getIndexForContentType(String contentType) {
-    switch (contentType) {
-      case 'opd':
-        return 0;
-      case 'consultation':
-        return 1;
-      case 'admissions':
-        return 2;
-      case 'expenses':
-        return 3;
-      default:
-        return 0;
-    }
-  }
-
-  String _getDisplayDateRange(ShiftProvider shiftProvider) {
-    String dateInfo;
-    String shiftInfo = widget.selectedShift == 'All' ? 'All Shifts' : '${widget.selectedShift} Shift';
-
-    if (shiftProvider.isDateRangeActive) {
-      dateInfo = '${_formatDate(shiftProvider.fromDate!)} - ${_formatDate(shiftProvider.toDate!)}';
-    } else if (shiftProvider.isTimeFilterActive) {
-      dateInfo = '${widget.selectedTimeFilter} (${_formatDate(shiftProvider.fromDate!)} - ${_formatDate(shiftProvider.toDate!)})';
-    } else {
-      dateInfo = _formatDate(widget.selectedDate);
-    }
-
-    return '$dateInfo • $shiftInfo';
-  }
-
-  String _getCategoryTitle() {
-    if (widget.opdContentIndex >= 0) {
-      switch (widget.opdContentIndex) {
-        case 0: return 'OPD';
-        case 1: return 'Consultation';
-        case 2: return 'Admissions';
-        case 3: return 'Expenses';
-        default: return 'OPD';
-      }
-    }
-    return 'OPD';
-  }
-
-  // These methods remain the same as in your original code
-  Widget _buildModernConsultationContent(ShiftProvider shiftProvider) {
-    return Container(
-      padding: EdgeInsets.all(widget.isTablet ? 24 : 16),
-      decoration: BoxDecoration(
-        color: AppColors.cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: HospitalColors.getModernCardShadow(elevation: 6),
-        border: Border.all(color: AppColors.borderColor, width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Consultation Summary',
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: widget.isTablet ? 20 : 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    _getDisplayDateRange(shiftProvider),
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.teal.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.teal.withOpacity(0.2)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.medical_services_outlined, size: 16, color: AppColors.teal),
-                    SizedBox(width: 6),
-                    Text(
-                      'Consultation',
-                      style: HospitalColors.getModernTextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.teal,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: widget.isTablet ? 24 : 20),
-          _buildNoDataAvailableSection(
-            title: 'Consultation Data Not Available',
-            subtitle: 'Consultation data is currently not available for this shift',
-            icon: Icons.medical_services_outlined,
-            color: AppColors.teal,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildModernAdmissionsContent(ShiftProvider shiftProvider) {
-    return Container(
-      padding: EdgeInsets.all(widget.isTablet ? 24 : 16),
-      decoration: BoxDecoration(
-        color: AppColors.cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: HospitalColors.getModernCardShadow(elevation: 6),
-        border: Border.all(color: AppColors.borderColor, width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Admissions Summary',
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: widget.isTablet ? 20 : 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    _getDisplayDateRange(shiftProvider),
-                    style: HospitalColors.getModernTextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.amber.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.amber.withOpacity(0.2)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.analytics_outlined, size: 16, color: AppColors.amber),
-                    SizedBox(width: 6),
-                    Text(
-                      'Admissions',
-                      style: HospitalColors.getModernTextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.amber,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: widget.isTablet ? 24 : 20),
-          _buildNoDataAvailableSection(
-            title: 'Admissions Data Not Available',
-            subtitle: 'Admissions data is currently not available for this shift',
-            icon: Icons.night_shelter_outlined,
-            color: AppColors.amber,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNoDataAvailableSection({
-    required String title,
+    required String value,
     required String subtitle,
     required IconData icon,
     required Color color,
+    required bool isSelected,
+    required VoidCallback onTap,
   }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isSelected
+                ? [color.withOpacity(0.15), color.withOpacity(0.2)]
+                : [color.withOpacity(0.05), color.withOpacity(0.1)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isSelected ? color : color.withOpacity(0.3),
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(isSelected ? 0.2 : 0.1),
+              blurRadius: isSelected ? 8 : 3,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [color, color.withOpacity(0.8)],
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 16),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: color.withOpacity(0.8),
+                    ),
+                  ),
+                ),
+                if (isSelected)
+                  Icon(Icons.check_circle, color: color, size: 18),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: const TextStyle(
+                fontSize: 11,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabContent(ShiftReportProvider provider, int tabIndex) {
+    switch (tabIndex) {
+      case 0:
+        return _buildRevenueContent(provider);
+      case 1:
+        return _buildExpensesContent(provider);
+      case 2:
+        return _buildNetRevenueContent(provider);
+      case 3:
+        return _buildConsultationsContent(provider);
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildRevenueContent(ShiftReportProvider provider) {
     return Container(
-      padding: EdgeInsets.all(widget.isTablet ? 40 : 30),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF3B82F6).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.attach_money, color: Color(0xFF3B82F6), size: 20),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Total Revenue Breakdown',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF374151),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Consultation Table
+          _buildConsultationTable(provider),
+          const SizedBox(height: 16),
+
+          // Other Services Table
+          _buildOtherServicesTable(provider),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExpensesContent(ShiftReportProvider provider) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEF4444).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.shopping_cart, color: Color(0xFFEF4444), size: 20),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Expenses Breakdown',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF374151),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Expenses Table
+          _buildExpensesTable(provider),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNetRevenueContent(ShiftReportProvider provider) {
+    final financial = provider.financialSummary;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.account_balance_wallet, color: Color(0xFF10B981), size: 20),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Net Revenue Analysis',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF374151),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // Financial Summary Cards
+          _buildFinancialSummaryCard(
+            'Total Revenue',
+            financial.totalRevenue,
+            Icons.trending_up,
+            const Color(0xFF3B82F6),
+          ),
+          const SizedBox(height: 12),
+          _buildFinancialSummaryCard(
+            'Total Expenses',
+            financial.totalExpensesWithDocShare,
+            Icons.trending_down,
+            const Color(0xFFEF4444),
+          ),
+          const SizedBox(height: 12),
+          _buildFinancialSummaryCard(
+            'Net Revenue',
+            financial.netHospitalRevenue,
+            Icons.account_balance,
+            const Color(0xFF10B981),
+            isHighlight: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFinancialSummaryCard(
+      String title,
+      double amount,
+      IconData icon,
+      Color color, {
+        bool isHighlight = false,
+      }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(isHighlight ? 0.1 : 0.05),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: color.withOpacity(isHighlight ? 0.3 : 0.2),
+          width: isHighlight ? 2 : 1,
+        ),
+      ),
+      child: Row(
         children: [
           Container(
-            width: widget.isTablet ? 80 : 60,
-            height: widget.isTablet ? 80 : 60,
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              size: widget.isTablet ? 40 : 32,
               color: color,
+              borderRadius: BorderRadius.circular(8),
             ),
+            child: Icon(icon, color: Colors.white, size: 20),
           ),
-          SizedBox(height: widget.isTablet ? 24 : 16),
-          Text(
-            title,
-            style: HospitalColors.getModernTextStyle(
-              fontSize: widget.isTablet ? 18 : 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: widget.isTablet ? 12 : 8),
-          Text(
-            subtitle,
-            style: HospitalColors.getModernTextStyle(
-              fontSize: widget.isTablet ? 14 : 12,
-              color: AppColors.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: widget.isTablet ? 24 : 16),
-          Container(
-            padding: EdgeInsets.all(widget.isTablet ? 12 : 8),
-            decoration: BoxDecoration(
-              color: AppColors.bgColor,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.borderColor),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.info_outline, size: 16, color: AppColors.infoColor),
-                SizedBox(width: 8),
                 Text(
-                  'This feature is currently under development',
-                  style: HospitalColors.getModernTextStyle(
-                    fontSize: widget.isTablet ? 12 : 10,
-                    color: AppColors.textSecondary,
+                  title,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[700],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Rs ${_formatAmount(amount)}',
+                  style: TextStyle(
+                    fontSize: isHighlight ? 22 : 18,
+                    fontWeight: FontWeight.w700,
+                    color: color,
                   ),
                 ),
               ],
@@ -1631,5 +1360,271 @@ class _OPDTabsWithContentState extends State<OPDTabsWithContent> {
         ],
       ),
     );
+  }
+
+  Widget _buildConsultationsContent(ShiftReportProvider provider) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF14B8A6).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.medical_services, color: Color(0xFF14B8A6), size: 20),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Consultations by Doctor',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF374151),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Consultation Table
+          _buildConsultationTable(provider),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConsultationTable(ShiftReportProvider provider) {
+    final consultations = provider.consultationSummaries;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Row(
+          children: [
+            Icon(Icons.description, color: Color(0xFF037389), size: 14),
+            SizedBox(width: 6),
+            Text(
+              'Consultation (Doctors)',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (consultations.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Text('No consultation data available'),
+            ),
+          )
+        else
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              columnSpacing: 20,
+              headingRowHeight: 40,
+              dataRowHeight: 40,
+              columns: const [
+                DataColumn(label: Text('Doctor Name', style: TextStyle(fontWeight: FontWeight.bold))),
+                DataColumn(label: Text('Total Service Amount', style: TextStyle(fontWeight: FontWeight.bold))),
+                DataColumn(label: Text('Dr. Share', style: TextStyle(fontWeight: FontWeight.bold))),
+                DataColumn(label: Text('Hospital Received', style: TextStyle(fontWeight: FontWeight.bold))),
+              ],
+              rows: [
+                ...consultations.map((consultation) {
+                  return DataRow(cells: [
+                    DataCell(Text(consultation.doctorName, style: const TextStyle(fontWeight: FontWeight.w600))),
+                    DataCell(Text(_formatAmount(consultation.totalAmount))),
+                    DataCell(Text(_formatAmount(consultation.drShare))),
+                    DataCell(Text(_formatAmount(consultation.hospitalShare), style: const TextStyle(color: Colors.green, fontWeight: FontWeight.w600))),
+                  ]);
+                }),
+                // Total row
+                DataRow(
+                  color: MaterialStateProperty.all(Colors.grey[100]),
+                  cells: [
+                    const DataCell(Text('Total', style: TextStyle(fontWeight: FontWeight.bold))),
+                    DataCell(Text(
+                      _formatAmount(consultations.fold(0.0, (sum, c) => sum + c.totalAmount)),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    )),
+                    DataCell(Text(
+                      _formatAmount(consultations.fold(0.0, (sum, c) => sum + c.drShare)),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    )),
+                    DataCell(Text(
+                      _formatAmount(consultations.fold(0.0, (sum, c) => sum + c.hospitalShare)),
+                      style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                    )),
+                  ],
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildOtherServicesTable(ShiftReportProvider provider) {
+    final services = provider.serviceSummaries;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Row(
+          children: [
+            Icon(Icons.description, color: Color(0xFF037389), size: 14),
+            SizedBox(width: 6),
+            Text(
+              'Other Services',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (services.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Text('No other services data available'),
+            ),
+          )
+        else
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              columnSpacing: 20,
+              headingRowHeight: 40,
+              dataRowHeight: 40,
+              columns: const [
+                DataColumn(label: Text('Service Name', style: TextStyle(fontWeight: FontWeight.bold))),
+                DataColumn(label: Text('Total Amount', style: TextStyle(fontWeight: FontWeight.bold))),
+                DataColumn(label: Text('Dr. Share', style: TextStyle(fontWeight: FontWeight.bold))),
+                DataColumn(label: Text('Hospital Received', style: TextStyle(fontWeight: FontWeight.bold))),
+              ],
+              rows: [
+                ...services.map((service) {
+                  return DataRow(cells: [
+                    DataCell(Text(service.serviceName, style: const TextStyle(fontWeight: FontWeight.w600))),
+                    DataCell(Text(_formatAmount(service.totalAmount))),
+                    DataCell(Text(_formatAmount(service.drShare))),
+                    DataCell(Text(_formatAmount(service.hospitalShare), style: const TextStyle(color: Colors.green, fontWeight: FontWeight.w600))),
+                  ]);
+                }),
+                // Total row
+                DataRow(
+                  color: MaterialStateProperty.all(Colors.grey[100]),
+                  cells: [
+                    const DataCell(Text('Total Services', style: TextStyle(fontWeight: FontWeight.bold))),
+                    DataCell(Text(
+                      _formatAmount(services.fold(0.0, (sum, s) => sum + s.totalAmount)),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    )),
+                    DataCell(Text(
+                      _formatAmount(services.fold(0.0, (sum, s) => sum + s.drShare)),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    )),
+                    DataCell(Text(
+                      _formatAmount(services.fold(0.0, (sum, s) => sum + s.hospitalShare)),
+                      style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                    )),
+                  ],
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildExpensesTable(ShiftReportProvider provider) {
+    final expenses = provider.expenses;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Row(
+          children: [
+            Icon(Icons.shopping_cart, color: Color(0xFFD97706), size: 14),
+            SizedBox(width: 6),
+            Text(
+              'Expenses',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (expenses.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Text('No expenses data available'),
+            ),
+          )
+        else
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              columnSpacing: 20,
+              headingRowHeight: 40,
+              dataRowHeight: 40,
+              columns: const [
+                DataColumn(label: Text('Expense Head', style: TextStyle(fontWeight: FontWeight.bold))),
+                DataColumn(label: Text('Description', style: TextStyle(fontWeight: FontWeight.bold))),
+                DataColumn(label: Text('Amount', style: TextStyle(fontWeight: FontWeight.bold))),
+              ],
+              rows: [
+                ...expenses.map((expense) {
+                  return DataRow(cells: [
+                    DataCell(Text(expense.expenseHead ?? '-', style: const TextStyle(fontWeight: FontWeight.w600))),
+                    DataCell(Text(expense.expenseDescription ?? '-')),
+                    DataCell(Text(_formatAmount(expense.expenseAmount))),
+                  ]);
+                }),
+                // Total row
+                DataRow(
+                  color: MaterialStateProperty.all(const Color(0xFFFFFBEB)),
+                  cells: [
+                    const DataCell(Text('Total Expenses', style: TextStyle(fontWeight: FontWeight.bold))),
+                    const DataCell(Text('')),
+                    DataCell(Text(
+                      _formatAmount(expenses.fold(0.0, (sum, e) => sum + e.expenseAmount)),
+                      style: const TextStyle(color: Color(0xFFD97706), fontWeight: FontWeight.bold),
+                    )),
+                  ],
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Future<void> _selectDate(BuildContext context, ShiftReportProvider provider) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: provider.selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+    );
+
+    if (picked != null && picked != provider.selectedDate) {
+      provider.setSelectedDate(picked);
+      provider.fetchAvailableShifts().then((_) {
+        provider.fetchData();
+      });
+    }
   }
 }
