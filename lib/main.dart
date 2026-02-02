@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hims/provider/shift_provider/shift_provider.dart';
+
 import 'package:hims/splash/splash_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +17,9 @@ class MyApp extends StatelessWidget {
     
     return MultiProvider(
       providers: [
+
         ChangeNotifierProvider(create: (_) => ShiftReportProvider()),
+        ChangeNotifierProvider(create: (_) => EnhancedShiftReportProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -8,7 +8,8 @@ import '../../custum widgets/opd_cards/opd_cards.dart';
 import '../../custum widgets/opd_cards_content/opd_content/opd_content.dart';
 import '../../custum widgets/quick_stats/quick_stats.dart';
 import '../../provider/shift_provider/shift_provider.dart';
-import 'package:provider/provider.dart'; // Add this import
+import 'package:provider/provider.dart';
+// import '../../custum widgets/shift_report/shift_report_widget.dart';
 
 class AttractiveHealthDashboard extends StatefulWidget {
   const AttractiveHealthDashboard({super.key});
@@ -19,7 +20,6 @@ class AttractiveHealthDashboard extends StatefulWidget {
 
 class _AttractiveHealthDashboardState extends State<AttractiveHealthDashboard> {
   int _currentIndex = 0;
-  int _opdContentIndex = -1;
   bool _showOPDContent = false;
   String? _selectedOPDCard;
   DateTime _selectedDate = DateTime.now();
@@ -68,7 +68,7 @@ class _AttractiveHealthDashboardState extends State<AttractiveHealthDashboard> {
   @override
   Widget build(BuildContext context) {
     final isTablet = MediaQuery.of(context).size.width > 768;
-    final shiftProvider = Provider.of<ShiftReportProvider>(context); // Get the provider
+    final shiftProvider = Provider.of<ShiftReportProvider>(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -82,91 +82,104 @@ class _AttractiveHealthDashboardState extends State<AttractiveHealthDashboard> {
               children: [
                 // OPD Cards
                 OPDCards(
-                  // isTablet: isTablet,
                   showOPDContent: _showOPDContent,
                   selectedOPDCard: _selectedOPDCard,
-                  onOPDCardTap: (title) {
-                    print('$title tapped');
+                  onOPDCardTap: (department) {
+                    print('$department tapped');
+                    setState(() {
+                      _showOPDContent = true;
+                      _selectedOPDCard = department.toLowerCase();
+                    });
                   },
                   onOPDTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ShiftReportPage()));
-                    // setState(() {
-                    //   // _showOPDContent = true;
-                    //   // _selectedOPDCard = 'opd';
-                    //   // _opdContentIndex = -1;
-                    // });
+                    setState(() {
+                      _showOPDContent = true;
+                      _selectedOPDCard = 'opd';
+                    });
                   },
                 ),
 
-//                 SizedBox(height: isTablet ? 24 : 16),
-//
-//                 // Add these variables to your state class
-//
-//
-// // Update your OPDTabsWithContent widget call with the new parameters:
-//                 if (_showOPDContent && _selectedOPDCard == 'opd')
-//                   OPDTabsWithContent(
-//                     isTablet: isTablet,
-//                     fromDate: _fromDate, // Use your state variable
-//                     toDate: _toDate, // Use your state variable
-//                     opdContentIndex: _opdContentIndex,
-//                     selectedDate: _selectedDate,
-//                     selectedShift: _selectedShift,
-//                     selectedTimeFilter: _selectedTimeFilter,
-//                     shifts: _shifts,
-//                     timeFilters: _timeFilters,
-//                     onTabSelected: (index) {
-//                       setState(() {
-//                         _opdContentIndex = index;
-//                       });
-//                     },
-//                     onClose: () {
-//                       setState(() {
-//                         _showOPDContent = false;
-//                         _selectedOPDCard = null;
-//                         _opdContentIndex = -1;
-//                         // Optionally clear date range when closing
-//                         _fromDate = null;
-//                         _toDate = null;
-//                       });
-//                     },
-//                     onDateChanged: (date) {
-//                       setState(() {
-//                         _selectedDate = date;
-//                       });
-//                       shiftProvider.setSelectedDate(date); // Update provider
-//                     },
-//                     onShiftChanged: (shift) {
-//                       setState(() {
-//                         _selectedShift = shift;
-//                       });
-//                       // shiftProvider.setSelectedShift(shift); // Update provider
-//                     },
-//                     onTimeFilterChanged: (filter) {
-//                       setState(() {
-//                         _selectedTimeFilter = filter;
-//                       });
-//                       // shiftProvider.setSelectedTimeFilter(filter); // Update provider
-//                     },
-//                     onFromDateChanged: (date) {
-//                       setState(() {
-//                         _fromDate = date;
-//                       });
-//                       // You might want to add provider update here if needed
-//                       // shiftProvider.setFromDate(date);
-//                     },
-//                     onToDateChanged: (date) {
-//                       setState(() {
-//                         _toDate = date;
-//                       });
-//                       // You might want to add provider update here if needed
-//                       // shiftProvider.setToDate(date);
-//                     },
-//                     consultantsData: _consultantsData,
-//                     shiftProvider: shiftProvider,
-//                   ),
+                SizedBox(height: isTablet ? 24 : 16),
 
-// If not showing OPD content, show the rest of the dashboard
+                // Show Shift Report Widget when OPD is selected
+                if (_showOPDContent && _selectedOPDCard == 'opd')
+                  Column(
+                    children: [
+                      // Close Button for OPD Content
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF037389), Color(0xFF14B8A6)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Row(
+                                  children: [
+                                    Icon(Icons.description, color: Colors.white),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'OPD Shift Report',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Shift-based financial summary',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.85),
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _showOPDContent = false;
+                                  _selectedOPDCard = null;
+                                });
+                              },
+                              icon: const Icon(Icons.close, color: Colors.white),
+                              tooltip: 'Close OPD Report',
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: isTablet ? 24 : 16),
+
+                      // Shift Report Widget
+                      ShiftReportWidget(
+                        onClose: () {
+                          setState(() {
+                            _showOPDContent = false;
+                            _selectedOPDCard = null;
+                          });
+                        },
+                        onDateChanged: (date) {
+                          setState(() {
+                            _selectedDate = date;
+                          });
+                          shiftProvider.setSelectedDate(date);
+                        },
+                      ),
+                    ],
+                  ),
+
+                // Show normal dashboard when no OPD content is shown
                 if (!_showOPDContent) ...[
                   MetricCards(isTablet: isTablet),
                   SizedBox(height: isTablet ? 24 : 16),

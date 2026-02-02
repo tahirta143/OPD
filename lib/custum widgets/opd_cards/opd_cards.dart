@@ -66,6 +66,7 @@ class OPDCards extends StatelessWidget {
                 department: 'opd',
                 onTap: onOPDTap,
                 isTablet: isTablet,
+                isSelected: showOPDContent && selectedOPDCard == 'opd',
               ),
 
               SizedBox(width: isTablet ? 20 : 16),
@@ -75,8 +76,9 @@ class OPDCards extends StatelessWidget {
                 title: 'Indoor',
                 icon: Icons.night_shelter_outlined,
                 department: 'indoor',
-                onTap: () => onOPDCardTap('Indoor'),
+                onTap: () => onOPDCardTap('indoor'),
                 isTablet: isTablet,
+                isSelected: showOPDContent && selectedOPDCard == 'indoor',
               ),
 
               SizedBox(width: isTablet ? 20 : 16),
@@ -86,8 +88,9 @@ class OPDCards extends StatelessWidget {
                 title: 'Lab',
                 icon: Icons.science_outlined,
                 department: 'laboratory',
-                onTap: () => onOPDCardTap('Laboratory'),
+                onTap: () => onOPDCardTap('laboratory'),
                 isTablet: isTablet,
+                isSelected: showOPDContent && selectedOPDCard == 'laboratory',
               ),
 
               SizedBox(width: isTablet ? 20 : 16),
@@ -97,8 +100,9 @@ class OPDCards extends StatelessWidget {
                 title: 'Pharmacy',
                 icon: Icons.medication_outlined,
                 department: 'pharmacy',
-                onTap: () => onOPDCardTap('Pharmacy'),
+                onTap: () => onOPDCardTap('pharmacy'),
                 isTablet: isTablet,
+                isSelected: showOPDContent && selectedOPDCard == 'pharmacy',
               ),
 
               SizedBox(width: isTablet ? 20 : 16),
@@ -108,8 +112,9 @@ class OPDCards extends StatelessWidget {
                 title: 'Store',
                 icon: Icons.inventory_2_outlined,
                 department: 'store',
-                onTap: () => onOPDCardTap('Store'),
+                onTap: () => onOPDCardTap('store'),
                 isTablet: isTablet,
+                isSelected: showOPDContent && selectedOPDCard == 'store',
               ),
 
               if (isTablet) ...[
@@ -120,8 +125,9 @@ class OPDCards extends StatelessWidget {
                   title: 'Staff',
                   icon: Icons.people_outline,
                   department: 'staff',
-                  onTap: () => onOPDCardTap('Staff'),
+                  onTap: () => onOPDCardTap('staff'),
                   isTablet: isTablet,
+                  isSelected: showOPDContent && selectedOPDCard == 'staff',
                 ),
 
                 SizedBox(width: 20),
@@ -131,8 +137,9 @@ class OPDCards extends StatelessWidget {
                   title: 'Finance',
                   icon: Icons.account_balance_outlined,
                   department: 'finance',
-                  onTap: () => onOPDCardTap('Finance'),
+                  onTap: () => onOPDCardTap('finance'),
                   isTablet: isTablet,
+                  isSelected: showOPDContent && selectedOPDCard == 'finance',
                 ),
               ],
 
@@ -158,8 +165,9 @@ class OPDCards extends StatelessWidget {
                     title: 'Staff',
                     icon: Icons.people_outline,
                     department: 'staff',
-                    onTap: () => onOPDCardTap('Staff'),
+                    onTap: () => onOPDCardTap('staff'),
                     isTablet: isTablet,
+                    isSelected: showOPDContent && selectedOPDCard == 'staff',
                   ),
 
                   SizedBox(width: 20),
@@ -169,8 +177,9 @@ class OPDCards extends StatelessWidget {
                     title: 'Finance',
                     icon: Icons.account_balance_outlined,
                     department: 'finance',
-                    onTap: () => onOPDCardTap('Finance'),
+                    onTap: () => onOPDCardTap('finance'),
                     isTablet: isTablet,
+                    isSelected: showOPDContent && selectedOPDCard == 'finance',
                   ),
 
                   SizedBox(width: 20),
@@ -180,8 +189,9 @@ class OPDCards extends StatelessWidget {
                     title: 'Emergency',
                     icon: Icons.emergency_outlined,
                     department: 'emergency',
-                    onTap: () => onOPDCardTap('Emergency'),
+                    onTap: () => onOPDCardTap('emergency'),
                     isTablet: isTablet,
+                    isSelected: showOPDContent && selectedOPDCard == 'emergency',
                   ),
 
                   SizedBox(width: 20),
@@ -191,8 +201,9 @@ class OPDCards extends StatelessWidget {
                     title: 'Radiology',
                     icon: Icons.scanner_outlined,
                     department: 'radiology',
-                    onTap: () => onOPDCardTap('Radiology'),
+                    onTap: () => onOPDCardTap('radiology'),
                     isTablet: isTablet,
+                    isSelected: showOPDContent && selectedOPDCard == 'radiology',
                   ),
 
                   SizedBox(width: 12),
@@ -210,8 +221,8 @@ class OPDCards extends StatelessWidget {
     required String department,
     required VoidCallback onTap,
     required bool isTablet,
+    required bool isSelected,
   }) {
-    final isSelected = showOPDContent && selectedOPDCard == department.toLowerCase();
     final Color departmentColor = HospitalColors.getDepartmentColor(department);
 
     return MouseRegion(

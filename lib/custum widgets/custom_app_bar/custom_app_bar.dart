@@ -62,7 +62,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Alex Johnson',
+                          'Admin user',
                           style: TextStyle(
                             fontSize: isTablet ? 22 : 18,
                             fontWeight: FontWeight.w700,
