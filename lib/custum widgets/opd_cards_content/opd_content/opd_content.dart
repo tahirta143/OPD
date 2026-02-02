@@ -803,10 +803,10 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           isTablet,
                         ),
                       ),
-                      SizedBox(width: 14),
+                      SizedBox(width: 10),
                       Expanded(
                         child: _buildSummaryCard(
-                          'Total Expenses',
+                          'Total Expense',
                           provider.monthlySummary!.totalExpenses,
                           Icons.trending_down,
                           Color(0xFFD97706),
@@ -815,7 +815,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 14),
+                  SizedBox(height: 12),
                   Row(
                     children: [
                       Expanded(
@@ -829,7 +829,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           isTablet,
                         ),
                       ),
-                      SizedBox(width: 14),
+                      SizedBox(width: 10),
                       Expanded(
                         child: _buildSummaryCard(
                           'Avg Daily',
@@ -1149,7 +1149,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
-                        DateFormat('dd/MM').format(data['date'] as DateTime),
+                        DateFormat('d').format(data['date'] as DateTime),
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
@@ -2817,7 +2817,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
-                        DateFormat('dd/MM').format(data['date'] as DateTime),
+                        DateFormat('d').format(data['date'] as DateTime),
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
@@ -3215,24 +3215,6 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              Spacer(),
-              if (provider != null && provider.yearlySummary != null)
-                ElevatedButton(
-                  onPressed: () {
-                    provider.fetchYearlySummary();
-                  },
-                  child: Row(
-                    children: [
-                      Icon(Icons.refresh, size: 16),
-                      SizedBox(width: 8),
-                      Text('Refresh'),
-                    ],
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF037389),
-                    foregroundColor: Colors.white,
-                  ),
-                ),
             ],
           ),
           SizedBox(height: 20),
@@ -3771,8 +3753,12 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
   }
 
   Widget _buildSummaryCard(String title, double value, IconData icon, Color color, bool isTablet) {
+    // Use MediaQuery for responsive sizing
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isLargeScreen = screenWidth > 600;
+
     return Container(
-      padding: EdgeInsets.all(isTablet ? 20 : 16),
+      padding: EdgeInsets.all(isLargeScreen ? 20 : 16),
       decoration: BoxDecoration(
         color: color.withOpacity(0.05),
         borderRadius: BorderRadius.circular(12),
@@ -3781,14 +3767,14 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(12),
+            padding: EdgeInsets.all(isLargeScreen ? 12 : 10),
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: Colors.white, size: 20),
+            child: Icon(icon, color: Colors.white, size: isLargeScreen ? 20 : 18),
           ),
-          SizedBox(width: 12),
+          SizedBox(width: isLargeScreen ? 12 : 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -3796,7 +3782,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: isLargeScreen ? 10 : 9,
                     color: Colors.grey[700],
                   ),
                 ),
@@ -3804,7 +3790,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 Text(
                   'Rs ${_formatAmount(value)}',
                   style: TextStyle(
-                    fontSize: isTablet ? 14 : 12,
+                    fontSize: isLargeScreen ? 12 : 12,
                     fontWeight: FontWeight.w700,
                     color: color,
                   ),
@@ -3816,7 +3802,6 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
       ),
     );
   }
-
   // Keep all your existing methods for daily report (they remain unchanged):
   // _buildSummaryCardsTabs, _buildSummaryCardTab, _buildTabContent,
   // _buildRevenueContent, _buildExpensesContent, _buildNetRevenueContent,
@@ -3884,7 +3869,6 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
         return _buildSummaryCardTab(
           title: tab['title'] as String,
           value: tab['value'] as String,
-          subtitle: tab['subtitle'] as String,
           icon: tab['icon'] as IconData,
           color: tab['color'] as Color,
           isSelected: isSelected,
@@ -3902,19 +3886,23 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
   Widget _buildSummaryCardTab({
     required String title,
     required String value,
-    required String subtitle,
+    // required String subtitle,
     required IconData icon,
     required Color color,
     required bool isSelected,
     required VoidCallback onTap,
     required bool isTablet,
   }) {
+    // Use MediaQuery for responsive sizing
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isLargeScreen = screenWidth > 600;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: EdgeInsets.all(isTablet ? 16 : 12),
+        padding: EdgeInsets.all(isLargeScreen ? 16 : 12),
         decoration: BoxDecoration(
           color: isSelected ? color.withOpacity(0.1) : Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -3936,8 +3924,8 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
             Row(
               children: [
                 Container(
-                  width: isTablet ? 40 : 32,
-                  height: isTablet ? 40 : 32,
+                  width: isLargeScreen ? 40 : 32,
+                  height: isLargeScreen ? 40 : 32,
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -3945,15 +3933,15 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                   child: Icon(
                     icon,
                     color: color,
-                    size: isTablet ? 20 : 16,
+                    size: isLargeScreen ? 20 : 16,
                   ),
                 ),
-                SizedBox(width: isTablet ? 12 : 10),
+                SizedBox(width: isLargeScreen ? 12 : 10),
                 Expanded(
                   child: Text(
                     title,
                     style: TextStyle(
-                      fontSize: isTablet ? 15 : 13,
+                      fontSize: isLargeScreen ? 15 : 13,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF374151),
                     ),
@@ -3963,33 +3951,25 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                   Icon(
                     Icons.check_circle,
                     color: color,
-                    size: isTablet ? 20 : 18,
+                    size: isLargeScreen ? 20 : 18,
                   ),
               ],
             ),
-            SizedBox(height: isTablet ? 12 : 10),
+            SizedBox(height: isLargeScreen ? 12 : 10),
             Text(
               value,
               style: TextStyle(
-                fontSize: isTablet ? 20 : 18,
+                fontSize: isLargeScreen ? 20 : 18,
                 fontWeight: FontWeight.w700,
                 color: color,
               ),
             ),
-            SizedBox(height: isTablet ? 6 : 4),
-            Text(
-              subtitle,
-              style: TextStyle(
-                fontSize: isTablet ? 12 : 11,
-                color: const Color(0xFF6B7280),
-              ),
-            ),
+            SizedBox(height: isLargeScreen ? 6 : 4),
           ],
         ),
       ),
     );
   }
-
   Widget _buildTabContent(ShiftReportProvider provider, int tabIndex, bool isTablet) {
     switch (tabIndex) {
       case 0:
@@ -4710,8 +4690,12 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
         bool isHighlight = false,
         required bool isTablet,
       }) {
+    // Use MediaQuery for responsive sizing
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isLargeScreen = screenWidth > 600;
+
     return Container(
-      padding: EdgeInsets.all(isTablet ? 20 : 16),
+      padding: EdgeInsets.all(isLargeScreen ? 20 : 16),
       decoration: BoxDecoration(
         color: color.withOpacity(0.05),
         borderRadius: BorderRadius.circular(10),
@@ -4723,7 +4707,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(isTablet ? 12 : 10),
+            padding: EdgeInsets.all(isLargeScreen ? 12 : 10),
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.circular(8),
@@ -4731,10 +4715,10 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
             child: Icon(
               icon,
               color: Colors.white,
-              size: isTablet ? 24 : 20,
+              size: isLargeScreen ? 24 : 20,
             ),
           ),
-          SizedBox(width: isTablet ? 20 : 16),
+          SizedBox(width: isLargeScreen ? 20 : 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -4742,16 +4726,18 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: isTablet ? 14 : 13,
+                    fontSize: isLargeScreen ? 14 : 13,
                     color: const Color(0xFF6B7280),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                SizedBox(height: isTablet ? 6 : 4),
+                SizedBox(height: isLargeScreen ? 6 : 4),
                 Text(
                   'Rs ${_formatAmount(amount)}',
                   style: TextStyle(
-                    fontSize: isHighlight ? (isTablet ? 26 : 22) : (isTablet ? 22 : 18),
+                    fontSize: isHighlight
+                        ? (isLargeScreen ? 26 : 22)
+                        : (isLargeScreen ? 22 : 18),
                     fontWeight: FontWeight.w700,
                     color: color,
                   ),
@@ -4763,7 +4749,6 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
       ),
     );
   }
-
   Future<void> _selectDate(BuildContext context, ShiftReportProvider provider) async {
     final DateTime? picked = await showDatePicker(
       context: context,
