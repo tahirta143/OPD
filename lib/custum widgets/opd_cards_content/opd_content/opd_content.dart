@@ -50,7 +50,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
     return Container(
       color: const Color(0xFFF9FAFB),
       child: SingleChildScrollView(
-        padding: EdgeInsets.all(isTablet ? 24 : 16),
+        // padding: EdgeInsets.all(isTablet ? 20 : 12),
         child: Consumer<ShiftReportProvider>(
           builder: (context, provider, child) {
             // Also get the enhanced provider for monthly/date range data
@@ -93,7 +93,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                         onPressed: () => provider.refresh(),
                         child: Text('Retry'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF037389),
+                          backgroundColor: Color(0xFF109A8A),
                         ),
                       ),
                     ],
@@ -141,7 +141,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
       bool isTablet
       ) {
     return Container(
-      padding: EdgeInsets.all(isTablet ? 18 : 14),
+      padding: EdgeInsets.all(isTablet ? 14 : 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -234,7 +234,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF037389),
+                  backgroundColor: const Color(0xFF109A8A),
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(
                     horizontal: isTablet ? 16 : 12,
@@ -377,7 +377,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 Icon(
                   Icons.calendar_today,
                   size: isTablet ? 18 : 16,
-                  color: const Color(0xFF037389),
+                  color: const Color(0xFF109A8A),
                 ),
                 SizedBox(width: isTablet ? 10 : 8),
                 Expanded(
@@ -427,7 +427,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 Icon(
                   Icons.calendar_today,
                   size: isTablet ? 18 : 16,
-                  color: const Color(0xFF037389),
+                  color: const Color(0xFF109A8A),
                 ),
                 SizedBox(width: isTablet ? 10 : 8),
                 Expanded(
@@ -482,7 +482,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 Icon(
                   Icons.calendar_today,
                   size: isTablet ? 18 : 16,
-                  color: const Color(0xFF037389),
+                  color: const Color(0xFF109A8A),
                 ),
                 SizedBox(width: isTablet ? 10 : 8),
                 Expanded(
@@ -537,7 +537,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
               icon: Icon(
                 Icons.arrow_drop_down,
                 size: isTablet ? 24 : 20,
-                color: const Color(0xFF037389),
+                color: const Color(0xFF109A8A),
               ),
               items: availableYears.map((year) {
                 return DropdownMenuItem(
@@ -606,7 +606,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
               icon: Icon(
                 Icons.arrow_drop_down,
                 size: isTablet ? 24 : 20,
-                color: const Color(0xFF037389),
+                color: const Color(0xFF109A8A),
               ),
               items: availableMonths.map((month) {
                 return DropdownMenuItem(
@@ -660,7 +660,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
               icon: Icon(
                 Icons.arrow_drop_down,
                 size: isTablet ? 24 : 20,
-                color: const Color(0xFF037389),
+                color: const Color(0xFF109A8A),
               ),
               items: [
                 DropdownMenuItem(
@@ -724,7 +724,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
           // Header
           Row(
             children: [
-              Icon(Icons.calendar_today, color: Color(0xFF037389), size: 24),
+              Icon(Icons.calendar_today, color: Color(0xFF109A8A), size: 24),
               SizedBox(width: 12),
               Text(
                 'Monthly Report: ${_getMonthName(_selectedMonth ?? DateTime.now().month)} ${_selectedYear ?? DateTime.now().year}',
@@ -745,7 +745,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 child: Column(
                   children: [
                     CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF037389)),
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF109A8A)),
                     ),
                     SizedBox(height: 16),
                     Text(
@@ -779,7 +779,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       onPressed: () => provider.fetchMonthlyReport(),
                       child: Text('Retry'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF037389),
+                        backgroundColor: Color(0xFF109A8A),
                       ),
                     ),
                   ],
@@ -799,7 +799,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           'Total Revenue',
                           provider.monthlySummary!.totalRevenue,
                           Icons.trending_up,
-                          Color(0xFF037389),
+                          Color(0xFF109A8A),
                           isTablet,
                         ),
                       ),
@@ -891,7 +891,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           onPressed: () => provider.fetchMonthlyReport(),
                           child: Text('Load Data'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF037389),
+                            backgroundColor: Color(0xFF109A8A),
                           ),
                         ),
                       ],
@@ -998,7 +998,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
-          columnSpacing: 16,
+          columnSpacing: 12,
           headingRowHeight: 60,
           dataRowHeight: 45,
           headingRowColor: MaterialStateProperty.all(Color(0xFFF9FAFB)),
@@ -1033,7 +1033,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                     'OPD REVENUE',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF037389),
+                      color: Color(0xFF109A8A),
                       fontSize: 12,
                     ),
                   ),
@@ -1042,25 +1042,25 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
             ),
             DataColumn(
               label: Text('Morning\nOPD',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF037389)),
+                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF109A8A)),
                 textAlign: TextAlign.center,
               ),
             ),
             DataColumn(
               label: Text('Evening\nOPD',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF037389)),
+                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF109A8A)),
                 textAlign: TextAlign.center,
               ),
             ),
             DataColumn(
               label: Text('Night\nOPD',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF037389)),
+                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF109A8A)),
                 textAlign: TextAlign.center,
               ),
             ),
             DataColumn(
               label: Text('OPD\nTotal',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF037389)),
+                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF109A8A)),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -1167,7 +1167,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       child: Text(
                         'Rs ${_formatAmount(data['morning_opd'] as double)}',
                         style: TextStyle(
-                          color: Color(0xFF037389),
+                          color: Color(0xFF109A8A),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -1180,7 +1180,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       child: Text(
                         'Rs ${_formatAmount(data['evening_opd'] as double)}',
                         style: TextStyle(
-                          color: Color(0xFF037389),
+                          color: Color(0xFF109A8A),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -1193,7 +1193,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       child: Text(
                         'Rs ${_formatAmount(data['night_opd'] as double)}',
                         style: TextStyle(
-                          color: Color(0xFF037389),
+                          color: Color(0xFF109A8A),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -1206,7 +1206,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       child: Text(
                         'Rs ${_formatAmount(data['opd_total'] as double)}',
                         style: TextStyle(
-                          color: Color(0xFF037389),
+                          color: Color(0xFF109A8A),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -1287,7 +1287,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           'Rs ${_formatAmount(data['daily_total'] as double)}',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF037389),
+                            color: Color(0xFF109A8A),
                           ),
                         ),
                       ),
@@ -1330,7 +1330,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                         'Rs ${_formatAmount(columnTotals['morning_opd']!)}',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF037389),
+                          color: Color(0xFF109A8A),
                         ),
                       ),
                     ),
@@ -1350,7 +1350,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                         'Rs ${_formatAmount(columnTotals['evening_opd']!)}',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF037389),
+                          color: Color(0xFF109A8A),
                         ),
                       ),
                     ),
@@ -1370,7 +1370,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                         'Rs ${_formatAmount(columnTotals['night_opd']!)}',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF037389),
+                          color: Color(0xFF109A8A),
                         ),
                       ),
                     ),
@@ -1383,7 +1383,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Color(0xFF037389),
+                        color: Color(0xFF109A8A),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -1516,6 +1516,15 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
   Widget _buildServiceBreakdownTable(EnhancedShiftReportProvider provider, bool isTablet) {
     return StatefulBuilder(
       builder: (context, setState) {
+        // Helper function for safe double conversion
+        double _safeDouble(dynamic value) {
+          if (value == null) return 0.0;
+          if (value is double) return value;
+          if (value is int) return value.toDouble();
+          if (value is String) return double.tryParse(value) ?? 0.0;
+          return 0.0;
+        }
+
         // Local refresh function
         void refreshData() {
           setState(() {});
@@ -1561,7 +1570,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       onPressed: () => provider.fetchDetailedBreakdown(),
                       child: Text('Retry'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF037389),
+                        backgroundColor: Color(0xFF109A8A),
                       ),
                     ),
                     SizedBox(width: 12),
@@ -1569,8 +1578,8 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       onPressed: refreshData,
                       child: Text('Refresh'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: Color(0xFF037389),
-                        side: BorderSide(color: Color(0xFF037389)),
+                        foregroundColor: Color(0xFF109A8A),
+                        side: BorderSide(color: Color(0xFF109A8A)),
                       ),
                     ),
                   ],
@@ -1608,7 +1617,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       onPressed: () => provider.fetchDetailedBreakdown(),
                       child: Text('Load Detailed Breakdown'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF037389),
+                        backgroundColor: Color(0xFF109A8A),
                       ),
                     ),
                     SizedBox(width: 12),
@@ -1622,8 +1631,8 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                         ],
                       ),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: Color(0xFF037389),
-                        side: BorderSide(color: Color(0xFF037389)),
+                        foregroundColor: Color(0xFF109A8A),
+                        side: BorderSide(color: Color(0xFF109A8A)),
                       ),
                     ),
                   ],
@@ -1642,7 +1651,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
             .where((item) => item['type'] == 'EXPENSE')
             .toList();
 
-        // Calculate totals
+        // Calculate totals using safe conversion
         double opdMorningTotal = 0;
         double opdEveningTotal = 0;
         double opdNightTotal = 0;
@@ -1654,17 +1663,17 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
         double expGrandTotal = 0;
 
         for (var service in opdServices) {
-          opdMorningTotal += (service['morning'] as double);
-          opdEveningTotal += (service['evening'] as double);
-          opdNightTotal += (service['night'] as double);
-          opdGrandTotal += (service['total'] as double);
+          opdMorningTotal += _safeDouble(service['morning']);
+          opdEveningTotal += _safeDouble(service['evening']);
+          opdNightTotal += _safeDouble(service['night']);
+          opdGrandTotal += _safeDouble(service['total']);
         }
 
         for (var expense in expenses) {
-          expMorningTotal += (expense['morning'] as double);
-          expEveningTotal += (expense['evening'] as double);
-          expNightTotal += (expense['night'] as double);
-          expGrandTotal += (expense['total'] as double);
+          expMorningTotal += _safeDouble(expense['morning']);
+          expEveningTotal += _safeDouble(expense['evening']);
+          expNightTotal += _safeDouble(expense['night']);
+          expGrandTotal += _safeDouble(expense['total']);
         }
 
         print('📊 Table Data: ${opdServices.length} OPD, ${expenses.length} Expenses');
@@ -1688,7 +1697,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                     'Service Breakdown',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 15,
                       color: Color(0xFF374151),
                     ),
                   ),
@@ -1699,10 +1708,10 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       provider.fetchDetailedBreakdown();
                     },
                     icon: Icon(Icons.refresh, size: 16),
-                    label: Text('Refresh Data'),
+                    label: Text('Refresh'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Color(0xFF037389),
-                      side: BorderSide(color: Color(0xFF037389)),
+                      foregroundColor: Color(0xFF109A8A),
+                      side: BorderSide(color: Color(0xFF109A8A)),
                     ),
                   ),
                 ],
@@ -1725,29 +1734,21 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: Color(0xFFE6F7FF),
-                      border: Border(bottom: BorderSide(color: Color(0xFF037389))),
+                      border: Border(bottom: BorderSide(color: Color(0xFF109A8A))),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.local_hospital, color: Color(0xFF037389), size: 20),
+                        Icon(Icons.local_hospital, color: Color(0xFF109A8A), size: 20),
                         SizedBox(width: 8),
                         Text(
                           'OPD SERVICES BREAKDOWN',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF037389),
+                            color: Color(0xFF109A8A),
                             fontSize: isTablet ? 15 : 14,
                           ),
                         ),
                         Spacer(),
-                        // IconButton(
-                        //   icon: Icon(Icons.refresh, size: 18, color: Color(0xFF037389)),
-                        //   onPressed: () {
-                        //     refreshData();
-                        //     provider.fetchDetailedBreakdown();
-                        //   },
-                        //   tooltip: 'Refresh OPD Data',
-                        // ),
                       ],
                     ),
                   ),
@@ -1797,7 +1798,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                     Container(
                                       width: 250,
                                       child: Text(
-                                        service['service_name'] as String,
+                                        (service['service_name'] as String?) ?? 'Unknown Service',
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
@@ -1805,9 +1806,9 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                   DataCell(
                                     Center(
                                       child: Text(
-                                        'Rs ${_formatAmount(service['morning'] as double)}',
+                                        'Rs ${_formatAmount(_safeDouble(service['morning']))}',
                                         style: TextStyle(
-                                          color: Color(0xFF037389),
+                                          color: Color(0xFF109A8A),
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -1816,9 +1817,9 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                   DataCell(
                                     Center(
                                       child: Text(
-                                        'Rs ${_formatAmount(service['evening'] as double)}',
+                                        'Rs ${_formatAmount(_safeDouble(service['evening']))}',
                                         style: TextStyle(
-                                          color: Color(0xFF037389),
+                                          color: Color(0xFF109A8A),
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -1827,9 +1828,9 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                   DataCell(
                                     Center(
                                       child: Text(
-                                        'Rs ${_formatAmount(service['night'] as double)}',
+                                        'Rs ${_formatAmount(_safeDouble(service['night']))}',
                                         style: TextStyle(
-                                          color: Color(0xFF037389),
+                                          color: Color(0xFF109A8A),
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -1844,9 +1845,9 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: Text(
-                                          'Rs ${_formatAmount(service['total'] as double)}',
+                                          'Rs ${_formatAmount(_safeDouble(service['total']))}',
                                           style: TextStyle(
-                                            color: Color(0xFF037389),
+                                            color: Color(0xFF109A8A),
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
@@ -1872,7 +1873,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                       child: Container(
                                         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                         decoration: BoxDecoration(
-                                          color: Color(0xFF037389),
+                                          color: Color(0xFF109A8A),
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: Text(
@@ -1890,7 +1891,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                       child: Container(
                                         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                         decoration: BoxDecoration(
-                                          color: Color(0xFF037389),
+                                          color: Color(0xFF109A8A),
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: Text(
@@ -1908,7 +1909,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                       child: Container(
                                         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                         decoration: BoxDecoration(
-                                          color: Color(0xFF037389),
+                                          color: Color(0xFF109A8A),
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: Text(
@@ -1926,7 +1927,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                       child: Container(
                                         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                         decoration: BoxDecoration(
-                                          color: Color(0xFF037389),
+                                          color: Color(0xFF109A8A),
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: Text(
@@ -1981,14 +1982,6 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           ),
                         ),
                         Spacer(),
-                        // IconButton(
-                        //   icon: Icon(Icons.refresh, size: 18, color: Color(0xFFD97706)),
-                        //   onPressed: () {
-                        //     refreshData();
-                        //     provider.fetchDetailedBreakdown();
-                        //   },
-                        //   tooltip: 'Refresh Expenses Data',
-                        // ),
                       ],
                     ),
                   ),
@@ -2038,7 +2031,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                     Container(
                                       width: 250,
                                       child: Text(
-                                        expense['service_name'] as String,
+                                        (expense['service_name'] as String?) ?? 'Unknown Expense',
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
@@ -2046,7 +2039,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                   DataCell(
                                     Center(
                                       child: Text(
-                                        'Rs ${_formatAmount(expense['morning'] as double)}',
+                                        'Rs ${_formatAmount(_safeDouble(expense['morning']))}',
                                         style: TextStyle(
                                           color: Color(0xFFD97706),
                                           fontWeight: FontWeight.w500,
@@ -2057,7 +2050,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                   DataCell(
                                     Center(
                                       child: Text(
-                                        'Rs ${_formatAmount(expense['evening'] as double)}',
+                                        'Rs ${_formatAmount(_safeDouble(expense['evening']))}',
                                         style: TextStyle(
                                           color: Color(0xFFD97706),
                                           fontWeight: FontWeight.w500,
@@ -2068,7 +2061,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                   DataCell(
                                     Center(
                                       child: Text(
-                                        'Rs ${_formatAmount(expense['night'] as double)}',
+                                        'Rs ${_formatAmount(_safeDouble(expense['night']))}',
                                         style: TextStyle(
                                           color: Color(0xFFD97706),
                                           fontWeight: FontWeight.w500,
@@ -2085,7 +2078,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: Text(
-                                          'Rs ${_formatAmount(expense['total'] as double)}',
+                                          'Rs ${_formatAmount(_safeDouble(expense['total']))}',
                                           style: TextStyle(
                                             color: Color(0xFFD97706),
                                             fontWeight: FontWeight.w600,
@@ -2425,7 +2418,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
         children: [
           Row(
             children: [
-              Icon(Icons.date_range, color: Color(0xFF037389), size: 24),
+              Icon(Icons.date_range, color: Color(0xFF109A8A), size: 24),
               SizedBox(width: 12),
               Text(
                 'Date Range Report',
@@ -2446,7 +2439,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 child: Column(
                   children: [
                     CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF037389)),
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF109A8A)),
                     ),
                     SizedBox(height: 16),
                     Text(
@@ -2479,7 +2472,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       onPressed: () => provider.fetchDateRangeReport(),
                       child: Text('Retry'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF037389),
+                        backgroundColor: Color(0xFF109A8A),
                       ),
                     ),
                   ],
@@ -2504,7 +2497,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.info, color: Color(0xFF037389)),
+                        Icon(Icons.info, color: Color(0xFF109A8A)),
                         SizedBox(width: 12),
                         Expanded(
                           child: Text(
@@ -2516,7 +2509,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           '${provider.dailySummaries.length} days',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF037389),
+                            color: Color(0xFF109A8A),
                           ),
                         ),
                       ],
@@ -2536,7 +2529,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                 provider.monthlySummary?.totalRevenue ??
                                     provider.dateRangeData?.totalRevenue ?? 0,
                                 Icons.trending_up,
-                                Color(0xFF037389),
+                                Color(0xFF109A8A),
                                 isTablet,
                               ),
                             ),
@@ -2638,7 +2631,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           onPressed: () => provider.fetchDateRangeReport(),
                           child: Text('Load Data'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF037389),
+                            backgroundColor: Color(0xFF109A8A),
                           ),
                         ),
                       ],
@@ -2652,13 +2645,13 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       padding: EdgeInsets.all(40),
                       child: Column(
                         children: [
-                          Icon(Icons.calendar_today, color: Colors.blue, size: 48),
+                          Icon(Icons.calendar_today, color: Color(0xFF109A8A), size: 48),
                           SizedBox(height: 16),
                           Text(
                             'Select start and end dates to view report',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.blue,
+                              color: Color(0xFF109A8A),
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -2783,39 +2776,29 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                     topRight: Radius.circular(6),
                   ),
                 ),
-                child: Center(
-                  child: Text(
-                    'OPD REVENUE',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF037389),
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
               ),
             ),
             DataColumn(
               label: Text('Morning\nOPD',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF037389)),
+                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF109A8A)),
                 textAlign: TextAlign.center,
               ),
             ),
             DataColumn(
               label: Text('Evening\nOPD',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF037389)),
+                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF109A8A)),
                 textAlign: TextAlign.center,
               ),
             ),
             DataColumn(
               label: Text('Night\nOPD',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF037389)),
+                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF109A8A)),
                 textAlign: TextAlign.center,
               ),
             ),
             DataColumn(
               label: Text('OPD\nTotal',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF037389)),
+                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF109A8A)),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -2840,16 +2823,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                     topRight: Radius.circular(6),
                   ),
                 ),
-                child: Center(
-                  child: Text(
-                    'EXPENSES',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFD97706),
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
+
               ),
             ),
             DataColumn(
@@ -2922,7 +2896,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       child: Text(
                         'Rs ${_formatAmount(data['morning_opd'] as double)}',
                         style: TextStyle(
-                          color: Color(0xFF037389),
+                          color: Color(0xFF109A8A),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -2935,7 +2909,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       child: Text(
                         'Rs ${_formatAmount(data['evening_opd'] as double)}',
                         style: TextStyle(
-                          color: Color(0xFF037389),
+                          color: Color(0xFF109A8A),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -2948,7 +2922,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       child: Text(
                         'Rs ${_formatAmount(data['night_opd'] as double)}',
                         style: TextStyle(
-                          color: Color(0xFF037389),
+                          color: Color(0xFF109A8A),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -2961,7 +2935,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       child: Text(
                         'Rs ${_formatAmount(data['opd_total'] as double)}',
                         style: TextStyle(
-                          color: Color(0xFF037389),
+                          color: Color(0xFF109A8A),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -3042,7 +3016,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           'Rs ${_formatAmount(data['daily_total'] as double)}',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF037389),
+                            color: Color(0xFF109A8A),
                           ),
                         ),
                       ),
@@ -3085,7 +3059,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                         'Rs ${_formatAmount(columnTotals['morning_opd']!)}',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF037389),
+                          color: Color(0xFF109A8A),
                         ),
                       ),
                     ),
@@ -3105,7 +3079,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                         'Rs ${_formatAmount(columnTotals['evening_opd']!)}',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF037389),
+                          color: Color(0xFF109A8A),
                         ),
                       ),
                     ),
@@ -3125,7 +3099,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                         'Rs ${_formatAmount(columnTotals['night_opd']!)}',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF037389),
+                          color: Color(0xFF109A8A),
                         ),
                       ),
                     ),
@@ -3138,7 +3112,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Color(0xFF037389),
+                        color: Color(0xFF109A8A),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -3356,7 +3330,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
         children: [
           Row(
             children: [
-              Icon(Icons.analytics, color: Color(0xFF037389), size: 24),
+              Icon(Icons.analytics, color: Color(0xFF109A8A), size: 24),
               SizedBox(width: 12),
               Text(
                 'Yearly Summary: ${_selectedYear ?? DateTime.now().year}',
@@ -3369,7 +3343,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
               // Refresh button
               IconButton(
                 onPressed: () => provider?.fetchYearlySummary(),
-                icon: Icon(Icons.refresh, color: Color(0xFF037389)),
+                icon: Icon(Icons.refresh, color: Color(0xFF109A8A)),
                 tooltip: 'Refresh Data',
               ),
             ],
@@ -3384,7 +3358,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 child: Column(
                   children: [
                     CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF037389)),
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF109A8A)),
                     ),
                     SizedBox(height: 16),
                     Text(
@@ -3417,7 +3391,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       onPressed: () => provider.fetchYearlySummary(),
                       child: Text('Retry'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF037389),
+                        backgroundColor: Color(0xFF109A8A),
                       ),
                     ),
                   ],
@@ -3438,7 +3412,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           'Total Revenue',
                           (provider.yearlySummary!['total_revenue'] ?? 0).toDouble(),
                           Icons.trending_up,
-                          Color(0xFF037389),
+                          Color(0xFF109A8A),
                           isTablet,
                         ),
                       ),
@@ -3569,7 +3543,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           onPressed: () => provider.fetchYearlyReport(),
                           child: Text('Load Yearly Summary'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF037389),
+                            backgroundColor: Color(0xFF109A8A),
                           ),
                         ),
                       ],
@@ -4649,7 +4623,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: isTablet ? 14 : 13,
-                                  color: Color(0xFF037389),
+                                  color: Color(0xFF109A8A),
                                 ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -4841,7 +4815,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                               fontSize: isTablet ? 14 : 13,
                               color: provider.selectedShiftFilter != 'All'
                                   ? _getShiftColor(provider.selectedShiftFilter)
-                                  : Color(0xFF037389),
+                                  : Color(0xFF109A8A),
                             ),
                           ),
                           SizedBox(height: 4),
@@ -4882,7 +4856,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                 fontSize: isTablet ? 12 : 11,
                                 color: provider.selectedShiftFilter != 'All'
                                     ? _getShiftColor(provider.selectedShiftFilter)
-                                    : Color(0xFF037389),
+                                    : Color(0xFF109A8A),
                               ),
                             ),
                             SizedBox(height: 4),
@@ -4952,7 +4926,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                   runSpacing: 8,
                   alignment: WrapAlignment.center,
                   children: [
-                    _buildLegendItem('OPD Services', Color(0xFF037389)),
+                    _buildLegendItem('OPD Services', Color(0xFF109A8A)),
                     _buildLegendItem('OPD Revenue', Color(0xFF10B981)),
                     if (provider.selectedShiftFilter != 'All')
                       _buildLegendItem(
@@ -4965,7 +4939,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           : 'Monthly OPD Totals',
                       provider.selectedShiftFilter != 'All'
                           ? _getShiftColor(provider.selectedShiftFilter)
-                          : Color(0xFF037389),
+                          : Color(0xFF109A8A),
                     ),
                     _buildLegendItem(
                       provider.selectedShiftFilter != 'All'
@@ -4992,7 +4966,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
       case 'night':
         return Color(0xFF1F2937); // Dark grey for night
       default:
-        return Color(0xFF037389); // Default teal
+        return Color(0xFF109A8A); // Default teal
     }
   }
   // Helper method to calculate total by type
@@ -5548,47 +5522,207 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
   }
 
   Widget _buildSummaryCard(String title, double value, IconData icon, Color color, bool isTablet) {
-    // Use MediaQuery for responsive sizing
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isLargeScreen = screenWidth > 600;
+    // Enhanced MediaQuery for comprehensive responsive design
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    final devicePixelRatio = mediaQuery.devicePixelRatio;
+
+    // Multiple breakpoints for better responsiveness
+    final isLargeDesktop = screenWidth > 1440;
+    final isDesktop = screenWidth > 1024;
+    final isLargeTablet = screenWidth > 768;
+    final isTablet = screenWidth > 600;
+    final isLargeMobile = screenWidth > 400;
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+
+    // Calculate responsive sizes
+    double getCardPadding() {
+      if (isLargeDesktop) return 22;
+      if (isDesktop) return 20;
+      if (isLargeTablet) return 18;
+      if (isTablet) return 16;
+      if (isLargeMobile) return 14;
+      return 12;
+    }
+
+    double getIconPadding() {
+      if (isLargeDesktop) return 14;
+      if (isDesktop) return 12;
+      if (isLargeTablet) return 11;
+      if (isTablet) return 10;
+      if (isLargeMobile) return 9;
+      return 8;
+    }
+
+    double getIconSize() {
+      if (isLargeDesktop) return 22;
+      if (isDesktop) return 20;
+      if (isLargeTablet) return 19;
+      if (isTablet) return 18;
+      if (isLargeMobile) return 17;
+      return 16;
+    }
+
+    double getSpacing() {
+      if (isLargeDesktop) return 16;
+      if (isDesktop) return 14;
+      if (isLargeTablet) return 13;
+      if (isTablet) return 12;
+      if (isLargeMobile) return 11;
+      return 10;
+    }
+
+    double getTitleFontSize() {
+      if (isLargeDesktop) return 13;
+      if (isDesktop) return 12;
+      if (isLargeTablet) return 11.5;
+      if (isTablet) return 11;
+      if (isLargeMobile) return 10.5;
+      return 10;
+    }
+
+    double getValueFontSize() {
+      if (isLargeDesktop) return 17;
+      if (isDesktop) return 16;
+      if (isLargeTablet) return 15;
+      if (isTablet) return 14;
+      if (isLargeMobile) return 13.5;
+      return 13;
+    }
+
+    double getBorderRadius() {
+      if (isLargeDesktop) return 16;
+      if (isDesktop) return 14;
+      if (isLargeTablet) return 13;
+      if (isTablet) return 12;
+      if (isLargeMobile) return 11;
+      return 10;
+    }
+
+    // Get the calculated values
+    final cardPadding = getCardPadding();
+    final iconPadding = getIconPadding();
+    final iconSize = getIconSize();
+    final spacing = getSpacing();
+    final titleFontSize = getTitleFontSize();
+    final valueFontSize = getValueFontSize();
+    final borderRadius = getBorderRadius();
+    final formattedValue = _formatAmount(value);
 
     return Container(
-      padding: EdgeInsets.all(isLargeScreen ? 20 : 16),
+      padding: EdgeInsets.all(cardPadding),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.2)),
+        gradient: LinearGradient(
+          colors: [
+            Colors.white,
+            Colors.white.withOpacity(0.98),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(
+          color: color.withOpacity(0.2),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            spreadRadius: 0,
+            offset: Offset(0, 3),
+          ),
+          BoxShadow(
+            color: color.withOpacity(0.06),
+            blurRadius: 8,
+            spreadRadius: 0,
+            offset: Offset(0, 1),
+          ),
+        ],
       ),
       child: Row(
         children: [
+          // Icon container with modern design
           Container(
-            padding: EdgeInsets.all(isLargeScreen ? 12 : 10),
+            padding: EdgeInsets.all(iconPadding),
             decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(8),
+              gradient: LinearGradient(
+                colors: [
+                  color,
+                  color.withOpacity(0.85),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(borderRadius * 0.7),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.25),
+                  blurRadius: 6,
+                  spreadRadius: 0,
+                  offset: Offset(0, 3),
+                ),
+              ],
             ),
-            child: Icon(icon, color: Colors.white, size: isLargeScreen ? 20 : 18),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: iconSize,
+            ),
           ),
-          SizedBox(width: isLargeScreen ? 12 : 10),
+
+          SizedBox(width: spacing),
+
+          // Content area
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: isLargeScreen ? 10 : 9,
-                    color: Colors.grey[700],
+                // Title with subtle styling
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: titleFontSize,
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                      letterSpacing: 0.3,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                SizedBox(height: 2),
-                Text(
-                  'Rs ${_formatAmount(value)}',
-                  style: TextStyle(
-                    fontSize: isLargeScreen ? 12 : 12,
-                    fontWeight: FontWeight.w700,
-                    color: color,
-                  ),
+
+                SizedBox(height: 4),
+
+                // Value with better typography
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final availableWidth = constraints.maxWidth;
+                    bool isValueTooLong = formattedValue.length > 8;
+
+                    return Text(
+                      'Rs $formattedValue',
+                      style: TextStyle(
+                        fontSize: isValueTooLong && availableWidth < 120
+                            ? valueFontSize * 0.9
+                            : valueFontSize,
+                        fontWeight: FontWeight.w800,
+                        color: color,
+                        letterSpacing: -0.2,
+                        height: 1.1,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    );
+                  },
                 ),
               ],
             ),
@@ -5597,19 +5731,52 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
       ),
     );
   }
-  // Keep all your existing methods for daily report (they remain unchanged):
-  // _buildSummaryCardsTabs, _buildSummaryCardTab, _buildTabContent,
-  // _buildRevenueContent, _buildExpensesContent, _buildNetRevenueContent,
-  // _buildConsultationsContent, _buildConsultationTable, _buildOtherServicesTable,
-  // _buildExpensesTable, _buildFinancialSummaryCard
 
-  // These methods remain exactly as they were in your original code...
   Widget _buildSummaryCardsTabs(ShiftReportProvider provider, bool isTablet) {
     if (provider.isLoading && provider.opdRecords.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(30),
-          child: CircularProgressIndicator(),
+      return Container(
+        height: 200,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 20,
+              offset: Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Color(0xFF109A8A).withOpacity(0.1),
+                    width: 3,
+                  ),
+                ),
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF109A8A)),
+                  strokeWidth: 3,
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Loading financial data...',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[700],
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -5620,150 +5787,372 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
       {
         'title': 'Total Revenue',
         'value': 'Rs ${_formatAmount(financial.totalRevenue)}',
-        'subtitle': 'All services',
-        'icon': Icons.attach_money,
-        'color': const Color(0xFF037389),
+        'subtitle': 'All services revenue',
+        'icon': Icons.trending_up_rounded,
+        'color': const Color(0xFF109A8A),
+        'gradient': LinearGradient(
+          colors: [Color(0xFF109A8A), Color(0xFF0B7C6F)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
       },
       {
         'title': 'Total Expenses',
         'value': 'Rs ${_formatAmount(financial.totalExpensesWithDocShare)}',
-        'subtitle': 'Incl. doctor share',
-        'icon': Icons.shopping_cart,
+        'subtitle': 'Including doctor share',
+        'icon': Icons.trending_down_rounded,
         'color': const Color(0xFFD97706),
+        'gradient': LinearGradient(
+          colors: [Color(0xFFD97706), Color(0xFFB45309)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
       },
       {
         'title': 'Net Revenue',
         'value': 'Rs ${_formatAmount(financial.netHospitalRevenue)}',
-        'subtitle': 'After expenses',
-        'icon': Icons.account_balance_wallet,
+        'subtitle': 'After all expenses',
+        'icon': Icons.account_balance_wallet_rounded,
         'color': const Color(0xFF10B981),
+        'gradient': LinearGradient(
+          colors: [Color(0xFF10B981), Color(0xFF059669)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
       },
       {
         'title': 'Consultations',
         'value': '${provider.consultationSummaries.length}',
-        'subtitle': 'Doctors',
-        'icon': Icons.medical_services,
+        'subtitle': 'Active doctors',
+        'icon': Icons.medical_services_rounded,
         'color': const Color(0xFF14B8A6),
+        'gradient': LinearGradient(
+          colors: [Color(0xFF14B8A6), Color(0xFF0D9488)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
       },
     ];
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: isTablet ? 4 : 2,
-        crossAxisSpacing: isTablet ? 16 : 12,
-        mainAxisSpacing: isTablet ? 16 : 12,
-        childAspectRatio: isTablet ? 1.2 : 1.4,
-      ),
-      itemCount: tabs.length,
-      itemBuilder: (context, index) {
-        final tab = tabs[index];
-        final isSelected = _selectedTabIndex == index;
+    // Get screen dimensions with MediaQuery
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    final isLargeScreen = screenWidth > 1200;
+    final isMediumScreen = screenWidth > 768;
+    final isSmallScreen = screenWidth <= 480;
+    final padding = mediaQuery.padding;
+    final viewInsets = mediaQuery.viewInsets;
 
-        return _buildSummaryCardTab(
-          title: tab['title'] as String,
-          value: tab['value'] as String,
-          icon: tab['icon'] as IconData,
-          color: tab['color'] as Color,
-          isSelected: isSelected,
-          onTap: () {
-            setState(() {
-              _selectedTabIndex = isSelected ? -1 : index;
-            });
-          },
-          isTablet: isTablet,
-        );
-      },
+    // Calculate available width for cards (accounting for padding)
+    final availableWidth = screenWidth - padding.left - padding.right - 32; // 16px padding on each side
+
+    // Calculate card width based on available space (2 cards per row with spacing)
+    final cardWidth = (availableWidth - 16) / 2; // Subtract spacing between cards
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: screenWidth,
+        minHeight: 200,
+      ),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, // Always 2 cards per row
+          crossAxisSpacing: _getCrossAxisSpacing(screenWidth),
+          mainAxisSpacing: _getMainAxisSpacing(screenWidth),
+          childAspectRatio: _getChildAspectRatio(screenWidth),
+        ),
+        itemCount: tabs.length,
+        itemBuilder: (context, index) {
+          final tab = tabs[index];
+          final isSelected = _selectedTabIndex == index;
+
+          return Container(
+            constraints: BoxConstraints(
+              maxWidth: cardWidth,
+            ),
+            child: _buildModernSummaryCard(
+              title: tab['title'] as String,
+              value: tab['value'] as String,
+              subtitle: tab['subtitle'] as String,
+              icon: tab['icon'] as IconData,
+              color: tab['color'] as Color,
+              gradient: tab['gradient'] as LinearGradient,
+              isSelected: isSelected,
+              onTap: () {
+                setState(() {
+                  _selectedTabIndex = isSelected ? -1 : index;
+                });
+              },
+              screenWidth: screenWidth,
+              cardWidth: cardWidth,
+            ),
+          );
+        },
+      ),
     );
   }
 
-  Widget _buildSummaryCardTab({
+  Widget _buildModernSummaryCard({
     required String title,
     required String value,
-    // required String subtitle,
+    required String subtitle,
     required IconData icon,
     required Color color,
+    required LinearGradient gradient,
     required bool isSelected,
     required VoidCallback onTap,
-    required bool isTablet,
+    required double screenWidth,
+    required double cardWidth,
   }) {
-    // Use MediaQuery for responsive sizing
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isLargeScreen = screenWidth > 600;
+    // Calculate sizes based on card width to prevent overflow
+    final bool isLargeCard = cardWidth > 180;
+    final bool isMediumCard = cardWidth > 140;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: EdgeInsets.all(isLargeScreen ? 16 : 12),
-        decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? color : const Color(0xFFE5E7EB),
-            width: isSelected ? 2 : 1.5,
+    final double padding = isLargeCard ? 16 : (isMediumCard ? 14 : 12);
+    final double iconSize = isLargeCard ? 22 : (isMediumCard ? 20 : 18);
+    final double iconContainerSize = isLargeCard ? 44 : (isMediumCard ? 40 : 36);
+    final double fontSizeTitle = isLargeCard ? 15 : (isMediumCard ? 14 : 13);
+    final double fontSizeValue = isLargeCard ? 20 : (isMediumCard ? 18 : 16);
+    final double fontSizeSubtitle = isLargeCard ? 12 : 11;
+    final double borderRadius = isLargeCard ? 14 : 12;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: cardWidth,
+            minHeight: 120,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(isSelected ? 0.08 : 0.04),
-              blurRadius: isSelected ? 8 : 4,
-              offset: const Offset(0, 2),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            constraints: BoxConstraints(
+              minHeight: 120,
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: isLargeScreen ? 40 : 32,
-                  height: isLargeScreen ? 40 : 32,
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: color,
-                    size: isLargeScreen ? 20 : 16,
-                  ),
-                ),
-                SizedBox(width: isLargeScreen ? 12 : 10),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: isLargeScreen ? 15 : 13,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF374151),
-                    ),
-                  ),
+            decoration: BoxDecoration(
+              gradient: isSelected ? gradient : LinearGradient(
+                colors: [Colors.white, Colors.white],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(borderRadius),
+              border: Border.all(
+                color: isSelected ? color.withOpacity(0.4) : Color(0xFFE5E7EB),
+                width: isSelected ? 2.5 : 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isSelected ? 0.15 : 0.06),
+                  blurRadius: isSelected ? 20 : 12,
+                  spreadRadius: isSelected ? -2 : 0,
+                  offset: Offset(0, isSelected ? 8 : 4),
                 ),
                 if (isSelected)
-                  Icon(
-                    Icons.check_circle,
-                    color: color,
-                    size: isLargeScreen ? 20 : 18,
+                  BoxShadow(
+                    color: color.withOpacity(0.2),
+                    blurRadius: 12,
+                    spreadRadius: 0,
+                    offset: Offset(0, 4),
                   ),
               ],
             ),
-            SizedBox(height: isLargeScreen ? 12 : 10),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: isLargeScreen ? 20 : 18,
-                fontWeight: FontWeight.w700,
-                color: color,
+            child: Padding(
+              padding: EdgeInsets.all(padding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Top row: Icon and title
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Icon container
+                      Container(
+                        width: iconContainerSize,
+                        height: iconContainerSize,
+                        decoration: BoxDecoration(
+                          gradient: isSelected
+                              ? LinearGradient(
+                            colors: [Colors.white, Colors.white.withOpacity(0.8)],
+                          )
+                              : LinearGradient(
+                            colors: [color.withOpacity(0.15), color.withOpacity(0.08)],
+                          ),
+                          borderRadius: BorderRadius.circular(borderRadius * 0.5),
+                          boxShadow: [
+                            if (isSelected)
+                              BoxShadow(
+                                color: Colors.white.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: Offset(0, 3),
+                              ),
+                            if (!isSelected)
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 5,
+                                offset: Offset(0, 2),
+                              ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Icon(
+                            icon,
+                            color: isSelected ? color : color.withOpacity(0.9),
+                            size: iconSize,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              style: TextStyle(
+                                fontSize: fontSizeTitle,
+                                fontWeight: FontWeight.w700,
+                                color: isSelected ? Colors.white : Colors.black87,
+                                letterSpacing: -0.3,
+                                height: 1.2,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 8),
+                            // Value display
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                value,
+                                style: TextStyle(
+                                  fontSize: fontSizeValue,
+                                  fontWeight: FontWeight.w800,
+                                  color: isSelected ? Colors.white : color,
+                                  letterSpacing: -0.5,
+                                  shadows: isSelected
+                                      ? [
+                                    Shadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      blurRadius: 2,
+                                      offset: Offset(1, 1),
+                                    ),
+                                  ]
+                                      : [],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (isSelected)
+                        Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: color.withOpacity(0.3),
+                                blurRadius: 5,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.check_rounded,
+                              color: color,
+                              size: 12,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+
+                  SizedBox(height: 10),
+
+                  // Bottom row: Subtitle and indicator
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: fontSizeSubtitle,
+                            fontWeight: FontWeight.w500,
+                            color: isSelected ? Colors.white.withOpacity(0.9) : Colors.grey[600],
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+
+                      // Status indicator
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        constraints: BoxConstraints(
+                          minWidth: 50,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.white.withOpacity(0.2) : color.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          isSelected ? '✓ Selected' : 'Tap',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected ? Colors.white : color,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: isLargeScreen ? 6 : 4),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  // Helper methods for responsive grid calculations
+  double _getCrossAxisSpacing(double screenWidth) {
+    if (screenWidth > 1200) return 20;
+    if (screenWidth > 768) return 16;
+    if (screenWidth > 480) return 12;
+    return 8;
+  }
+
+  double _getMainAxisSpacing(double screenWidth) {
+    if (screenWidth > 1200) return 20;
+    if (screenWidth > 768) return 16;
+    if (screenWidth > 480) return 12;
+    return 8;
+  }
+
+  double _getChildAspectRatio(double screenWidth) {
+    // Aspect ratio calculation based on screen width
+    if (screenWidth > 1200) return 1.5; // Desktop - wider cards
+    if (screenWidth > 768) return 1.4;  // Tablet
+    if (screenWidth > 480) return 1.3;  // Large mobile
+    return 1.2; // Small mobile - more compact
   }
   Widget _buildTabContent(ShiftReportProvider provider, int tabIndex, bool isTablet) {
     switch (tabIndex) {
@@ -5781,6 +6170,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
   }
 
   Widget _buildRevenueContent(ShiftReportProvider provider, bool isTablet) {
+    SizedBox(height: 40);
     return Container(
       padding: EdgeInsets.all(isTablet ? 20 : 16),
       decoration: BoxDecoration(
@@ -5796,12 +6186,12 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
               Container(
                 padding: EdgeInsets.all(isTablet ? 10 : 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF037389).withOpacity(0.1),
+                  color: const Color(0xFF109A8A).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   Icons.attach_money,
-                  color: const Color(0xFF037389),
+                  color: const Color(0xFF109A8A),
                   size: isTablet ? 24 : 20,
                 ),
               ),
@@ -5925,7 +6315,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
             'Total Revenue',
             financial.totalRevenue,
             Icons.trending_up,
-            const Color(0xFF037389),
+            const Color(0xFF109A8A),
             isTablet: isTablet,
           ),
           SizedBox(height: isTablet ? 16 : 12),
@@ -6007,7 +6397,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
           children: [
             Icon(
               Icons.description,
-              color: const Color(0xFF037389),
+              color: const Color(0xFF109A8A),
               size: isTablet ? 18 : 14,
             ),
             SizedBox(width: isTablet ? 8 : 6),
@@ -6179,7 +6569,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
           children: [
             Icon(
               Icons.description,
-              color: const Color(0xFF037389),
+              color: const Color(0xFF109A8A),
               size: isTablet ? 18 : 14,
             ),
             SizedBox(width: isTablet ? 8 : 6),
@@ -6554,7 +6944,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF037389),
+              primary: Color(0xFF109A8A),
             ),
             dialogBackgroundColor: Colors.white,
           ),
@@ -6584,7 +6974,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF037389),
+              primary: Color(0xFF109A8A),
             ),
             dialogBackgroundColor: Colors.white,
           ),
@@ -6613,7 +7003,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF037389),
+              primary: Color(0xFF109A8A),
             ),
             dialogBackgroundColor: Colors.white,
           ),
@@ -6675,13 +7065,4 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
       }
     }
   }
-
-  // String _getMonthName(int? month) {
-  //   if (month == null) return 'All Months';
-  //   final months = [
-  //     'January', 'February', 'March', 'April', 'May', 'June',
-  //     'July', 'August', 'September', 'October', 'November', 'December'
-  //   ];
-  //   return months[month - 1];
-  // }
 }

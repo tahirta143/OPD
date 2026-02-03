@@ -21,12 +21,12 @@ class _LoginScreenState extends State<LoginScreen>
   bool _isLoading = false;
   bool _rememberMe = false;
 
-  // Your specified purple colors
-  final Color _primaryColor = const Color(0xFF8B5CF6);
-  final Color _secondaryColor = const Color(0xFF7C3AED);
-  final Color _accentColor = const Color(0xFF6D28D9);
-  final Color _lightPurple = const Color(0xFFEDE9FE);
-  final Color _darkPurple = const Color(0xFF4C1D95);
+  // Updated colors to use 0xFF109A8A (teal)
+  final Color _primaryColor = const Color(0xFF109A8A);
+  final Color _secondaryColor = const Color(0xFF0B7C6F);
+  final Color _accentColor = const Color(0xFF087065);
+  final Color _lightTeal = const Color(0xFFE0F2F1);
+  final Color _darkTeal = const Color(0xFF004D40);
 
   @override
   void initState() {
@@ -53,24 +53,6 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   void _login() async {
-    // if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-    //   _showSnackBar('Please fill in all fields', Colors.red.shade400);
-    //   return;
-    // }
-    //
-    // if (!_emailController.text.contains('@')) {
-    //   _showSnackBar('Please enter a valid email', Colors.orange.shade400);
-    //   return;
-    // }
-    //flutter
-    // setState(() => _isLoading = true);
-    //
-    // // Simulate API call
-    // await Future.delayed(const Duration(seconds: 2));
-    //
-    // setState(() => _isLoading = false);
-
-    // Navigate to home screen
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -253,7 +235,7 @@ class _LoginScreenState extends State<LoginScreen>
                                               decoration: BoxDecoration(
                                                 gradient: LinearGradient(
                                                   colors: [
-                                                    _lightPurple,
+                                                    _lightTeal,
                                                     Colors.white,
                                                   ],
                                                   begin: Alignment.topLeft,
@@ -262,7 +244,7 @@ class _LoginScreenState extends State<LoginScreen>
                                                 shape: BoxShape.circle,
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: _darkPurple.withOpacity(0.3),
+                                                    color: _darkTeal.withOpacity(0.3),
                                                     blurRadius: 30,
                                                     spreadRadius: 3,
                                                     offset: const Offset(0, 10),
@@ -314,7 +296,7 @@ class _LoginScreenState extends State<LoginScreen>
                                                 return LinearGradient(
                                                   colors: [
                                                     Colors.white,
-                                                    _lightPurple,
+                                                    _lightTeal,
                                                   ],
                                                 ).createShader(bounds);
                                               },
@@ -327,7 +309,7 @@ class _LoginScreenState extends State<LoginScreen>
                                                   letterSpacing: -0.5,
                                                   shadows: [
                                                     Shadow(
-                                                      color: _darkPurple
+                                                      color: _darkTeal
                                                           .withOpacity(0.4),
                                                       blurRadius: 15,
                                                       offset: const Offset(0, 3),
@@ -382,7 +364,7 @@ class _LoginScreenState extends State<LoginScreen>
                                                     BorderRadius.circular(35),
                                                     boxShadow: [
                                                       BoxShadow(
-                                                        color: _darkPurple
+                                                        color: _darkTeal
                                                             .withOpacity(0.3),
                                                         blurRadius: 50,
                                                         spreadRadius: 5,
@@ -477,10 +459,6 @@ class _LoginScreenState extends State<LoginScreen>
                                                                 ),
                                                               ),
                                                             ),
-                                                            // SizedBox(
-                                                            //     width: isTablet
-                                                            //         ? 8
-                                                            //         : 2),
                                                             Text(
                                                               'Remember me',
                                                               style: TextStyle(
@@ -727,7 +705,7 @@ class _LoginScreenState extends State<LoginScreen>
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  _lightPurple.withOpacity(0.2),
+                  _lightTeal.withOpacity(0.2),
                   Colors.transparent,
                 ],
                 stops: const [0.1, 0.8],
@@ -748,7 +726,7 @@ class _LoginScreenState extends State<LoginScreen>
             shape: BoxShape.circle,
             gradient: RadialGradient(
               colors: [
-                _lightPurple.withOpacity(0.15),
+                _lightTeal.withOpacity(0.15),
                 Colors.transparent,
               ],
               stops: const [0.05, 0.8],
@@ -795,7 +773,7 @@ class _LoginScreenState extends State<LoginScreen>
         Text(
           label,
           style: TextStyle(
-            color: _darkPurple,
+            color: _darkTeal,
             fontSize: isTablet ? 17 : 15,
             fontWeight: FontWeight.w700,
           ),
@@ -881,7 +859,7 @@ class _LoginScreenState extends State<LoginScreen>
         Text(
           'Password',
           style: TextStyle(
-            color: _darkPurple,
+            color: _darkTeal,
             fontSize: isTablet ? 17 : 15,
             fontWeight: FontWeight.w700,
           ),

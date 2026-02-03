@@ -72,7 +72,7 @@ class _AttractiveHealthDashboardState extends State<AttractiveHealthDashboard> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: CustomAppBar(isTablet: isTablet),
+      appBar: CustomAppBar(),
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
