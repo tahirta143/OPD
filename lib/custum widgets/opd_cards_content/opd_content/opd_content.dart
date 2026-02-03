@@ -1514,602 +1514,689 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
   }
 // Helper method for second table: Service-wise Breakdown
   Widget _buildServiceBreakdownTable(EnhancedShiftReportProvider provider, bool isTablet) {
-    if (provider.isLoadingNew) {
-      return Center(
-        child: Padding(
-          padding: EdgeInsets.all(20),
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
+    return StatefulBuilder(
+      builder: (context, setState) {
+        // Local refresh function
+        void refreshData() {
+          setState(() {});
+          print('🔄 Manually refreshing table data...');
+        }
 
-    if (provider.errorMessageNew.isNotEmpty) {
-      return Container(
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.grey[50],
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Color(0xFFE5E7EB)),
-        ),
-        child: Column(
-          children: [
-            Icon(Icons.error_outline, color: Colors.orange, size: 48),
-            SizedBox(height: 8),
-            Text(
-              'Error loading detailed breakdown',
-              style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+        if (provider.isLoadingNew) {
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
             ),
-            SizedBox(height: 8),
-            Text(
-              provider.errorMessageNew,
-              style: TextStyle(color: Colors.grey[600]),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
+          );
+        }
 
-    if (provider.combinedServiceBreakdown.isEmpty) {
-      return Container(
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.grey[50],
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Color(0xFFE5E7EB)),
-        ),
-        child: Column(
+        if (provider.errorMessageNew.isNotEmpty) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Color(0xFFE5E7EB)),
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.error_outline, color: Colors.orange, size: 48),
+                SizedBox(height: 8),
+                Text(
+                  'Error loading detailed breakdown',
+                  style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  provider.errorMessageNew,
+                  style: TextStyle(color: Colors.grey[600]),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => provider.fetchDetailedBreakdown(),
+                      child: Text('Retry'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF037389),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    OutlinedButton(
+                      onPressed: refreshData,
+                      child: Text('Refresh'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Color(0xFF037389),
+                        side: BorderSide(color: Color(0xFF037389)),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (provider.combinedServiceBreakdown.isEmpty) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Color(0xFFE5E7EB)),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  'No Detailed Breakdown Available',
+                  style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Detailed breakdown data has not been loaded yet.',
+                  style: TextStyle(color: Colors.grey[600]),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => provider.fetchDetailedBreakdown(),
+                      child: Text('Load Detailed Breakdown'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF037389),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    OutlinedButton(
+                      onPressed: refreshData,
+                      child: Row(
+                        children: [
+                          Icon(Icons.refresh, size: 16),
+                          SizedBox(width: 4),
+                          Text('Refresh'),
+                        ],
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Color(0xFF037389),
+                        side: BorderSide(color: Color(0xFF037389)),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Separate OPD and Expenses
+        final opdServices = provider.combinedServiceBreakdown
+            .where((item) => item['type'] == 'OPD')
+            .toList();
+
+        final expenses = provider.combinedServiceBreakdown
+            .where((item) => item['type'] == 'EXPENSE')
+            .toList();
+
+        // Calculate totals
+        double opdMorningTotal = 0;
+        double opdEveningTotal = 0;
+        double opdNightTotal = 0;
+        double opdGrandTotal = 0;
+
+        double expMorningTotal = 0;
+        double expEveningTotal = 0;
+        double expNightTotal = 0;
+        double expGrandTotal = 0;
+
+        for (var service in opdServices) {
+          opdMorningTotal += (service['morning'] as double);
+          opdEveningTotal += (service['evening'] as double);
+          opdNightTotal += (service['night'] as double);
+          opdGrandTotal += (service['total'] as double);
+        }
+
+        for (var expense in expenses) {
+          expMorningTotal += (expense['morning'] as double);
+          expEveningTotal += (expense['evening'] as double);
+          expNightTotal += (expense['night'] as double);
+          expGrandTotal += (expense['total'] as double);
+        }
+
+        print('📊 Table Data: ${opdServices.length} OPD, ${expenses.length} Expenses');
+        print('📊 OPD Totals: M=${opdMorningTotal}, E=${opdEveningTotal}, N=${opdNightTotal}, T=${opdGrandTotal}');
+        print('📊 Expense Totals: M=${expMorningTotal}, E=${expEveningTotal}, N=${expNightTotal}, T=${expGrandTotal}');
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'No Detailed Breakdown Available',
-              style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+            // Header with refresh button
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Color(0xFFE5E7EB)),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    'Service Breakdown',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Color(0xFF374151),
+                    ),
+                  ),
+                  Spacer(),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      refreshData();
+                      provider.fetchDetailedBreakdown();
+                    },
+                    icon: Icon(Icons.refresh, size: 16),
+                    label: Text('Refresh Data'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Color(0xFF037389),
+                      side: BorderSide(color: Color(0xFF037389)),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            SizedBox(height: 8),
-            Text(
-              'Detailed breakdown data has not been loaded yet.',
-              style: TextStyle(color: Colors.grey[600]),
-              textAlign: TextAlign.center,
+
+            SizedBox(height: 20),
+
+            // OPD Services Section
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Color(0xFFE5E7EB)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // OPD Header
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFE6F7FF),
+                      border: Border(bottom: BorderSide(color: Color(0xFF037389))),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.local_hospital, color: Color(0xFF037389), size: 20),
+                        SizedBox(width: 8),
+                        Text(
+                          'OPD SERVICES BREAKDOWN',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF037389),
+                            fontSize: isTablet ? 15 : 14,
+                          ),
+                        ),
+                        Spacer(),
+                        // IconButton(
+                        //   icon: Icon(Icons.refresh, size: 18, color: Color(0xFF037389)),
+                        //   onPressed: () {
+                        //     refreshData();
+                        //     provider.fetchDetailedBreakdown();
+                        //   },
+                        //   tooltip: 'Refresh OPD Data',
+                        // ),
+                      ],
+                    ),
+                  ),
+
+                  // OPD Table
+                  Container(
+                    constraints: BoxConstraints(maxHeight: 300), // Limit height with scroll
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          columnSpacing: 20,
+                          headingRowHeight: 50,
+                          dataRowHeight: 40,
+                          headingRowColor: MaterialStateProperty.all(Color(0xFFF9FAFB)),
+                          columns: [
+                            DataColumn(
+                              label: Container(
+                                width: 250,
+                                child: Text('Service Name', style: TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                            ),
+                            DataColumn(
+                              label: Text('Morning', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              numeric: true,
+                            ),
+                            DataColumn(
+                              label: Text('Evening', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              numeric: true,
+                            ),
+                            DataColumn(
+                              label: Text('Night', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              numeric: true,
+                            ),
+                            DataColumn(
+                              label: Text('Total', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              numeric: true,
+                            ),
+                          ],
+                          rows: [
+                            // OPD service rows
+                            for (var service in opdServices)
+                              DataRow(
+                                cells: [
+                                  DataCell(
+                                    Container(
+                                      width: 250,
+                                      child: Text(
+                                        service['service_name'] as String,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Text(
+                                        'Rs ${_formatAmount(service['morning'] as double)}',
+                                        style: TextStyle(
+                                          color: Color(0xFF037389),
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Text(
+                                        'Rs ${_formatAmount(service['evening'] as double)}',
+                                        style: TextStyle(
+                                          color: Color(0xFF037389),
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Text(
+                                        'Rs ${_formatAmount(service['night'] as double)}',
+                                        style: TextStyle(
+                                          color: Color(0xFF037389),
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFFE6F7FF),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Rs ${_formatAmount(service['total'] as double)}',
+                                          style: TextStyle(
+                                            color: Color(0xFF037389),
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                            // OPD totals row
+                            if (opdServices.isNotEmpty)
+                              DataRow(
+                                color: MaterialStateProperty.all(Color(0xFFF0F9FF)),
+                                cells: [
+                                  DataCell(
+                                    Text(
+                                      'OPD TOTAL',
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFF037389),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Rs ${_formatAmount(opdMorningTotal)}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFF037389),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Rs ${_formatAmount(opdEveningTotal)}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFF037389),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Rs ${_formatAmount(opdNightTotal)}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFF037389),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Rs ${_formatAmount(opdGrandTotal)}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
+
+            SizedBox(height: 24),
+
+            // Expenses Section
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Color(0xFFE5E7EB)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Expenses Header
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFFFF4E6),
+                      border: Border(bottom: BorderSide(color: Color(0xFFD97706))),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.money_off, color: Color(0xFFD97706), size: 20),
+                        SizedBox(width: 8),
+                        Text(
+                          'EXPENSES BREAKDOWN',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFD97706),
+                            fontSize: isTablet ? 15 : 14,
+                          ),
+                        ),
+                        Spacer(),
+                        // IconButton(
+                        //   icon: Icon(Icons.refresh, size: 18, color: Color(0xFFD97706)),
+                        //   onPressed: () {
+                        //     refreshData();
+                        //     provider.fetchDetailedBreakdown();
+                        //   },
+                        //   tooltip: 'Refresh Expenses Data',
+                        // ),
+                      ],
+                    ),
+                  ),
+
+                  // Expenses Table
+                  Container(
+                    constraints: BoxConstraints(maxHeight: 300), // Limit height with scroll
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          columnSpacing: 20,
+                          headingRowHeight: 50,
+                          dataRowHeight: 40,
+                          headingRowColor: MaterialStateProperty.all(Color(0xFFF9FAFB)),
+                          columns: [
+                            DataColumn(
+                              label: Container(
+                                width: 250,
+                                child: Text('Expense Item', style: TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                            ),
+                            DataColumn(
+                              label: Text('Morning', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              numeric: true,
+                            ),
+                            DataColumn(
+                              label: Text('Evening', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              numeric: true,
+                            ),
+                            DataColumn(
+                              label: Text('Night', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              numeric: true,
+                            ),
+                            DataColumn(
+                              label: Text('Total', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              numeric: true,
+                            ),
+                          ],
+                          rows: [
+                            // Expense rows
+                            for (var expense in expenses)
+                              DataRow(
+                                cells: [
+                                  DataCell(
+                                    Container(
+                                      width: 250,
+                                      child: Text(
+                                        expense['service_name'] as String,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Text(
+                                        'Rs ${_formatAmount(expense['morning'] as double)}',
+                                        style: TextStyle(
+                                          color: Color(0xFFD97706),
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Text(
+                                        'Rs ${_formatAmount(expense['evening'] as double)}',
+                                        style: TextStyle(
+                                          color: Color(0xFFD97706),
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Text(
+                                        'Rs ${_formatAmount(expense['night'] as double)}',
+                                        style: TextStyle(
+                                          color: Color(0xFFD97706),
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFFFFF4E6),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Rs ${_formatAmount(expense['total'] as double)}',
+                                          style: TextStyle(
+                                            color: Color(0xFFD97706),
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                            // Expenses totals row
+                            if (expenses.isNotEmpty)
+                              DataRow(
+                                color: MaterialStateProperty.all(Color(0xFFFEF3C7)),
+                                cells: [
+                                  DataCell(
+                                    Text(
+                                      'EXPENSES TOTAL',
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFFD97706),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Rs ${_formatAmount(expMorningTotal)}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFFD97706),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Rs ${_formatAmount(expEveningTotal)}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFFD97706),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Rs ${_formatAmount(expNightTotal)}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFFD97706),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Rs ${_formatAmount(expGrandTotal)}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => provider.fetchDetailedBreakdown(),
-              child: Text('Load Detailed Breakdown'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF037389),
-              ),
-            ),
           ],
-        ),
-      );
-    }
-
-    // Separate OPD and Expenses
-    final opdServices = provider.combinedServiceBreakdown
-        .where((item) => item['type'] == 'OPD')
-        .toList();
-
-    final expenses = provider.combinedServiceBreakdown
-        .where((item) => item['type'] == 'EXPENSE')
-        .toList();
-
-    // Calculate totals
-    double opdMorningTotal = 0;
-    double opdEveningTotal = 0;
-    double opdNightTotal = 0;
-    double opdGrandTotal = 0;
-
-    double expMorningTotal = 0;
-    double expEveningTotal = 0;
-    double expNightTotal = 0;
-    double expGrandTotal = 0;
-
-    for (var service in opdServices) {
-      opdMorningTotal += (service['morning'] as double);
-      opdEveningTotal += (service['evening'] as double);
-      opdNightTotal += (service['night'] as double);
-      opdGrandTotal += (service['total'] as double);
-    }
-
-    for (var expense in expenses) {
-      expMorningTotal += (expense['morning'] as double);
-      expEveningTotal += (expense['evening'] as double);
-      expNightTotal += (expense['night'] as double);
-      expGrandTotal += (expense['total'] as double);
-    }
-
-    print('📊 Table Data: ${opdServices.length} OPD, ${expenses.length} Expenses');
-    print('📊 OPD Totals: M=${opdMorningTotal}, E=${opdEveningTotal}, N=${opdNightTotal}, T=${opdGrandTotal}');
-    print('📊 Expense Totals: M=${expMorningTotal}, E=${expEveningTotal}, N=${expNightTotal}, T=${expGrandTotal}');
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // OPD Services Section
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Color(0xFFE5E7EB)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // OPD Header
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Color(0xFFE6F7FF),
-                  border: Border(bottom: BorderSide(color: Color(0xFF037389))),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.local_hospital, color: Color(0xFF037389), size: 20),
-                    SizedBox(width: 8),
-                    Text(
-                      'OPD SERVICES BREAKDOWN',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF037389),
-                        fontSize: isTablet ? 15 : 14,
-                      ),
-                    ),
-                    Spacer(),
-                    // Text(
-                    //   'Rs ${_formatAmount(opdGrandTotal)}',
-                    //   style: TextStyle(
-                    //     fontWeight: FontWeight.bold,
-                    //     color: Color(0xFF037389),
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ),
-
-              // OPD Table
-              Container(
-                constraints: BoxConstraints(maxHeight: 300), // Limit height with scroll
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                      columnSpacing: 20,
-                      headingRowHeight: 50,
-                      dataRowHeight: 40,
-                      headingRowColor: MaterialStateProperty.all(Color(0xFFF9FAFB)),
-                      columns: [
-                        DataColumn(
-                          label: Container(
-                            width: 250,
-                            child: Text('Service Name', style: TextStyle(fontWeight: FontWeight.bold)),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text('Morning', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                          numeric: true,
-                        ),
-                        DataColumn(
-                          label: Text('Evening', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                          numeric: true,
-                        ),
-                        DataColumn(
-                          label: Text('Night', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                          numeric: true,
-                        ),
-                        DataColumn(
-                          label: Text('Total', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                          numeric: true,
-                        ),
-                      ],
-                      rows: [
-                        // OPD service rows
-                        for (var service in opdServices)
-                          DataRow(
-                            cells: [
-                              DataCell(
-                                Container(
-                                  width: 250,
-                                  child: Text(
-                                    service['service_name'] as String,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Text(
-                                    'Rs ${_formatAmount(service['morning'] as double)}',
-                                    style: TextStyle(
-                                      color: Color(0xFF037389),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Text(
-                                    'Rs ${_formatAmount(service['evening'] as double)}',
-                                    style: TextStyle(
-                                      color: Color(0xFF037389),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Text(
-                                    'Rs ${_formatAmount(service['night'] as double)}',
-                                    style: TextStyle(
-                                      color: Color(0xFF037389),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFFE6F7FF),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'Rs ${_formatAmount(service['total'] as double)}',
-                                      style: TextStyle(
-                                        color: Color(0xFF037389),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                        // OPD totals row
-                        if (opdServices.isNotEmpty)
-                          DataRow(
-                            color: MaterialStateProperty.all(Color(0xFFF0F9FF)),
-                            cells: [
-                              DataCell(
-                                Text(
-                                  'OPD TOTAL',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF037389),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'Rs ${_formatAmount(opdMorningTotal)}',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF037389),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'Rs ${_formatAmount(opdEveningTotal)}',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF037389),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'Rs ${_formatAmount(opdNightTotal)}',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF037389),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'Rs ${_formatAmount(opdGrandTotal)}',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        SizedBox(height: 24),
-
-        // Expenses Section
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Color(0xFFE5E7EB)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Expenses Header
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Color(0xFFFFF4E6),
-                  border: Border(bottom: BorderSide(color: Color(0xFFD97706))),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.money_off, color: Color(0xFFD97706), size: 20),
-                    SizedBox(width: 8),
-                    Text(
-                      'EXPENSES BREAKDOWN ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFD97706),
-                        fontSize: isTablet ? 15 : 14,
-                      ),
-                    ),
-                    Spacer(),
-                    // Text(
-                    //   'Rs ${_formatAmount(expGrandTotal)}',
-                    //   style: TextStyle(
-                    //     fontWeight: FontWeight.bold,
-                    //     color: Color(0xFFD97706),
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ),
-
-              // Expenses Table
-              Container(
-                constraints: BoxConstraints(maxHeight: 300), // Limit height with scroll
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                      columnSpacing: 20,
-                      headingRowHeight: 50,
-                      dataRowHeight: 40,
-                      headingRowColor: MaterialStateProperty.all(Color(0xFFF9FAFB)),
-                      columns: [
-                        DataColumn(
-                          label: Container(
-                            width: 250,
-                            child: Text('Expense Item', style: TextStyle(fontWeight: FontWeight.bold)),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text('Morning', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                          numeric: true,
-                        ),
-                        DataColumn(
-                          label: Text('Evening', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                          numeric: true,
-                        ),
-                        DataColumn(
-                          label: Text('Night', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                          numeric: true,
-                        ),
-                        DataColumn(
-                          label: Text('Total', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                          numeric: true,
-                        ),
-                      ],
-                      rows: [
-                        // Expense rows
-                        for (var expense in expenses)
-                          DataRow(
-                            cells: [
-                              DataCell(
-                                Container(
-                                  width: 250,
-                                  child: Text(
-                                    expense['service_name'] as String,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Text(
-                                    'Rs ${_formatAmount(expense['morning'] as double)}',
-                                    style: TextStyle(
-                                      color: Color(0xFFD97706),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Text(
-                                    'Rs ${_formatAmount(expense['evening'] as double)}',
-                                    style: TextStyle(
-                                      color: Color(0xFFD97706),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Text(
-                                    'Rs ${_formatAmount(expense['night'] as double)}',
-                                    style: TextStyle(
-                                      color: Color(0xFFD97706),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFFFFF4E6),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'Rs ${_formatAmount(expense['total'] as double)}',
-                                      style: TextStyle(
-                                        color: Color(0xFFD97706),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                        // Expenses totals row
-                        if (expenses.isNotEmpty)
-                          DataRow(
-                            color: MaterialStateProperty.all(Color(0xFFFEF3C7)),
-                            cells: [
-                              DataCell(
-                                Text(
-                                  'EXPENSES TOTAL',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFFD97706),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'Rs ${_formatAmount(expMorningTotal)}',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFFD97706),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'Rs ${_formatAmount(expEveningTotal)}',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFFD97706),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'Rs ${_formatAmount(expNightTotal)}',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Center(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFFD97706),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'Rs ${_formatAmount(expGrandTotal)}',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        SizedBox(height: 16),
-
-
-      ],
+        );
+      },
     );
   }
-
-
 // get month
   String _getMonthName(int month) {
     final months = [
@@ -3188,11 +3275,74 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
       print('   Loading state: ${provider.isLoadingNew}');
       print('   Error: ${provider.errorMessageNew}');
       print('   Yearly summary: ${provider.yearlySummary != null ? "Available" : "NULL"}');
+
+      // NEW: Check which method loaded the data
       if (provider.yearlySummary != null) {
-        print('   Monthly breakdown count: ${(provider.yearlySummary!['monthly_breakdown'] as List).length}');
+        print('📊 Yearly Summary Keys: ${provider.yearlySummary!.keys}');
+
+        if (provider.yearlySummary!.containsKey('monthly_breakdown')) {
+          final breakdown = provider.yearlySummary!['monthly_breakdown'] as List;
+          print('📅 Monthly breakdown length: ${breakdown.length}');
+
+          // Check if data has service_data
+          if (breakdown.isNotEmpty) {
+            final firstMonth = breakdown[0];
+            if (firstMonth is Map) {
+              print('📊 First month data keys: ${firstMonth.keys}');
+              if (firstMonth.containsKey('service_data')) {
+                final serviceData = firstMonth['service_data'] as Map<String, dynamic>;
+                print('📈 First month has service_data with ${serviceData.length} services');
+              }
+            }
+          }
+        }
+
+        // Check combinedServiceBreakdown
+        print('🔍 Combined services count: ${provider.combinedServiceBreakdown.length}');
+        if (provider.combinedServiceBreakdown.isNotEmpty) {
+          final firstService = provider.combinedServiceBreakdown[0];
+          print('📊 First service: ${firstService['service_name']} - Rs ${firstService['total']}');
+        }
       }
     }
 
+    // Calculate total consultations for the year
+    // Calculate totals
+    double totalConsultationAmount = 0.0;
+    int totalConsultationCount = 0;
+    double totalExpensesAmount = 0.0;
+    double totalOpdAmount = 0.0;
+
+    if (provider != null && provider.yearlySummary != null) {
+      // Calculate OPD total from ALL services (not filtered)
+      for (var service in provider.combinedServiceBreakdown) {
+        if (service['type'] == 'OPD') {
+          totalOpdAmount += (service['total'] as num?)?.toDouble() ?? 0.0;
+        }
+      }
+
+      // Calculate consultation amount from ALL services
+      for (var service in provider.combinedServiceBreakdown) {
+        if (service['type'] == 'CONSULTATION') {
+          totalConsultationAmount += (service['total'] as num?)?.toDouble() ?? 0.0;
+        }
+      }
+
+      // Calculate expenses amount from ALL services
+      for (var service in provider.combinedServiceBreakdown) {
+        if (service['type'] == 'EXPENSE') {
+          totalExpensesAmount += (service['total'] as num?)?.toDouble() ?? 0.0;
+        }
+      }
+
+      // Calculate consultation count from monthly breakdown
+      final monthlyBreakdown = provider.yearlySummary!['monthly_breakdown'] as List<dynamic>?;
+      if (monthlyBreakdown != null) {
+        for (var monthData in monthlyBreakdown) {
+          totalConsultationCount += (monthData['total_opd_count'] as int? ?? 0);
+        }
+      }
+    }
     return Container(
       padding: EdgeInsets.all(isTablet ? 20 : 16),
       decoration: BoxDecoration(
@@ -3214,6 +3364,13 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                   fontSize: isTablet ? 18 : 16,
                   fontWeight: FontWeight.w700,
                 ),
+              ),
+              Spacer(),
+              // Refresh button
+              IconButton(
+                onPressed: () => provider?.fetchYearlySummary(),
+                icon: Icon(Icons.refresh, color: Color(0xFF037389)),
+                tooltip: 'Refresh Data',
               ),
             ],
           ),
@@ -3273,7 +3430,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Yearly summary cards
+                  // Yearly summary cards - Updated with OPD Total (replaced Net Amount)
                   Row(
                     children: [
                       Expanded(
@@ -3302,21 +3459,19 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                     children: [
                       Expanded(
                         child: _buildSummaryCard(
-                          'Net Amount',
-                          (provider.yearlySummary!['net_amount'] ?? 0).toDouble(),
-                          Icons.account_balance,
-                          (provider.yearlySummary!['net_amount'] ?? 0).toDouble() >= 0
-                              ? Color(0xFF10B981)
-                              : Colors.red,
+                          'OPD Total', // REPLACED: Changed from "Net Amount" to "OPD Total"
+                          totalOpdAmount, // REPLACED: Changed from net amount to OPD total
+                          Icons.medical_services, // REPLACED: Changed icon
+                          Color(0xFF10B981), // Changed color to green for OPD
                           isTablet,
                         ),
                       ),
                       SizedBox(width: 16),
                       Expanded(
                         child: _buildSummaryCard(
-                          'Total OPD',
-                          (provider.yearlySummary!['total_opd_count'] ?? 0).toDouble(),
-                          Icons.people,
+                          'Total Consultation',
+                          totalConsultationAmount,
+                          Icons.monetization_on,
                           Color(0xFF8B5CF6),
                           isTablet,
                         ),
@@ -3325,29 +3480,72 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                   ),
                   SizedBox(height: 24),
 
-                  // Service-wise Monthly Pivot Table
-                  Text(
-                    'Service-wise Monthly Pivot Table',
-                    style: TextStyle(
-                      fontSize: isTablet ? 18 : 16,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF374151),
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Services (Left Column) vs Months (Top Row)',
-                    style: TextStyle(
-                      fontSize: isTablet ? 14 : 12,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  SizedBox(height: 16),
+                  // Filter Controls
+                  _buildYearlyFilters(provider, isTablet),
 
-                  // Pivot Table
-                  _buildServiceMonthPivotTable(provider, isTablet),
+                  SizedBox(height: 24),
 
-                  SizedBox(height: 10),
+                  // Show appropriate table based on selected view
+                  if (provider.selectedYearlyView == 'All' || provider.selectedYearlyView == 'OPD') ...[
+                    // OPD Service-wise Monthly Pivot Table
+                    Text(
+                      'OPD Revenue ${provider.selectedShiftFilter != 'All' ? '(${provider.selectedShiftFilter} Shift)' : ''}',
+                      style: TextStyle(
+                        fontSize: isTablet ? 18 : 16,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF43A047),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+
+                    SizedBox(height: 16),
+
+                    // OPD Pivot Table
+                    _buildOpdServiceMonthPivotTable(provider, isTablet),
+
+                    SizedBox(height: 32),
+                  ],
+
+                  if (provider.selectedYearlyView == 'All' || provider.selectedYearlyView == 'CONSULTATION') ...[
+                    // Consultation Monthly Pivot Table
+                    Text(
+                      'Consultations ${provider.selectedShiftFilter != 'All' ? '(${provider.selectedShiftFilter} Shift)' : ''}',
+                      style: TextStyle(
+                        fontSize: isTablet ? 18 : 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.deepPurpleAccent,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+
+
+                    SizedBox(height: 16),
+
+                    // Consultation Pivot Table
+                    _buildConsultationMonthPivotTable(provider, isTablet),
+
+                    SizedBox(height: 32),
+                  ],
+
+                  if (provider.selectedYearlyView == 'All' || provider.selectedYearlyView == 'EXPENSE') ...[
+                    // Expenses Monthly Pivot Table
+                    Text(
+                      'Expenses  ${provider.selectedShiftFilter != 'All' ? '(${provider.selectedShiftFilter} Shift)' : ''}',
+                      style: TextStyle(
+                        fontSize: isTablet ? 18 : 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.red,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+
+                    SizedBox(height: 16),
+
+                    // Expenses Pivot Table
+                    _buildExpensesMonthPivotTable(provider, isTablet),
+
+                    SizedBox(height: 10),
+                  ],
                 ],
               )
             // Show empty state
@@ -3368,7 +3566,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                         ),
                         SizedBox(height: 16),
                         ElevatedButton(
-                          onPressed: () => provider.fetchYearlySummary(),
+                          onPressed: () => provider.fetchYearlyReport(),
                           child: Text('Load Yearly Summary'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF037389),
@@ -3403,20 +3601,395 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
     );
   }
 
-  Widget _buildServiceMonthPivotTable(EnhancedShiftReportProvider provider, bool isTablet) {
+  Widget _buildYearlyFilters(EnhancedShiftReportProvider provider, bool isTablet) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Color(0xFFF9FAFB),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Filters',
+                style: TextStyle(
+                  fontSize: isTablet ? 16 : 14,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF374151),
+                ),
+              ),
+              if (provider.selectedYearlyView != 'All' || provider.selectedShiftFilter != 'All')
+                GestureDetector(
+                  onTap: () => provider.resetYearlyFilters(),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFFEE2E2),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.close, size: 14, color: Color(0xFFDC2626)),
+                        SizedBox(width: 4),
+                        Text(
+                          'Clear Filters',
+                          style: TextStyle(
+                            fontSize: isTablet ? 12 : 11,
+                            color: Color(0xFFDC2626),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          SizedBox(height: 16),
+
+          // Filter dropdowns in a row
+          Row(
+            children: [
+              Expanded(
+                child: _buildFilterDropdown(
+                  label: 'View Type',
+                  value: provider.selectedYearlyView,
+                  items: [
+                    DropdownMenuItem(
+                      value: 'All',
+                      child: Row(
+                        children: [
+                          // Icon(Icons.dashboard, size: 18, color: Color(0xFF037389)),
+                          SizedBox(width: 8),
+                          Text('All'),
+                        ],
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'OPD',
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Icon(Icons.medical_services, size: 18, color: Color(0xFF10B981)),
+                          ),
+                          SizedBox(width: 8),
+                          Text('OPD'),
+                        ],
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'CONSULTATION',
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 4),
+                            child: Icon(Icons.person, size: 18, color: Color(0xFF8B5CF6)),
+                          ),
+                          SizedBox(width: 4),
+                          Text('Consultations'),
+                        ],
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'EXPENSE',
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 4),
+                            child: Icon(Icons.money_off, size: 18, color: Color(0xFFD97706)),
+                          ),
+                          SizedBox(width: 8),
+                          Text('Expenses'),
+                        ],
+                      ),
+                    ),
+                  ],
+                  onChanged: (value) => provider.setSelectedYearlyView(value.toString()),
+                  isTablet: isTablet,
+                ),
+              ),
+
+              SizedBox(width: 16),
+
+              Expanded(
+                child: _buildFilterDropdown(
+                  label: 'Shift',
+                  value: provider.selectedShiftFilter,
+                  items: [
+                    DropdownMenuItem(
+                      value: 'All',
+                      child: Row(
+                        children: [
+                          Icon(Icons.all_inclusive, size: 18, color: Color(0xFF6B7280)),
+                          SizedBox(width: 8),
+                          Text('All Shifts'),
+                        ],
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Morning',
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 6),
+                            child: Icon(Icons.wb_sunny, size: 18, color: Color(0xFFF59E0B)),
+                          ),
+                          SizedBox(width: 8),
+                          Text('Morning'),
+                        ],
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Evening',
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 6),
+                            child: Icon(Icons.nights_stay, size: 18, color: Color(0xFF8B5CF6)),
+                          ),
+                          SizedBox(width: 8),
+                          Text('Evening'),
+                        ],
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Night',
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 6),
+                            child: Icon(Icons.dark_mode, size: 18, color: Color(0xFF1F2937)),
+                          ),
+                          SizedBox(width: 8),
+                          Text('Night Shift'),
+                        ],
+                      ),
+                    ),
+                  ],
+                  onChanged: (value) => provider.setSelectedShiftFilter(value.toString()),
+                  isTablet: isTablet,
+                ),
+              ),
+            ],
+          ),
+
+          // Active filters summary
+          SizedBox(height: 12),
+          if (provider.selectedYearlyView != 'All' || provider.selectedShiftFilter != 'All')
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Color(0xFFEFF6FF),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: Color(0xFFBFDBFE)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.filter_alt, size: 16, color: Color(0xFF3B82F6)),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Showing: ${_getViewTypeLabel(provider.selectedYearlyView)} ${provider.selectedShiftFilter != 'All' ? '(${provider.selectedShiftFilter} Shift)' : ''}',
+                      style: TextStyle(
+                        fontSize: isTablet ? 13 : 12,
+                        color: Color(0xFF374151),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  String _getViewTypeLabel(String viewType) {
+    switch (viewType) {
+      case 'All':
+        return 'All Data';
+      case 'OPD':
+        return 'OPD Services Only';
+      case 'CONSULTATION':
+        return 'Consultations Only';
+      case 'EXPENSE':
+        return 'Expenses Only';
+      default:
+        return 'All Data';
+    }
+  }
+
+  Widget _buildFilterDropdown({
+    required String label,
+    required String value,
+    required List<DropdownMenuItem<String>> items,
+    required Function(String?) onChanged,
+    required bool isTablet,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: isTablet ? 14 : 13,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF6B7280),
+          ),
+        ),
+        SizedBox(height: 6),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Color(0xFFD1D5DB)),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: value,
+              items: items,
+              onChanged: onChanged,
+              isExpanded: true,
+              icon: Icon(Icons.arrow_drop_down, color: Color(0xFF6B7280)),
+              style: TextStyle(
+                fontSize: isTablet ? 14 : 13,
+                color: Color(0xFF374151),
+                fontWeight: FontWeight.w500,
+              ),
+              dropdownColor: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              elevation: 2,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildExpensesMonthPivotTable(EnhancedShiftReportProvider provider, bool isTablet) {
     final yearlySummary = provider.yearlySummary!;
     final monthlyBreakdown = (yearlySummary['monthly_breakdown'] as List<dynamic>);
 
-    // Get services from combined breakdown (if available)
-    final services = provider.combinedServiceBreakdown;
+    // Use filteredServices instead of combinedServiceBreakdown to respect shift filters
+    final expenseServices = provider.filteredServices
+        .where((service) => service['type'] == 'EXPENSE')
+        .toList();
 
     // Get month names for header
     final monthNames = monthlyBreakdown
         .map<String>((m) => m['month_name'] as String)
         .toList();
 
-    // Add "Service" column and month columns
-    final List<String> columns = ['Service', ...monthNames, 'Year Total'];
+    // Add "Expense Head" column and month columns
+    final List<String> columns = ['Expense Head', ...monthNames, 'Year Total'];
+
+    // Calculate totals for each month
+    Map<int, double> monthlyTotals = {};
+    Map<String, double> rowTotals = {};
+
+    // Initialize totals
+    for (int i = 1; i <= 12; i++) {
+      monthlyTotals[i] = 0.0;
+    }
+
+    // Calculate monthly totals and row totals for expenses
+    for (var service in expenseServices) {
+      final expenseName = service['service_name'].toString();
+
+      // Use appropriate total based on shift filter
+      double serviceTotal = 0.0;
+
+      if (provider.selectedShiftFilter != 'All') {
+        // Use shift-filtered total
+        serviceTotal = (service['shift_filtered_total'] as num?)?.toDouble() ?? 0.0;
+
+        // If not found, try to calculate from shift-specific monthly amounts
+        if (serviceTotal == 0.0 && service.containsKey('filtered_monthly_amounts')) {
+          final filteredAmounts = service['filtered_monthly_amounts'] as Map<String, dynamic>?;
+          if (filteredAmounts != null) {
+            filteredAmounts.forEach((key, value) {
+              if (value is num) {
+                serviceTotal += value.toDouble();
+              }
+            });
+          }
+        }
+      } else {
+        // Use regular total
+        serviceTotal = (service['total'] as num?)?.toDouble() ?? 0.0;
+      }
+
+      rowTotals[expenseName] = serviceTotal;
+
+      // Get monthly amounts based on shift filter
+      Map<String, dynamic>? monthlyAmounts;
+
+      if (provider.selectedShiftFilter != 'All') {
+        // Check for shift-filtered amounts
+        monthlyAmounts = service['filtered_monthly_amounts'] as Map<String, dynamic>?;
+
+        // If not found, try to get from expense-specific shift amounts
+        if (monthlyAmounts == null) {
+          switch (provider.selectedShiftFilter.toLowerCase()) {
+            case 'morning':
+              monthlyAmounts = service['morning_amounts'] as Map<String, dynamic>?;
+              break;
+            case 'evening':
+              monthlyAmounts = service['evening_amounts'] as Map<String, dynamic>?;
+              break;
+            case 'night':
+              monthlyAmounts = service['night_amounts'] as Map<String, dynamic>?;
+              break;
+          }
+        }
+      }
+
+      // If no shift-specific amounts, use regular monthly amounts
+      monthlyAmounts ??= service['monthly_amounts'] as Map<String, dynamic>?;
+
+      for (int month = 1; month <= 12; month++) {
+        final monthKey = 'month_$month';
+        double monthAmount = 0.0;
+
+        if (monthlyAmounts != null && monthlyAmounts.containsKey(monthKey)) {
+          final amount = monthlyAmounts[monthKey];
+          if (amount is num) {
+            monthAmount = amount.toDouble();
+          }
+        }
+
+        // Add to monthly total
+        monthlyTotals[month] = (monthlyTotals[month] ?? 0.0) + monthAmount;
+      }
+    }
+
+    // Calculate grand total for expenses
+    double grandTotal = expenseServices.fold(0.0, (sum, service) {
+      if (provider.selectedShiftFilter != 'All') {
+        double shiftTotal = (service['shift_filtered_total'] as num?)?.toDouble() ?? 0.0;
+
+        if (shiftTotal == 0.0 && service.containsKey('filtered_monthly_amounts')) {
+          final filteredAmounts = service['filtered_monthly_amounts'] as Map<String, dynamic>?;
+          if (filteredAmounts != null) {
+            filteredAmounts.forEach((key, value) {
+              if (value is num) {
+                shiftTotal += value.toDouble();
+              }
+            });
+          }
+        }
+        return sum + shiftTotal;
+      } else {
+        return sum + ((service['total'] as num?)?.toDouble() ?? 0.0);
+      }
+    });
 
     return Container(
       decoration: BoxDecoration(
@@ -3427,16 +4000,16 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
         scrollDirection: Axis.horizontal,
         child: Column(
           children: [
-            // Header Row - Months
+            // Header Row - Months with Shift Indicator
             Container(
               color: Color(0xFFF9FAFB),
               child: Row(
                 children: columns.map((columnName) {
-                  final isServiceColumn = columnName == 'Service';
+                  final isExpenseColumn = columnName == 'Expense Head';
                   final isTotalColumn = columnName == 'Year Total';
 
                   return Container(
-                    width: isServiceColumn ? 180 : 200,
+                    width: isExpenseColumn ? 180 : 200,
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       border: Border(
@@ -3445,14 +4018,28 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       ),
                     ),
                     child: Center(
-                      child: Text(
-                        columnName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: isTablet ? 14 : 13,
-                          color: Color(0xFF374151),
-                        ),
-                        textAlign: TextAlign.center,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            columnName,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: isTablet ? 14 : 13,
+                              color: Color(0xFF374151),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          if (provider.selectedShiftFilter != 'All' && !isExpenseColumn && !isTotalColumn)
+                            Text(
+                              '(${provider.selectedShiftFilter})',
+                              style: TextStyle(
+                                fontSize: isTablet ? 10 : 9,
+                                color: _getShiftColor(provider.selectedShiftFilter),
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   );
@@ -3460,18 +4047,36 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
               ),
             ),
 
-            // Data Rows - Services
-            if (services.isNotEmpty)
-              ...services.map((service) {
-                final serviceName = service['service_name'].toString();
-                final isOpd = service['type'] == 'OPD';
-                final serviceTotal = (service['total'] as num?)?.toDouble() ?? 0.0;
+            // Data Rows - Expense Heads
+            if (expenseServices.isNotEmpty)
+              ...expenseServices.map((service) {
+                final expenseName = service['service_name'].toString();
+
+                // Determine which total to use based on shift filter
+                double serviceTotal = 0.0;
+
+                if (provider.selectedShiftFilter != 'All') {
+                  serviceTotal = (service['shift_filtered_total'] as num?)?.toDouble() ?? 0.0;
+
+                  if (serviceTotal == 0.0 && service.containsKey('filtered_monthly_amounts')) {
+                    final filteredAmounts = service['filtered_monthly_amounts'] as Map<String, dynamic>?;
+                    if (filteredAmounts != null) {
+                      filteredAmounts.forEach((key, value) {
+                        if (value is num) {
+                          serviceTotal += value.toDouble();
+                        }
+                      });
+                    }
+                  }
+                } else {
+                  serviceTotal = (service['total'] as num?)?.toDouble() ?? 0.0;
+                }
 
                 return Container(
-                  color: services.indexOf(service) % 2 == 0 ? Colors.white : Color(0xFFF9FAFB),
+                  color: expenseServices.indexOf(service) % 2 == 0 ? Colors.white : Color(0xFFF9FAFB),
                   child: Row(
                     children: [
-                      // Service Name Column
+                      // Expense Name Column with Shift Indicator
                       Container(
                         width: 180,
                         padding: EdgeInsets.all(12),
@@ -3485,31 +4090,59 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              serviceName,
+                              expenseName,
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: isTablet ? 14 : 13,
-                                color: isOpd ? Color(0xFF037389) : Color(0xFFD97706),
+                                color: Color(0xFFD97706),
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                             SizedBox(height: 4),
-                            Text(
-                              isOpd ? 'OPD Service' : 'Expense',
-                              style: TextStyle(
-                                fontSize: isTablet ? 11 : 10,
-                                color: Colors.grey[600],
-                                fontStyle: FontStyle.italic,
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  'Expense',
+                                  style: TextStyle(
+                                    fontSize: isTablet ? 11 : 10,
+                                    color: Colors.grey[600],
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                                if (provider.selectedShiftFilter != 'All')
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 8),
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: _getShiftColor(provider.selectedShiftFilter).withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(4),
+                                        border: Border.all(
+                                          color: _getShiftColor(provider.selectedShiftFilter).withOpacity(0.3),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        provider.selectedShiftFilter,
+                                        style: TextStyle(
+                                          fontSize: isTablet ? 9 : 8,
+                                          color: _getShiftColor(provider.selectedShiftFilter),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                           ],
                         ),
                       ),
 
-                      // Month Columns - Placeholder for now
+                      // Month Columns with Shift-specific amounts
                       ...monthlyBreakdown.map((monthData) {
                         final month = monthData['month'] as int;
+                        final monthAmount = _getServiceMonthAmount(provider, month, expenseName, false);
 
                         return Container(
                           width: 200,
@@ -3523,89 +4156,37 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              // OPD Amount (if OPD service)
-                              if (isOpd)
-                                Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.monetization_on, size: 14, color: Color(0xFF10B981)),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          'Rs ${_formatAmount(_getServiceMonthAmount(provider, month, serviceName, isOpd))}',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: isTablet ? 12 : 11,
-                                            color: Color(0xFF10B981),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      'OPD',
-                                      style: TextStyle(
-                                        fontSize: isTablet ? 10 : 9,
-                                        color: Color(0xFF10B981),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                              // Expense Amount (if expense or both)
-                              if (!isOpd)
-                                Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.money_off, size: 14, color: Color(0xFFDC2626)),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          'Rs ${_formatAmount(_getServiceMonthAmount(provider, month, serviceName, isOpd))}',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: isTablet ? 12 : 11,
-                                            color: Color(0xFFDC2626),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      'Expense',
-                                      style: TextStyle(
-                                        fontSize: isTablet ? 10 : 9,
-                                        color: Color(0xFFDC2626),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                              // Details button
-                              SizedBox(height: 8),
-                              ElevatedButton(
-                                onPressed: () {
-                                  _showServiceMonthDetails(provider, month, serviceName, isOpd);
-                                },
-                                child: Text(
-                                  'Details',
-                                  style: TextStyle(fontSize: isTablet ? 11 : 10),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: isOpd ? Color(0xFF10B981) : Color(0xFFDC2626),
-                                  foregroundColor: Colors.white,
-                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                  minimumSize: Size(0, 0),
+                              Text(
+                                'Rs ${_formatAmount(monthAmount)}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: isTablet ? 12 : 11,
+                                  color: monthAmount > 0 ? Color(0xFFDC2626) : Colors.grey[400],
                                 ),
                               ),
+                              if (monthAmount > 0 && provider.selectedShiftFilter != 'All')
+                                SizedBox(height: 4),
+                              if (monthAmount > 0 && provider.selectedShiftFilter != 'All')
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: _getShiftColor(provider.selectedShiftFilter).withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(3),
+                                  ),
+                                  child: Text(
+                                    provider.selectedShiftFilter,
+                                    style: TextStyle(
+                                      fontSize: isTablet ? 8 : 7,
+                                      color: _getShiftColor(provider.selectedShiftFilter),
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                         );
                       }).toList(),
 
-                      // Year Total Column
+                      // Year Total Column (Row Total) with Shift Indicator
                       Container(
                         width: 200,
                         padding: EdgeInsets.all(12),
@@ -3623,17 +4204,27 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: isTablet ? 14 : 13,
-                                color: isOpd ? Color(0xFF047857) : Color(0xFFB45309),
+                                color: serviceTotal > 0 ? Color(0xFFB45309) : Colors.grey[400],
                               ),
                             ),
-                            SizedBox(height: 4),
-                            Text(
-                              isOpd ? 'OPD Total' : 'Expense Total',
-                              style: TextStyle(
-                                fontSize: isTablet ? 11 : 10,
-                                color: Colors.grey[600],
+                            if (serviceTotal > 0 && provider.selectedShiftFilter != 'All')
+                              SizedBox(height: 4),
+                            if (serviceTotal > 0 && provider.selectedShiftFilter != 'All')
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: _getShiftColor(provider.selectedShiftFilter).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  '${provider.selectedShiftFilter} Total',
+                                  style: TextStyle(
+                                    fontSize: isTablet ? 10 : 9,
+                                    color: _getShiftColor(provider.selectedShiftFilter),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),
@@ -3642,37 +4233,193 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 );
               }).toList()
             else
-            // Fallback to regular monthly breakdown
               Container(
-                height: 300,
+                height: 150,
                 child: Center(
-                  child: Text(
-                    'No service breakdown data available',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.money_off,
+                        size: 40,
+                        color: Colors.grey[400],
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        provider.selectedShiftFilter != 'All'
+                            ? 'No expense data for ${provider.selectedShiftFilter} shift'
+                            : 'No expense data available',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
 
-            // Legend
+            // Expenses Column Totals Row (Monthly Totals) with Shift Indicator
+            Container(
+              color: Color(0xFFFEF3C7),
+              child: Row(
+                children: [
+                  // Label Column
+                  Container(
+                    width: 180,
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        right: BorderSide(color: Color(0xFFE5E7EB)),
+                        bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          provider.selectedShiftFilter != 'All'
+                              ? '${provider.selectedShiftFilter} Expense Totals'
+                              : 'Expense Monthly Totals',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isTablet ? 14 : 13,
+                            color: provider.selectedShiftFilter != 'All'
+                                ? _getShiftColor(provider.selectedShiftFilter)
+                                : Color(0xFFD97706),
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          provider.selectedShiftFilter != 'All'
+                              ? 'Sum of ${provider.selectedShiftFilter} shift'
+                              : 'Sum of expenses',
+                          style: TextStyle(
+                            fontSize: isTablet ? 10 : 9,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Month Column Totals
+                  ...monthlyBreakdown.map((monthData) {
+                    final month = monthData['month'] as int;
+                    final monthTotal = monthlyTotals[month] ?? 0.0;
+
+                    return Container(
+                      width: 200,
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          right: BorderSide(color: Color(0xFFE5E7EB)),
+                          bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Rs ${_formatAmount(monthTotal)}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: isTablet ? 12 : 11,
+                              color: provider.selectedShiftFilter != 'All'
+                                  ? _getShiftColor(provider.selectedShiftFilter)
+                                  : Color(0xFFD97706),
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            provider.selectedShiftFilter != 'All'
+                                ? '${provider.selectedShiftFilter} ${monthData['month_name']}'
+                                : 'Month ${monthData['month_name']}',
+                            style: TextStyle(
+                              fontSize: isTablet ? 10 : 9,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+
+                  // Expenses Grand Total Column with Shift Indicator
+                  Container(
+                    width: 200,
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        right: BorderSide(color: Color(0xFFE5E7EB)),
+                        bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Rs ${_formatAmount(grandTotal)}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isTablet ? 14 : 13,
+                            color: provider.selectedShiftFilter != 'All'
+                                ? _getShiftColor(provider.selectedShiftFilter)
+                                : Color(0xFFB45309),
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          provider.selectedShiftFilter != 'All'
+                              ? '${provider.selectedShiftFilter} Grand Total'
+                              : 'Expenses Grand Total',
+                          style: TextStyle(
+                            fontSize: isTablet ? 11 : 10,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Legend with Shift Indicator
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
                 color: Color(0xFFF3F4F6),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Wrap(
+                spacing: 16,
+                runSpacing: 8,
+                alignment: WrapAlignment.center,
                 children: [
-                  _buildLegendItem('OPD Services', Color(0xFF037389)),
-                  SizedBox(width: 20),
-                  _buildLegendItem('OPD Revenue', Color(0xFF10B981)),
-                  SizedBox(width: 20),
-                  _buildLegendItem('Expenses', Color(0xFFD97706)),
-                  SizedBox(width: 20),
+                  _buildLegendItem('Expense Heads', Color(0xFFD97706)),
                   _buildLegendItem('Expense Amount', Color(0xFFDC2626)),
+                  if (provider.selectedShiftFilter != 'All')
+                    _buildLegendItem(
+                      '${provider.selectedShiftFilter} Shift',
+                      _getShiftColor(provider.selectedShiftFilter),
+                    ),
+                  _buildLegendItem(
+                    provider.selectedShiftFilter != 'All'
+                        ? '${provider.selectedShiftFilter} Totals'
+                        : 'Monthly Expense Totals',
+                    provider.selectedShiftFilter != 'All'
+                        ? _getShiftColor(provider.selectedShiftFilter)
+                        : Color(0xFFD97706),
+                  ),
+                  _buildLegendItem(
+                    provider.selectedShiftFilter != 'All'
+                        ? '${provider.selectedShiftFilter} Grand Total'
+                        : 'Expenses Grand Total',
+                    provider.selectedShiftFilter != 'All'
+                        ? _getShiftColor(provider.selectedShiftFilter)
+                        : Color(0xFFB45309),
+                  ),
                 ],
               ),
             ),
@@ -3681,18 +4428,645 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
       ),
     );
   }
+  // opd serviecs
+  Widget _buildOpdServiceMonthPivotTable(EnhancedShiftReportProvider provider, bool isTablet) {
+    final yearlySummary = provider.yearlySummary!;
+    final monthlyBreakdown = (yearlySummary['monthly_breakdown'] as List<dynamic>);
+
+    // Use FILTERED services instead of all OPD services
+    final filteredServices = provider.filteredServices
+        .where((service) => service['type'] == 'OPD')
+        .toList();
+
+    // Get month names for header
+    final monthNames = monthlyBreakdown
+        .map<String>((m) => m['month_name'] as String)
+        .toList();
+
+    // Add "Service" column and month columns
+    final List<String> columns = ['OPD Service', ...monthNames, 'Year Total'];
+
+    // Calculate totals for each month - RESPECT SHIFT FILTER
+    Map<int, double> monthlyTotals = {};
+    Map<String, double> rowTotals = {};
+    Map<int, Map<String, double>> monthlyServiceTotals = {};
+
+    // Initialize totals
+    for (int i = 1; i <= 12; i++) {
+      monthlyTotals[i] = 0.0;
+      monthlyServiceTotals[i] = {};
+    }
+
+    // Calculate monthly totals and row totals for OPD services - RESPECT SHIFT FILTER
+    for (var service in filteredServices) {
+      final serviceName = service['service_name'].toString();
+      // Use shift-filtered total if available, otherwise use regular total
+      double serviceTotal = 0.0;
+
+      if (provider.selectedShiftFilter != 'All') {
+        // Use shift-filtered total
+        serviceTotal = (service['shift_filtered_total'] as num?)?.toDouble() ?? 0.0;
+
+        // If shift_filtered_total doesn't exist, calculate from shift-specific monthly amounts
+        if (serviceTotal == 0.0) {
+          final shiftKey = '${provider.selectedShiftFilter.toLowerCase()}_amounts';
+          final shiftAmounts = service[shiftKey] as Map<String, dynamic>?;
+          if (shiftAmounts != null) {
+            shiftAmounts.forEach((key, value) {
+              if (value is num) {
+                serviceTotal += value.toDouble();
+              }
+            });
+          }
+        }
+      } else {
+        // Use regular total
+        serviceTotal = (service['total'] as num?)?.toDouble() ?? 0.0;
+      }
+
+      rowTotals[serviceName] = serviceTotal;
+
+      // Get monthly amounts - RESPECT SHIFT FILTER
+      Map<String, dynamic>? monthlyAmounts;
+
+      if (provider.selectedShiftFilter != 'All') {
+        // Use shift-specific amounts
+        final shiftKey = '${provider.selectedShiftFilter.toLowerCase()}_amounts';
+        monthlyAmounts = service[shiftKey] as Map<String, dynamic>?;
+
+        // If shift-specific amounts don't exist, fall back to filtered_monthly_amounts
+        if (monthlyAmounts == null) {
+          monthlyAmounts = service['filtered_monthly_amounts'] as Map<String, dynamic>?;
+        }
+      }
+
+      // If no shift-specific amounts, use regular monthly amounts
+      monthlyAmounts ??= service['monthly_amounts'] as Map<String, dynamic>?;
+
+      for (int month = 1; month <= 12; month++) {
+        final monthKey = 'month_$month';
+        double monthAmount = 0.0;
+
+        if (monthlyAmounts != null && monthlyAmounts.containsKey(monthKey)) {
+          final amount = monthlyAmounts[monthKey];
+          if (amount is num) {
+            monthAmount = amount.toDouble();
+          }
+        }
+
+        // Add to monthly total
+        monthlyTotals[month] = (monthlyTotals[month] ?? 0.0) + monthAmount;
+
+        // Add to monthly service totals
+        monthlyServiceTotals[month]![serviceName] = monthAmount;
+      }
+    }
+
+    // Calculate grand total - RESPECT SHIFT FILTER
+    double grandTotal = 0.0;
+    if (provider.selectedShiftFilter != 'All') {
+      // Sum all shift-filtered totals
+      for (var service in filteredServices) {
+        double serviceTotal = (service['shift_filtered_total'] as num?)?.toDouble() ?? 0.0;
+        if (serviceTotal == 0.0) {
+          // Calculate from shift-specific monthly amounts
+          final shiftKey = '${provider.selectedShiftFilter.toLowerCase()}_amounts';
+          final shiftAmounts = service[shiftKey] as Map<String, dynamic>?;
+          if (shiftAmounts != null) {
+            shiftAmounts.forEach((key, value) {
+              if (value is num) {
+                serviceTotal += value.toDouble();
+              }
+            });
+          }
+        }
+        grandTotal += serviceTotal;
+      }
+    } else {
+      grandTotal = rowTotals.values.fold(0.0, (sum, value) => sum + value);
+    }
+
+    return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Color(0xFFE5E7EB)),
+        ),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Column(
+            children: [
+              // Header Row - Months with Shift Indicator
+              Container(
+                color: Color(0xFFF9FAFB),
+                child: Row(
+                  children: columns.map((columnName) {
+                    final isServiceColumn = columnName == 'OPD Service';
+                    final isTotalColumn = columnName == 'Year Total';
+
+                    return Container(
+                      width: isServiceColumn ? 180 : 200,
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          right: BorderSide(color: Color(0xFFE5E7EB)),
+                          bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                        ),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              columnName,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: isTablet ? 14 : 13,
+                                color: Color(0xFF374151),
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            if (provider.selectedShiftFilter != 'All' && !isServiceColumn && !isTotalColumn)
+                              Text(
+                                '(${provider.selectedShiftFilter})',
+                                style: TextStyle(
+                                  fontSize: isTablet ? 10 : 9,
+                                  color: _getShiftColor(provider.selectedShiftFilter),
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+
+              // Data Rows - OPD Services
+              if (filteredServices.isNotEmpty)
+                ...filteredServices.map((service) {
+                  final serviceName = service['service_name'].toString();
+                  // Use appropriate total based on shift filter
+                  double serviceTotal = 0.0;
+
+                  if (provider.selectedShiftFilter != 'All') {
+                    serviceTotal = (service['shift_filtered_total'] as num?)?.toDouble() ?? 0.0;
+                    if (serviceTotal == 0.0) {
+                      // Calculate from shift-specific monthly amounts
+                      final shiftKey = '${provider.selectedShiftFilter.toLowerCase()}_amounts';
+                      final shiftAmounts = service[shiftKey] as Map<String, dynamic>?;
+                      if (shiftAmounts != null) {
+                        shiftAmounts.forEach((key, value) {
+                          if (value is num) {
+                            serviceTotal += value.toDouble();
+                          }
+                        });
+                      }
+                    }
+                  } else {
+                    serviceTotal = (service['total'] as num?)?.toDouble() ?? 0.0;
+                  }
+
+                  return Container(
+                    color: filteredServices.indexOf(service) % 2 == 0 ? Colors.white : Color(0xFFF9FAFB),
+                    child: Row(
+                      children: [
+                        // Service Name Column with Shift Indicator
+                        Container(
+                          width: 180,
+                          padding: EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              right: BorderSide(color: Color(0xFFE5E7EB)),
+                              bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                serviceName,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: isTablet ? 14 : 13,
+                                  color: Color(0xFF037389),
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Text(
+                                    'OPD Service',
+                                    style: TextStyle(
+                                      fontSize: isTablet ? 11 : 10,
+                                      color: Colors.grey[600],
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                  if (provider.selectedShiftFilter != 'All')
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 8),
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: _getShiftColor(provider.selectedShiftFilter).withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(4),
+                                          border: Border.all(
+                                            color: _getShiftColor(provider.selectedShiftFilter).withOpacity(0.3),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          provider.selectedShiftFilter,
+                                          style: TextStyle(
+                                            fontSize: isTablet ? 9 : 8,
+                                            color: _getShiftColor(provider.selectedShiftFilter),
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Month Columns with Shift-specific amounts
+                        ...monthlyBreakdown.map((monthData) {
+                          final month = monthData['month'] as int;
+                          final monthAmount = _getServiceMonthAmount(provider, month, serviceName, true);
+
+                          return Container(
+                            width: 200,
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              border: Border(
+                                right: BorderSide(color: Color(0xFFE5E7EB)),
+                                bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Rs ${_formatAmount(monthAmount)}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: isTablet ? 12 : 11,
+                                    color: monthAmount > 0 ? Color(0xFF10B981) : Colors.grey[400],
+                                  ),
+                                ),
+                                if (monthAmount > 0 && provider.selectedShiftFilter != 'All')
+                                  SizedBox(height: 4),
+                                if (monthAmount > 0 && provider.selectedShiftFilter != 'All')
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: _getShiftColor(provider.selectedShiftFilter).withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(3),
+                                    ),
+                                    child: Text(
+                                      provider.selectedShiftFilter,
+                                      style: TextStyle(
+                                        fontSize: isTablet ? 8 : 7,
+                                        color: _getShiftColor(provider.selectedShiftFilter),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+
+                        // Year Total Column (Row Total) with Shift Indicator
+                        Container(
+                          width: 200,
+                          padding: EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              right: BorderSide(color: Color(0xFFE5E7EB)),
+                              bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Rs ${_formatAmount(serviceTotal)}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: isTablet ? 14 : 13,
+                                  color: serviceTotal > 0 ? Color(0xFF047857) : Colors.grey[400],
+                                ),
+                              ),
+                              if (serviceTotal > 0 && provider.selectedShiftFilter != 'All')
+                                SizedBox(height: 4),
+                              if (serviceTotal > 0 && provider.selectedShiftFilter != 'All')
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: _getShiftColor(provider.selectedShiftFilter).withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    '${provider.selectedShiftFilter} Total',
+                                    style: TextStyle(
+                                      fontSize: isTablet ? 10 : 9,
+                                      color: _getShiftColor(provider.selectedShiftFilter),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList()
+              else
+                Container(
+                  height: 150,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.filter_alt_off,
+                          size: 40,
+                          color: Colors.grey[400],
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          provider.selectedShiftFilter != 'All'
+                              ? 'No OPD data for ${provider.selectedShiftFilter} shift'
+                              : 'No OPD service data available',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+              // OPD Column Totals Row (Monthly Totals) with Shift Indicator
+              Container(
+                color: Color(0xFFEFF6FF),
+                child: Row(
+                  children: [
+                    // Label Column
+                    Container(
+                      width: 180,
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          right: BorderSide(color: Color(0xFFE5E7EB)),
+                          bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            provider.selectedShiftFilter != 'All'
+                                ? '${provider.selectedShiftFilter} Monthly Totals'
+                                : 'OPD Monthly Totals',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: isTablet ? 14 : 13,
+                              color: provider.selectedShiftFilter != 'All'
+                                  ? _getShiftColor(provider.selectedShiftFilter)
+                                  : Color(0xFF037389),
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            provider.selectedShiftFilter != 'All'
+                                ? 'Sum of ${provider.selectedShiftFilter} shift'
+                                : 'Sum of OPD services',
+                            style: TextStyle(
+                              fontSize: isTablet ? 10 : 9,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Month Column Totals
+                    ...monthlyBreakdown.map((monthData) {
+                      final month = monthData['month'] as int;
+                      final monthTotal = monthlyTotals[month] ?? 0.0;
+
+                      return Container(
+                        width: 200,
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            right: BorderSide(color: Color(0xFFE5E7EB)),
+                            bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Rs ${_formatAmount(monthTotal)}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: isTablet ? 12 : 11,
+                                color: provider.selectedShiftFilter != 'All'
+                                    ? _getShiftColor(provider.selectedShiftFilter)
+                                    : Color(0xFF037389),
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              provider.selectedShiftFilter != 'All'
+                                  ? '${provider.selectedShiftFilter} ${monthData['month_name']}'
+                                  : 'Month ${monthData['month_name']}',
+                              style: TextStyle(
+                                fontSize: isTablet ? 10 : 9,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+
+                    // OPD Grand Total Column with Shift Indicator
+                    Container(
+                      width: 200,
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          right: BorderSide(color: Color(0xFFE5E7EB)),
+                          bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Rs ${_formatAmount(grandTotal)}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: isTablet ? 14 : 13,
+                              color: provider.selectedShiftFilter != 'All'
+                                  ? _getShiftColor(provider.selectedShiftFilter)
+                                  : Color(0xFF047857),
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            provider.selectedShiftFilter != 'All'
+                                ? '${provider.selectedShiftFilter} Grand Total'
+                                : 'OPD Grand Total',
+                            style: TextStyle(
+                              fontSize: isTablet ? 11 : 10,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Legend with Shift Indicator
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
+                  color: Color(0xFFF3F4F6),
+                ),
+                child: Wrap(
+                  spacing: 16,
+                  runSpacing: 8,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    _buildLegendItem('OPD Services', Color(0xFF037389)),
+                    _buildLegendItem('OPD Revenue', Color(0xFF10B981)),
+                    if (provider.selectedShiftFilter != 'All')
+                      _buildLegendItem(
+                        '${provider.selectedShiftFilter} Shift',
+                        _getShiftColor(provider.selectedShiftFilter),
+                      ),
+                    _buildLegendItem(
+                      provider.selectedShiftFilter != 'All'
+                          ? '${provider.selectedShiftFilter} Totals'
+                          : 'Monthly OPD Totals',
+                      provider.selectedShiftFilter != 'All'
+                          ? _getShiftColor(provider.selectedShiftFilter)
+                          : Color(0xFF037389),
+                    ),
+                    _buildLegendItem(
+                      provider.selectedShiftFilter != 'All'
+                          ? '${provider.selectedShiftFilter} Grand Total'
+                          : 'OPD Grand Total',
+                      provider.selectedShiftFilter != 'All'
+                          ? _getShiftColor(provider.selectedShiftFilter)
+                          : Color(0xFF047857),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )
+    );
+  }
+  Color _getShiftColor(String shift) {
+    switch (shift.toLowerCase()) {
+      case 'morning':
+        return Color(0xFFF59E0B); // Orange for morning
+      case 'evening':
+        return Color(0xFF8B5CF6); // Purple for evening
+      case 'night':
+        return Color(0xFF1F2937); // Dark grey for night
+      default:
+        return Color(0xFF037389); // Default teal
+    }
+  }
+  // Helper method to calculate total by type
+  double _calculateTotalByType(List<Map<String, dynamic>> services, String type) {
+    return services
+        .where((service) => service['type'] == type)
+        .fold(0.0, (sum, service) => sum + ((service['total'] as num?)?.toDouble() ?? 0.0));
+  }
 // Helper method to get service amount for a specific month
   double _getServiceMonthAmount(EnhancedShiftReportProvider provider, int month, String serviceName, bool isOpd) {
-    // Placeholder - you need to implement this based on your data structure
-    // This should fetch the actual amount for this service in this month
-    return 0.0; // Return actual amount
-  }
-// Method to show detailed breakdown
-  void _showServiceMonthDetails(EnhancedShiftReportProvider provider, int month, String serviceName, bool isOpd) {
-    // Fetch and show detailed breakdown
-    print('Showing details for $serviceName in month $month');
+    if (provider.filteredServices.isEmpty) {
+      return 0.0;
+    }
 
-    // You can implement this to show a dialog with shift-wise breakdown
+    // Find the service in filtered breakdown
+    for (var service in provider.filteredServices) {
+      if (service['service_name'] == serviceName) {
+        // Check if it's a consultation service
+        final isConsultation = service['type'] == 'CONSULTATION';
+
+        // Determine which monthly amounts to use based on shift filter
+        Map<String, dynamic>? monthlyAmounts;
+
+        if (provider.selectedShiftFilter != 'All') {
+          // Check for shift-filtered amounts first
+          if (service.containsKey('filtered_monthly_amounts')) {
+            monthlyAmounts = service['filtered_monthly_amounts'] as Map<String, dynamic>?;
+            print('🔍 Using filtered_monthly_amounts for $serviceName');
+          } else if (isConsultation) {
+            // Fall back to consultation-specific shift amounts
+            switch (provider.selectedShiftFilter.toLowerCase()) {
+              case 'morning':
+                monthlyAmounts = service['morning_amounts'] as Map<String, dynamic>?;
+                break;
+              case 'evening':
+                monthlyAmounts = service['evening_amounts'] as Map<String, dynamic>?;
+                break;
+              case 'night':
+                monthlyAmounts = service['night_amounts'] as Map<String, dynamic>?;
+                break;
+            }
+            print('🔍 Using ${provider.selectedShiftFilter.toLowerCase()}_amounts for $serviceName');
+          }
+        }
+
+        // If no shift-specific amounts, use regular monthly amounts
+        if (monthlyAmounts == null) {
+          monthlyAmounts = service['monthly_amounts'] as Map<String, dynamic>?;
+          print('🔍 Using monthly_amounts for $serviceName');
+        }
+
+        if (monthlyAmounts != null) {
+          final monthKey = 'month_$month';
+          final amount = monthlyAmounts[monthKey];
+
+          print('📊 $serviceName - Month $month: $amount');
+
+          if (amount is num) {
+            return amount.toDouble();
+          } else if (amount is double) {
+            return amount;
+          } else if (amount is int) {
+            return amount.toDouble();
+          }
+          return 0.0;
+        }
+
+        print('⚠️ No monthly amounts found for $serviceName');
+        return 0.0;
+      }
+    }
+
+    print('❌ Service $serviceName not found in filteredServices');
+    return 0.0;
   }
 // Helper method for legend items
   Widget _buildLegendItem(String text, Color color) {
@@ -3715,6 +5089,427 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildConsultationMonthPivotTable(EnhancedShiftReportProvider provider, bool isTablet) {
+    final yearlySummary = provider.yearlySummary!;
+    final monthlyBreakdown = (yearlySummary['monthly_breakdown'] as List<dynamic>);
+
+    // Use filteredServices
+    final consultationServices = provider.filteredServices
+        .where((service) => service['type'] == 'CONSULTATION')
+        .toList();
+
+    // Get month names for header
+    final monthNames = monthlyBreakdown
+        .map<String>((m) => m['month_name'] as String)
+        .toList();
+
+    // Add "Doctor" column and month columns
+    final List<String> columns = ['Doctor', ...monthNames, 'Year Total'];
+
+    // Calculate totals for each month
+    Map<int, double> monthlyTotals = {};
+
+    // Initialize totals
+    for (int i = 1; i <= 12; i++) {
+      monthlyTotals[i] = 0.0;
+    }
+
+    // Calculate monthly totals for consultations
+    for (var service in consultationServices) {
+      // Get monthly amounts based on shift filter
+      Map<String, dynamic>? monthlyAmounts;
+
+      if (provider.selectedShiftFilter != 'All') {
+        // Use shift-specific amounts
+        switch (provider.selectedShiftFilter.toLowerCase()) {
+          case 'morning':
+            monthlyAmounts = service['morning_amounts'] as Map<String, dynamic>?;
+            break;
+          case 'evening':
+            monthlyAmounts = service['evening_amounts'] as Map<String, dynamic>?;
+            break;
+          case 'night':
+            monthlyAmounts = service['night_amounts'] as Map<String, dynamic>?;
+            break;
+        }
+      } else {
+        // Use regular monthly amounts
+        monthlyAmounts = service['monthly_amounts'] as Map<String, dynamic>?;
+      }
+
+      if (monthlyAmounts != null) {
+        for (int month = 1; month <= 12; month++) {
+          final monthKey = 'month_$month';
+          double monthAmount = 0.0;
+
+          final amount = monthlyAmounts[monthKey];
+          if (amount is num) {
+            monthAmount = amount.toDouble();
+          }
+
+          // Add to monthly total
+          monthlyTotals[month] = (monthlyTotals[month] ?? 0.0) + monthAmount;
+        }
+      }
+    }
+
+    // Calculate grand total for consultations
+    double grandTotal = consultationServices.fold(0.0, (sum, service) {
+      if (provider.selectedShiftFilter != 'All') {
+        double shiftTotal = 0.0;
+        switch (provider.selectedShiftFilter.toLowerCase()) {
+          case 'morning':
+            shiftTotal = (service['morning_total'] as num?)?.toDouble() ?? 0.0;
+            break;
+          case 'evening':
+            shiftTotal = (service['evening_total'] as num?)?.toDouble() ?? 0.0;
+            break;
+          case 'night':
+            shiftTotal = (service['night_total'] as num?)?.toDouble() ?? 0.0;
+            break;
+        }
+        return sum + shiftTotal;
+      } else {
+        return sum + ((service['total'] as num?)?.toDouble() ?? 0.0);
+      }
+    });
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Color(0xFFE5E7EB)),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Column(
+          children: [
+            // Header Row - Months with Shift Indicator
+            Container(
+              color: Color(0xFFF9FAFB),
+              child: Row(
+                children: columns.map((columnName) {
+                  final isDoctorColumn = columnName == 'Doctor';
+                  final isTotalColumn = columnName == 'Year Total';
+
+                  return Container(
+                    width: isDoctorColumn ? 180 : 200,
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        right: BorderSide(color: Color(0xFFE5E7EB)),
+                        bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                      ),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            columnName,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: isTablet ? 14 : 13,
+                              color: Color(0xFF374151),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          if (provider.selectedShiftFilter != 'All' && !isDoctorColumn && !isTotalColumn)
+                            Text(
+                              '(${provider.selectedShiftFilter})',
+                              style: TextStyle(
+                                fontSize: isTablet ? 10 : 9,
+                                color: _getShiftColor(provider.selectedShiftFilter),
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+
+            // Data Rows - Doctors
+            if (consultationServices.isNotEmpty)
+              ...consultationServices.map((service) {
+                final doctorName = service['service_name'].toString();
+
+                // Determine which total to use based on shift filter
+                double serviceTotal = 0.0;
+
+                if (provider.selectedShiftFilter != 'All') {
+                  switch (provider.selectedShiftFilter.toLowerCase()) {
+                    case 'morning':
+                      serviceTotal = (service['morning_total'] as num?)?.toDouble() ?? 0.0;
+                      break;
+                    case 'evening':
+                      serviceTotal = (service['evening_total'] as num?)?.toDouble() ?? 0.0;
+                      break;
+                    case 'night':
+                      serviceTotal = (service['night_total'] as num?)?.toDouble() ?? 0.0;
+                      break;
+                  }
+                } else {
+                  serviceTotal = (service['total'] as num?)?.toDouble() ?? 0.0;
+                }
+
+                return Container(
+                  color: consultationServices.indexOf(service) % 2 == 0 ? Colors.white : Color(0xFFF9FAFB),
+                  child: Row(
+                    children: [
+                      // Doctor Name Column
+                      Container(
+                        width: 180,
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            right: BorderSide(color: Color(0xFFE5E7EB)),
+                            bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              doctorName,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: isTablet ? 14 : 13,
+                                color: Color(0xFF8B5CF6),
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Consultation',
+                              style: TextStyle(
+                                fontSize: isTablet ? 11 : 10,
+                                color: Colors.grey[600],
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Month Columns
+                      ...monthlyBreakdown.map((monthData) {
+                        final month = monthData['month'] as int;
+                        double monthAmount = 0.0;
+
+                        // Get appropriate month amount based on shift filter
+                        if (provider.selectedShiftFilter != 'All') {
+                          Map<String, dynamic>? shiftAmounts;
+                          switch (provider.selectedShiftFilter.toLowerCase()) {
+                            case 'morning':
+                              shiftAmounts = service['morning_amounts'] as Map<String, dynamic>?;
+                              break;
+                            case 'evening':
+                              shiftAmounts = service['evening_amounts'] as Map<String, dynamic>?;
+                              break;
+                            case 'night':
+                              shiftAmounts = service['night_amounts'] as Map<String, dynamic>?;
+                              break;
+                          }
+
+                          if (shiftAmounts != null) {
+                            final monthKey = 'month_$month';
+                            final amount = shiftAmounts[monthKey];
+                            if (amount is num) {
+                              monthAmount = amount.toDouble();
+                            }
+                          }
+                        } else {
+                          // Use the helper method for "All" shifts
+                          monthAmount = _getServiceMonthAmount(provider, month, doctorName, false);
+                        }
+
+                        return Container(
+                          width: 200,
+                          padding: EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              right: BorderSide(color: Color(0xFFE5E7EB)),
+                              bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Rs ${_formatAmount(monthAmount)}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: isTablet ? 12 : 11,
+                                  color: monthAmount > 0 ? Color(0xFF8B5CF6) : Colors.grey[400],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+
+                      // Year Total Column (Row Total)
+                      Container(
+                        width: 200,
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            right: BorderSide(color: Color(0xFFE5E7EB)),
+                            bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Rs ${_formatAmount(serviceTotal)}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: isTablet ? 14 : 13,
+                                color: serviceTotal > 0 ? Color(0xFF7C3AED) : Colors.grey[400],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList()
+            else
+              Container(
+                height: 150,
+                child: Center(
+                  child: Text(
+                    'No consultation data available',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+
+            // Consultation Column Totals Row (Monthly Totals)
+            Container(
+              color: Color(0xFFF5F3FF),
+              child: Row(
+                children: [
+                  // Label Column
+                  Container(
+                    width: 180,
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        right: BorderSide(color: Color(0xFFE5E7EB)),
+                        bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Consultation Monthly Totals',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isTablet ? 14 : 13,
+                            color: Color(0xFF8B5CF6),
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Sum of consultations',
+                          style: TextStyle(
+                            fontSize: isTablet ? 10 : 9,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Month Column Totals
+                  ...monthlyBreakdown.map((monthData) {
+                    final month = monthData['month'] as int;
+                    final monthTotal = monthlyTotals[month] ?? 0.0;
+
+                    return Container(
+                      width: 200,
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          right: BorderSide(color: Color(0xFFE5E7EB)),
+                          bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Rs ${_formatAmount(monthTotal)}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: isTablet ? 12 : 11,
+                              color: Color(0xFF8B5CF6),
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Month ${monthData['month_name']}',
+                            style: TextStyle(
+                              fontSize: isTablet ? 10 : 9,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+
+                  // Consultation Grand Total Column
+                  Container(
+                    width: 200,
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        right: BorderSide(color: Color(0xFFE5E7EB)),
+                        bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Rs ${_formatAmount(grandTotal)}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isTablet ? 14 : 13,
+                            color: Color(0xFF7C3AED),
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Consultation Grand Total',
+                          style: TextStyle(
+                            fontSize: isTablet ? 11 : 10,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 // Helper widget for summary items

@@ -205,13 +205,36 @@ class DailySummary {
     required this.nightOpdCount,
   });
 }
+
+class YearlyBreakdownItem {
+  final int month;
+  final String shift;
+  final String service;
+  final double amount;
+
+  YearlyBreakdownItem({
+    required this.month,
+    required this.shift,
+    required this.service,
+    required this.amount,
+  });
+
+  factory YearlyBreakdownItem.fromJson(Map<String, dynamic> json) {
+    return YearlyBreakdownItem(
+      month: json['month'] as int,
+      shift: json['shift'] as String,
+      service: json['service'] as String,
+      amount: (json['amount'] as num).toDouble(),
+    );
+  }
+}
 // Main Enhanced Provider that extends your existing functionality
 class EnhancedShiftReportProvider extends ChangeNotifier {
   // API URLs for new features
   static const String _baseUrl = 'https://api.opd.afaqmis.com/api';
   static const String _monthlyReportUrl = '$_baseUrl/shifts/monthly-report';
   static const String _dateRangeReportUrl = '$_baseUrl/shifts/date-range-report';
-  static const String _yearlySummaryUrl = '$_baseUrl/shifts/yearly-summary';
+  static const String _yearlyReportUrl = '$_baseUrl/shifts/yearly-report';
   static const String _detailedBreakdownUrl = '$_baseUrl/shifts/detailed-breakdown';
   // State for new features
   bool _isLoadingNew = false;
@@ -227,6 +250,9 @@ class EnhancedShiftReportProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _opdServiceBreakdown = [];
   List<Map<String, dynamic>> _expensesBreakdown = [];
   List<Map<String, dynamic>> _combinedServiceBreakdown = [];
+  String _selectedYearlyView = 'All'; // 'All', 'OPD', 'Expenses', 'Consultation'
+  String _selectedShiftFilter = 'All'; // 'All', 'Morning', 'Evening', 'Night'
+
 
 
   // Filter states for new features
@@ -257,8 +283,30 @@ class EnhancedShiftReportProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get opdServiceBreakdown => _opdServiceBreakdown;
   List<Map<String, dynamic>> get expensesBreakdown => _expensesBreakdown;
   List<Map<String, dynamic>> get combinedServiceBreakdown => _combinedServiceBreakdown;
+  String get selectedYearlyView => _selectedYearlyView;
+  String get selectedShiftFilter => _selectedShiftFilter;
+
 
   // Setters for new features
+
+  // Setters for filters
+  void setSelectedYearlyView(String view) {
+    _selectedYearlyView = view;
+    notifyListeners();
+  }
+
+  void setSelectedShiftFilter(String shift) {
+    _selectedShiftFilter = shift;
+    notifyListeners();
+  }
+
+  // Reset filters
+  void resetYearlyFilters() {
+    _selectedYearlyView = 'All';
+    _selectedShiftFilter = 'All';
+    notifyListeners();
+  }
+
   void setSelectedFilterType(FilterType type) {
     _selectedFilterType = type;
     notifyListeners();
@@ -289,6 +337,141 @@ class EnhancedShiftReportProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+
+  List<Map<String, dynamic>> get filteredServices {
+    if (_combinedServiceBreakdown.isEmpty) return [];
+
+    final selectedShift = _selectedShiftFilter;
+    final selectedView = _selectedYearlyView;
+    final isAllView = selectedView == 'All';
+    final shiftFiltered = selectedShift != 'All';
+
+    final result = <Map<String, dynamic>>[];
+
+    for (final service in _combinedServiceBreakdown) {
+      final serviceType = service['type'] as String? ?? '';
+      final serviceName = service['service_name'] as String? ?? 'Unknown';
+
+      // 1. Apply view type filter
+      if (!isAllView && serviceType != selectedView.toUpperCase()) {
+        continue;
+      }
+
+      // 2. Apply shift filter
+      if (shiftFiltered) {
+        final shift = selectedShift.toLowerCase();
+
+        // Determine which keys to use for this shift
+        String shiftTotalKey;
+        String shiftAmountsKey;
+
+        switch (shift) {
+          case 'morning':
+            shiftTotalKey = 'morning_total';
+            shiftAmountsKey = 'morning_amounts';
+            break;
+          case 'evening':
+            shiftTotalKey = 'evening_total';
+            shiftAmountsKey = 'evening_amounts';
+            break;
+          case 'night':
+            shiftTotalKey = 'night_total';
+            shiftAmountsKey = 'night_amounts';
+            break;
+          default:
+          // Should not happen, but fallback
+            shiftTotalKey = 'total';
+            shiftAmountsKey = 'monthly_amounts';
+        }
+
+        // Get shift data
+        final shiftTotal = (service[shiftTotalKey] as num?)?.toDouble() ?? 0.0;
+        final shiftAmounts = service[shiftAmountsKey] as Map<String, dynamic>?;
+
+        // Handle different service types
+        if (serviceType == 'CONSULTATION' || serviceType == 'OPD') {
+          // For CONSULTATION and OPD, only include if shift has data
+          if (shiftTotal > 0) {
+            result.add(_createFilteredService(
+              service,
+              shiftTotal,
+              shiftAmounts,
+              selectedShift,
+              true,  // has shift data
+            ));
+          }
+          // If shiftTotal is 0, skip this service for this shift
+        }
+        else if (serviceType == 'EXPENSE') {
+          // Check if expense has shift-specific data
+          final hasShiftSpecificData = service.containsKey(shiftTotalKey) ||
+              (shiftAmounts != null && shiftAmounts.isNotEmpty);
+
+          if (hasShiftSpecificData && shiftTotal > 0) {
+            // Expense WITH shift-specific data
+            result.add(_createFilteredService(
+              service,
+              shiftTotal,
+              shiftAmounts,
+              selectedShift,
+              true,  // has shift data
+            ));
+          }
+          else if (!hasShiftSpecificData) {
+            // Expense WITHOUT shift-specific data - include with note
+            result.add(_addExpenseNote(service));
+          }
+          // If hasShiftSpecificData is true but shiftTotal is 0, skip
+        }
+        else {
+          // For other service types (if any), include if shift has data
+          if (shiftTotal > 0) {
+            result.add(_createFilteredService(
+              service,
+              shiftTotal,
+              shiftAmounts,
+              selectedShift,
+              true,
+            ));
+          }
+        }
+      } else {
+        // No shift filter selected - include all services as-is
+        result.add(service);
+      }
+    }
+
+    return result;
+  }
+
+// Helper to create filtered service entry
+  Map<String, dynamic> _createFilteredService(
+      Map<String, dynamic> service,
+      double shiftTotal,
+      Map<String, dynamic>? shiftAmounts,
+      String selectedShift,
+      bool hasShiftData,
+      ) {
+    // Create new service map with shift-filtered data
+    return {
+      ...service,  // Spread operator copies the original map
+      'total': shiftTotal,
+      'shift_filtered_total': shiftTotal,
+      'filtered_monthly_amounts': shiftAmounts ?? {},
+      '_filtered_by_shift': selectedShift,
+      '_has_shift_data': hasShiftData,
+      if (!hasShiftData) '_shift_note': 'Not shift-specific',
+    };
+  }
+
+// Helper for expenses without shift data
+  Map<String, dynamic> _addExpenseNote(Map<String, dynamic> service) {
+    return {
+      ...service,
+      '_has_shift_data': false,
+      '_shift_note': 'Expenses are not shift-specific',
+    };
+  }
   // Get month names for dropdown
   List<Map<String, dynamic>> get availableMonths {
     return [
@@ -312,6 +495,163 @@ class EnhancedShiftReportProvider extends ChangeNotifier {
     final currentYear = DateTime.now().year;
     return List.generate(5, (index) => currentYear - 2 + index);
   }
+
+  Future<void> fetchYearlyReport() async {
+    try {
+      _isLoadingNew = true;
+      _errorMessageNew = '';
+      _yearlySummary = null;
+      notifyListeners();
+
+      final year = _selectedYear ?? DateTime.now().year;
+      print('🔵 Fetching yearly report for year: $year');
+
+      final uri = Uri.parse(_yearlyReportUrl).replace(queryParameters: {
+        'year': year.toString(),
+      });
+
+      final response = await http.get(uri);
+      print('🟢 Yearly report response: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        print('📊 Yearly report data received: ${data.keys}');
+
+        if (data.containsKey('success') && data['success'] == true) {
+          print('✅ API returned success: true');
+
+          // Process the opdBreakdown data
+          final List<dynamic> opdBreakdown = data['opdBreakdown'] ?? [];
+          print('📈 OPD Breakdown items: ${opdBreakdown.length}');
+
+          // Transform the data for your pivot table
+          _processYearlyData(data);
+
+          _yearlySummary = data;
+        } else {
+          _errorMessageNew = 'API did not return success';
+        }
+      } else {
+        _errorMessageNew = 'Failed to load yearly report: ${response.statusCode}';
+      }
+    } catch (e) {
+      _errorMessageNew = 'Error loading yearly report: $e';
+      print('💥 Exception: $e');
+    } finally {
+      _isLoadingNew = false;
+      notifyListeners();
+    }
+  }
+  void _processYearlyData(Map<String, dynamic> data) {
+    final List<dynamic> opdBreakdown = data['opdBreakdown'] ?? [];
+
+    // 1. Get all unique services
+    final Set<String> allServices = {};
+    final Set<int> allMonths = {};
+
+    for (var item in opdBreakdown) {
+      if (item is Map) {
+        final service = item['service']?.toString() ?? 'Unknown';
+        final month = item['month'] as int? ?? 0;
+
+        if (month > 0) allMonths.add(month);
+        if (service.isNotEmpty) allServices.add(service);
+      }
+    }
+
+    // 2. Create monthly breakdown structure with service_data
+    final List<Map<String, dynamic>> monthlyBreakdown = [];
+
+    for (int month = 1; month <= 12; month++) {
+      double monthRevenue = 0;
+      Map<String, double> serviceAmounts = {};
+
+      for (var item in opdBreakdown) {
+        if (item is Map && item['month'] == month) {
+          final service = item['service']?.toString() ?? 'Unknown';
+          final amount = (item['amount'] as num?)?.toDouble() ?? 0.0;
+
+          monthRevenue += amount;
+          serviceAmounts[service] = (serviceAmounts[service] ?? 0) + amount;
+        }
+      }
+
+      // Always add the month, even if no data
+      monthlyBreakdown.add({
+        'month': month,
+        'month_name': _getMonthName(month),
+        'revenue': monthRevenue,
+        'service_data': serviceAmounts,
+      });
+    }
+
+    // 3. Calculate yearly totals
+    double totalRevenue = 0;
+    Map<String, double> yearlyServiceTotals = {};
+
+    for (var item in opdBreakdown) {
+      if (item is Map) {
+        final service = item['service']?.toString() ?? 'Unknown';
+        final amount = (item['amount'] as num?)?.toDouble() ?? 0.0;
+
+        totalRevenue += amount;
+        yearlyServiceTotals[service] = (yearlyServiceTotals[service] ?? 0) + amount;
+      }
+    }
+
+    // 4. Prepare combined service breakdown for the UI - CRITICAL FIX
+    _combinedServiceBreakdown.clear(); // Clear first
+
+    yearlyServiceTotals.forEach((serviceName, totalAmount) {
+      // Create service data with monthly breakdown
+      Map<String, double> monthlyAmounts = {};
+
+      for (int month = 1; month <= 12; month++) {
+        monthlyAmounts['month_$month'] = 0.0;
+
+        // Find amount for this service in this month
+        for (var item in opdBreakdown) {
+          if (item is Map &&
+              item['month'] == month &&
+              (item['service']?.toString() ?? 'Unknown') == serviceName) {
+            monthlyAmounts['month_$month'] = (item['amount'] as num?)?.toDouble() ?? 0.0;
+            break;
+          }
+        }
+      }
+
+      _combinedServiceBreakdown.add({
+        'type': 'OPD',
+        'service_name': serviceName,
+        'total': totalAmount,
+        'monthly_amounts': monthlyAmounts, // Store monthly data here
+      });
+    });
+
+    // Sort services by total amount (descending)
+    _combinedServiceBreakdown.sort((a, b) => (b['total'] as double).compareTo(a['total'] as double));
+
+    // 5. Update yearly summary with processed data
+    data['monthly_breakdown'] = monthlyBreakdown;
+    data['total_revenue'] = totalRevenue;
+    data['total_expenses'] = 0.0; // This endpoint only has revenue data
+    data['net_amount'] = totalRevenue;
+    data['total_opd_count'] = opdBreakdown.length;
+
+    print('💰 Processed yearly data:');
+    print('   Total Revenue: $totalRevenue');
+    print('   Unique Services: ${allServices.length}');
+    print('   Combined Services: ${_combinedServiceBreakdown.length}');
+
+    // Debug: Print first few services
+    if (_combinedServiceBreakdown.isNotEmpty) {
+      print('📊 Sample services:');
+      for (int i = 0; i < min(3, _combinedServiceBreakdown.length); i++) {
+        print('   ${i + 1}. ${_combinedServiceBreakdown[i]['service_name']}: Rs ${_combinedServiceBreakdown[i]['total']}');
+      }
+    }
+  }
+
 
 
   // fetch detailed breakdown
@@ -1013,152 +1353,399 @@ class EnhancedShiftReportProvider extends ChangeNotifier {
       _isLoadingNew = true;
       _errorMessageNew = '';
       _yearlySummary = null;
+      _combinedServiceBreakdown.clear(); // Clear existing data
       notifyListeners();
 
       final year = _selectedYear ?? DateTime.now().year;
+      print('🔵 Fetching yearly report for year: $year');
 
-      print('🔵 Fetching yearly summary for year: $year');
+      final uri = Uri.parse(_yearlyReportUrl).replace(queryParameters: {
+        'year': year.toString(),
+      });
 
-      // We'll fetch data for each month and aggregate it
-      double totalRevenue = 0;
-      double totalExpenses = 0;
-      int totalDays = 0;
-      int totalOpdCount = 0;
-      final monthlyBreakdown = <Map<String, dynamic>>[];
+      final response = await http.get(uri);
+      print('🟢 Yearly report response: ${response.statusCode}');
 
-      // Fetch data for each month
-      for (int month = 1; month <= 12; month++) {
-        try {
-          final queryParams = {
-            'year': year.toString(),
-            'month': month.toString(),
-          };
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        print('📊 Yearly report data received: ${data.keys}');
 
-          final uri = Uri.parse(_monthlyReportUrl).replace(queryParameters: queryParams);
-          final response = await http.get(uri);
+        if (data.containsKey('success') && data['success'] == true) {
+          print('✅ API returned success: true');
 
-          if (response.statusCode == 200) {
-            final data = json.decode(response.body);
+          // Process OPD breakdown
+          final List<dynamic> opdBreakdown = data['opdBreakdown'] ?? [];
+          final List<dynamic> expensesBreakdown = data['expensesBreakdown'] ?? [];
+          final List<dynamic> consultationBreakdown = data['consultationBreakdown'] ?? [];
 
-            if (data is Map && data.containsKey('success') && data['success'] == true) {
-              if (data.containsKey('report') && data['report'] is List) {
-                final reportList = data['report'] as List;
+          print('📈 Data counts:');
+          print('   OPD Breakdown: ${opdBreakdown.length} items');
+          print('   Expenses Breakdown: ${expensesBreakdown.length} items');
+          print('   Consultation Breakdown: ${consultationBreakdown.length} items');
 
-                if (reportList.isNotEmpty) {
-                  double monthRevenue = 0;
-                  double monthExpenses = 0;
-                  int monthOpdCount = 0;
+          // Process data for service-month breakdown
+          _processYearlyOpdData(opdBreakdown);
+          _processYearlyExpensesData(expensesBreakdown);
+          _processYearlyConsultationData(consultationBreakdown);
 
-                  for (var dayData in reportList) {
-                    if (dayData is Map) {
-                      // Parse morning shift
-                      final morning = dayData['morning'] as Map<String, dynamic>? ?? {};
-                      monthRevenue += (morning['opd_total'] ?? 0).toDouble();
-                      monthExpenses += (morning['expenses_total'] ?? 0).toDouble();
-                      monthOpdCount += ((morning['opd_count'] ?? 0) as num).toInt();
+          // Calculate totals
+          double totalOpdRevenue = 0;
+          double totalExpenses = 0;
+          double totalConsultation = 0;
 
-                      // Parse evening shift
-                      final evening = dayData['evening'] as Map<String, dynamic>? ?? {};
-                      monthRevenue += (evening['opd_total'] ?? 0).toDouble();
-                      monthExpenses += (evening['expenses_total'] ?? 0).toDouble();
-                      monthOpdCount += ((evening['opd_count'] ?? 0) as num).toInt();
+          // Calculate OPD revenue
+          for (var item in opdBreakdown) {
+            if (item is Map<String, dynamic>) {
+              totalOpdRevenue += (item['amount'] as num?)?.toDouble() ?? 0.0;
+            }
+          }
 
-                      // Parse night shift
-                      final night = dayData['night'] as Map<String, dynamic>? ?? {};
-                      monthRevenue += (night['opd_total'] ?? 0).toDouble();
-                      monthExpenses += (night['expenses_total'] ?? 0).toDouble();
-                      monthOpdCount += ((night['opd_count'] ?? 0) as num).toInt();
+          // Calculate expenses
+          for (var item in expensesBreakdown) {
+            if (item is Map<String, dynamic>) {
+              totalExpenses += (item['amount'] as num?)?.toDouble() ?? 0.0;
+            }
+          }
 
-                      totalDays++;
-                    }
-                  }
+          // Calculate consultation total
+          for (var item in consultationBreakdown) {
+            if (item is Map<String, dynamic>) {
+              totalConsultation += (item['amount'] as num?)?.toDouble() ?? 0.0;
+            }
+          }
 
-                  // Add to yearly totals
-                  totalRevenue += monthRevenue;
-                  totalExpenses += monthExpenses;
-                  totalOpdCount += monthOpdCount;
+          double totalRevenue = totalOpdRevenue + totalConsultation;
+          double netAmount = totalRevenue - totalExpenses;
 
-                  // Add to monthly breakdown
-                  monthlyBreakdown.add({
-                    'month': month,
-                    'month_name': _getMonthName(month),
-                    'revenue': monthRevenue,
-                    'expenses': monthExpenses,
-                    'net': monthRevenue - monthExpenses,
-                    'opd_count': monthOpdCount,
-                    'days_with_data': reportList.length,
-                  });
+          // Create monthly breakdown
+          final List<Map<String, dynamic>> monthlyBreakdown = [];
+          for (int month = 1; month <= 12; month++) {
+            double monthOpdRevenue = 0;
+            double monthExpenses = 0;
+            double monthConsultation = 0;
 
-                  print('📊 Month $month: Revenue=$monthRevenue, Expenses=$monthExpenses');
-                }
+            // Calculate month OPD revenue
+            for (var item in opdBreakdown) {
+              if (item is Map<String, dynamic> && item['month'] == month) {
+                monthOpdRevenue += (item['amount'] as num?)?.toDouble() ?? 0.0;
               }
             }
-          } else {
-            print('⚠️ Failed to fetch month $month: ${response.statusCode}');
-            // Add zero data for this month
+
+            // Calculate month expenses
+            for (var item in expensesBreakdown) {
+              if (item is Map<String, dynamic> && item['month'] == month) {
+                monthExpenses += (item['amount'] as num?)?.toDouble() ?? 0.0;
+              }
+            }
+
+            // Calculate month consultation
+            for (var item in consultationBreakdown) {
+              if (item is Map<String, dynamic> && item['month'] == month) {
+                monthConsultation += (item['amount'] as num?)?.toDouble() ?? 0.0;
+              }
+            }
+
+            double monthRevenue = monthOpdRevenue + monthConsultation;
+
             monthlyBreakdown.add({
               'month': month,
               'month_name': _getMonthName(month),
-              'revenue': 0,
-              'expenses': 0,
-              'net': 0,
-              'opd_count': 0,
-              'days_with_data': 0,
+              'opd_revenue': monthOpdRevenue,
+              'consultation_revenue': monthConsultation,
+              'total_revenue': monthRevenue,
+              'expenses': monthExpenses,
+              'net': monthRevenue - monthExpenses,
             });
           }
-        } catch (e) {
-          print('💥 Error fetching month $month: $e');
-          // Add zero data for this month
-          monthlyBreakdown.add({
-            'month': month,
-            'month_name': _getMonthName(month),
-            'revenue': 0,
-            'expenses': 0,
-            'net': 0,
-            'opd_count': 0,
-            'days_with_data': 0,
-          });
+
+          // Update yearly summary with detailed totals
+          _yearlySummary = {
+            'year': year,
+            'total_opd_revenue': totalOpdRevenue,
+            'total_consultation_revenue': totalConsultation,
+            'total_revenue': totalRevenue,
+            'total_expenses': totalExpenses,
+            'net_amount': netAmount,
+            'monthly_breakdown': monthlyBreakdown,
+            'opdBreakdown': opdBreakdown,
+            'expensesBreakdown': expensesBreakdown,
+            'consultationBreakdown': consultationBreakdown,
+          };
+
+          print('💰 Yearly Summary created:');
+          print('   Total OPD Revenue: $totalOpdRevenue');
+          print('   Total Consultation Revenue: $totalConsultation');
+          print('   Total Revenue: $totalRevenue');
+          print('   Total Expenses: $totalExpenses');
+          print('   Net Amount: $netAmount');
+          print('   Unique Services: ${_combinedServiceBreakdown.length}');
+
+          if (_combinedServiceBreakdown.isNotEmpty) {
+            print('📊 Sample services:');
+            for (int i = 0; i < min(3, _combinedServiceBreakdown.length); i++) {
+              print('   ${i + 1}. ${_combinedServiceBreakdown[i]['service_name']}: Rs ${_combinedServiceBreakdown[i]['total']}');
+            }
+          }
+        } else {
+          _errorMessageNew = 'API did not return success';
         }
-      }
-
-      // Calculate yearly totals
-      final double netAmount = totalRevenue - totalExpenses;
-      final double avgMonthlyRevenue = totalRevenue / 12;
-      final double avgMonthlyExpenses = totalExpenses / 12;
-      final double avgDailyRevenue = totalDays > 0 ? totalRevenue / totalDays : 0;
-
-      // Create yearly summary
-      _yearlySummary = {
-        'year': year,
-        'total_revenue': totalRevenue,
-        'total_expenses': totalExpenses,
-        'net_amount': netAmount,
-        'total_opd_count': totalOpdCount,
-        'total_days_with_data': totalDays,
-        'avg_monthly_revenue': avgMonthlyRevenue,
-        'avg_monthly_expenses': avgMonthlyExpenses,
-        'avg_daily_revenue': avgDailyRevenue,
-        'monthly_breakdown': monthlyBreakdown,
-      };
-
-      print('💰 Yearly Summary for $year:');
-      print('   Total Revenue: $totalRevenue');
-      print('   Total Expenses: $totalExpenses');
-      print('   Net Amount: $netAmount');
-      print('   Total OPD Count: $totalOpdCount');
-      print('   Days with Data: $totalDays');
-
-      if (totalRevenue == 0 && totalExpenses == 0) {
-        _errorMessageNew = 'No data available for selected year';
+      } else {
+        _errorMessageNew = 'Failed to load yearly report: ${response.statusCode}';
       }
     } catch (e) {
-      _errorMessageNew = 'Error loading yearly summary: $e';
+      _errorMessageNew = 'Error loading yearly report: $e';
       print('💥 Exception: $e');
     } finally {
       _isLoadingNew = false;
       notifyListeners();
     }
   }
+
+// Process OPD data
+  void _processYearlyOpdData(List<dynamic> opdBreakdown) {
+    _combinedServiceBreakdown.clear();
+
+    // Group by service name
+    final Map<String, Map<String, double>> serviceData = {};
+
+    for (var item in opdBreakdown) {
+      if (item is Map<String, dynamic>) {
+        final serviceName = item['service']?.toString() ?? 'Unknown';
+        final month = (item['month'] as num?)?.toInt() ?? 0;
+        final amount = (item['amount'] as num?)?.toDouble() ?? 0.0;
+        final shift = item['shift']?.toString() ?? 'Unknown';
+
+        if (!serviceData.containsKey(serviceName)) {
+          serviceData[serviceName] = {
+            'total': 0.0,
+          };
+
+          // Initialize shift totals
+          serviceData[serviceName]!['morning_total'] = 0.0;
+          serviceData[serviceName]!['evening_total'] = 0.0;
+          serviceData[serviceName]!['night_total'] = 0.0;
+        }
+
+        // Add to total
+        serviceData[serviceName]!['total'] = (serviceData[serviceName]!['total'] ?? 0.0) + amount;
+
+        // Add to shift total
+        final shiftLower = shift.toLowerCase();
+        switch (shiftLower) {
+          case 'morning':
+            serviceData[serviceName]!['morning_total'] =
+                (serviceData[serviceName]!['morning_total'] ?? 0.0) + amount;
+            break;
+          case 'evening':
+            serviceData[serviceName]!['evening_total'] =
+                (serviceData[serviceName]!['evening_total'] ?? 0.0) + amount;
+            break;
+          case 'night':
+            serviceData[serviceName]!['night_total'] =
+                (serviceData[serviceName]!['night_total'] ?? 0.0) + amount;
+            break;
+        }
+
+        // Add month amount
+        final monthKey = 'month_$month';
+        final currentMonthAmount = serviceData[serviceName]![monthKey] ?? 0.0;
+        serviceData[serviceName]![monthKey] = currentMonthAmount + amount;
+
+        // Add shift-specific month amount
+        final shiftMonthKey = '${shiftLower}_month_$month';
+        final currentShiftMonthAmount = serviceData[serviceName]![shiftMonthKey] ?? 0.0;
+        serviceData[serviceName]![shiftMonthKey] = currentShiftMonthAmount + amount;
+      }
+    }
+
+    // Convert to list format
+    serviceData.forEach((serviceName, data) {
+      // Create monthly amounts maps
+      final Map<String, double> monthlyAmounts = {};
+      final Map<String, double> morningAmounts = {};
+      final Map<String, double> eveningAmounts = {};
+      final Map<String, double> nightAmounts = {};
+
+      for (int month = 1; month <= 12; month++) {
+        final monthKey = 'month_$month';
+        final morningKey = 'morning_month_$month';
+        final eveningKey = 'evening_month_$month';
+        final nightKey = 'night_month_$month';
+
+        monthlyAmounts[monthKey] = data[monthKey] ?? 0.0;
+        morningAmounts[monthKey] = data[morningKey] ?? 0.0;
+        eveningAmounts[monthKey] = data[eveningKey] ?? 0.0;
+        nightAmounts[monthKey] = data[nightKey] ?? 0.0;
+      }
+
+      _combinedServiceBreakdown.add({
+        'type': 'OPD',
+        'service_name': serviceName,
+        'total': data['total'] ?? 0.0,
+        'morning_total': data['morning_total'] ?? 0.0,
+        'evening_total': data['evening_total'] ?? 0.0,
+        'night_total': data['night_total'] ?? 0.0,
+        'monthly_amounts': monthlyAmounts,
+        'morning_amounts': morningAmounts,
+        'evening_amounts': eveningAmounts,
+        'night_amounts': nightAmounts,
+      });
+    });
+
+    // Sort by total amount (descending)
+    _combinedServiceBreakdown.sort((a, b) {
+      final totalA = (a['total'] as num?)?.toDouble() ?? 0.0;
+      final totalB = (b['total'] as num?)?.toDouble() ?? 0.0;
+      return totalB.compareTo(totalA);
+    });
+  }
+
+// Process expenses data
+  void _processYearlyExpensesData(List<dynamic> expensesBreakdown) {
+    final Map<String, Map<String, dynamic>> expenseData = {};
+
+    for (var item in expensesBreakdown) {
+      if (item is Map<String, dynamic>) {
+        final expenseHead = item['head']?.toString() ?? 'Unknown';
+        final month = (item['month'] as num?)?.toInt() ?? 0;
+        final amount = (item['amount'] as num?)?.toDouble() ?? 0.0;
+        final shift = item['shift']?.toString()?.toLowerCase() ?? 'all'; // Assuming shift field exists
+
+        if (!expenseData.containsKey(expenseHead)) {
+          expenseData[expenseHead] = {
+            'total': 0.0,
+            'morning_total': 0.0,
+            'evening_total': 0.0,
+            'night_total': 0.0,
+          };
+        }
+
+        // Add to total
+        expenseData[expenseHead]!['total'] += amount;
+
+        // Add to shift total
+        switch (shift) {
+          case 'morning':
+            expenseData[expenseHead]!['morning_total'] += amount;
+            break;
+          case 'evening':
+            expenseData[expenseHead]!['evening_total'] += amount;
+            break;
+          case 'night':
+            expenseData[expenseHead]!['night_total'] += amount;
+            break;
+        }
+
+        // Add month amount
+        final monthKey = 'month_$month';
+        expenseData[expenseHead]![monthKey] =
+            (expenseData[expenseHead]![monthKey] ?? 0.0) + amount;
+
+        // Add shift-month amount
+        final shiftMonthKey = '${shift}_month_$month';
+        expenseData[expenseHead]![shiftMonthKey] =
+            (expenseData[expenseHead]![shiftMonthKey] ?? 0.0) + amount;
+      }
+    }
+
+    // Add expenses to combined breakdown
+    expenseData.forEach((expenseHead, data) {
+      final Map<String, double> monthlyAmounts = {};
+      final Map<String, double> morningAmounts = {};
+      final Map<String, double> eveningAmounts = {};
+      final Map<String, double> nightAmounts = {};
+
+      for (int month = 1; month <= 12; month++) {
+        final monthKey = 'month_$month';
+        final morningKey = 'morning_month_$month';
+        final eveningKey = 'evening_month_$month';
+        final nightKey = 'night_month_$month';
+
+        monthlyAmounts[monthKey] = data[monthKey] ?? 0.0;
+        morningAmounts[monthKey] = data[morningKey] ?? 0.0;
+        eveningAmounts[monthKey] = data[eveningKey] ?? 0.0;
+        nightAmounts[monthKey] = data[nightKey] ?? 0.0;
+      }
+
+      _combinedServiceBreakdown.add({
+        'type': 'EXPENSE',
+        'service_name': expenseHead,
+        'total': data['total'] ?? 0.0,
+        'morning_total': data['morning_total'] ?? 0.0,
+        'evening_total': data['evening_total'] ?? 0.0,
+        'night_total': data['night_total'] ?? 0.0,
+        'monthly_amounts': monthlyAmounts,
+        'morning_amounts': morningAmounts,
+        'evening_amounts': eveningAmounts,
+        'night_amounts': nightAmounts,
+      });
+    });
+  }
+// Process consultation data
+  void _processYearlyConsultationData(List<dynamic> consultationBreakdown) {
+    final Map<String, Map<String, dynamic>> doctorData = {};
+
+    for (var item in consultationBreakdown) {
+      final doctor = item['doctorName']?.toString() ?? 'Unknown';
+      final month = (item['month'] as num?)?.toInt() ?? 0;
+      final amount = (item['amount'] as num?)?.toDouble() ?? 0.0;
+      final shift = item['shift']?.toString().toLowerCase() ?? 'unknown';
+
+      doctorData.putIfAbsent(doctor, () => {
+        'total': 0.0,
+        'morning_total': 0.0,
+        'evening_total': 0.0,
+        'night_total': 0.0,
+      });
+
+      // total
+      doctorData[doctor]!['total'] += amount;
+
+      // shift total
+      final shiftTotalKey = '${shift}_total';
+      if (doctorData[doctor]!.containsKey(shiftTotalKey)) {
+        doctorData[doctor]![shiftTotalKey] += amount;
+      }
+
+      // month
+      final monthKey = 'month_$month';
+      doctorData[doctor]![monthKey] =
+          (doctorData[doctor]![monthKey] ?? 0.0) + amount;
+
+      // shift + month
+      final shiftMonthKey = '${shift}_month_$month';
+      doctorData[doctor]![shiftMonthKey] =
+          (doctorData[doctor]![shiftMonthKey] ?? 0.0) + amount;
+    }
+
+    doctorData.forEach((doctor, data) {
+      final Map<String, double> monthly = {};
+      final Map<String, double> morning = {};
+      final Map<String, double> evening = {};
+      final Map<String, double> night = {};
+
+      for (int m = 1; m <= 12; m++) {
+        monthly['month_$m'] = data['month_$m'] ?? 0.0;
+        morning['month_$m'] = data['morning_month_$m'] ?? 0.0;
+        evening['month_$m'] = data['evening_month_$m'] ?? 0.0;
+        night['month_$m'] = data['night_month_$m'] ?? 0.0;
+      }
+
+      _combinedServiceBreakdown.add({
+        'type': 'CONSULTATION',
+        'service_name': doctor,
+        'total': data['total'],
+        'morning_total': data['morning_total'],
+        'evening_total': data['evening_total'],
+        'night_total': data['night_total'],
+        'monthly_amounts': monthly,
+        'morning_amounts': morning,
+        'evening_amounts': evening,
+        'night_amounts': night,
+      });
+    });
+  }
+
   // Main fetch method for new features
   Future<void> fetchNewData() async {
     switch (_selectedFilterType) {
@@ -1174,6 +1761,7 @@ class EnhancedShiftReportProvider extends ChangeNotifier {
         break;
       case FilterType.yearly:
         await fetchYearlySummary();
+        await fetchYearlyReport();
         break;
     }
   }
