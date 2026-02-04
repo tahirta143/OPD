@@ -1020,24 +1020,24 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
             // OPD Revenue Section (Left side)
             DataColumn(
               label: Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Color(0xFFE6F7FF),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(6),
-                    topRight: Radius.circular(6),
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    'OPD REVENUE',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF109A8A),
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
+                // padding: EdgeInsets.all(8),
+                // decoration: BoxDecoration(
+                //   color: Color(0xFFE6F7FF),
+                //   borderRadius: BorderRadius.only(
+                //     topLeft: Radius.circular(6),
+                //     topRight: Radius.circular(6),
+                //   ),
+                // ),
+                // child: Center(
+                //   // child: Text(
+                //   //   'OPD REVENUE',
+                //   //   style: TextStyle(
+                //   //     fontWeight: FontWeight.bold,
+                //   //     color: Color(0xFF109A8A),
+                //   //     fontSize: 12,
+                //   //   ),
+                //   // ),
+                // ),
               ),
             ),
             DataColumn(
@@ -1077,24 +1077,24 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
             // Expenses Section (Right side)
             DataColumn(
               label: Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Color(0xFFFFF4E6),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(6),
-                    topRight: Radius.circular(6),
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    'EXPENSES',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFD97706),
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
+                // padding: EdgeInsets.all(8),
+                // decoration: BoxDecoration(
+                //   color: Color(0xFFFFF4E6),
+                //   borderRadius: BorderRadius.only(
+                //     topLeft: Radius.circular(6),
+                //     topRight: Radius.circular(6),
+                //   ),
+                // ),
+                // child: Center(
+                //   child: Text(
+                //     'EXPENSES',
+                //     style: TextStyle(
+                //       fontWeight: FontWeight.bold,
+                //       color: Color(0xFFD97706),
+                //       fontSize: 12,
+                //     ),
+                //   ),
+                // ),
               ),
             ),
             DataColumn(
@@ -1321,7 +1321,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 DataCell(
                   Center(
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                       decoration: BoxDecoration(
                         color: Color(0xFFE6F7FF),
                         borderRadius: BorderRadius.circular(4),
@@ -1341,7 +1341,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 DataCell(
                   Center(
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                       decoration: BoxDecoration(
                         color: Color(0xFFE6F7FF),
                         borderRadius: BorderRadius.circular(4),
@@ -1361,7 +1361,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 DataCell(
                   Center(
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                       decoration: BoxDecoration(
                         color: Color(0xFFE6F7FF),
                         borderRadius: BorderRadius.circular(4),
@@ -1378,10 +1378,11 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 ),
 
                 // OPD Grand Total
+
                 DataCell(
                   Center(
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                       decoration: BoxDecoration(
                         color: Color(0xFF109A8A),
                         borderRadius: BorderRadius.circular(4),
@@ -1407,7 +1408,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 DataCell(
                   Center(
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                       decoration: BoxDecoration(
                         color: Color(0xFFFFF4E6),
                         borderRadius: BorderRadius.circular(4),
@@ -1427,7 +1428,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 DataCell(
                   Center(
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                       decoration: BoxDecoration(
                         color: Color(0xFFFFF4E6),
                         borderRadius: BorderRadius.circular(4),
@@ -1447,7 +1448,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 DataCell(
                   Center(
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                       decoration: BoxDecoration(
                         color: Color(0xFFFFF4E6),
                         borderRadius: BorderRadius.circular(4),
@@ -1467,7 +1468,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 DataCell(
                   Center(
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                       decoration: BoxDecoration(
                         color: Color(0xFFD97706),
                         borderRadius: BorderRadius.circular(4),
@@ -1490,7 +1491,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                 DataCell(
                   Center(
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                       decoration: BoxDecoration(
                         color: Color(0xFF10B981),
                         borderRadius: BorderRadius.circular(4),
@@ -1516,6 +1517,27 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
   Widget _buildServiceBreakdownTable(EnhancedShiftReportProvider provider, bool isTablet) {
     return StatefulBuilder(
       builder: (context, setState) {
+        // Get screen size
+        final screenWidth = MediaQuery.of(context).size.width;
+        final screenHeight = MediaQuery.of(context).size.height;
+
+        // Responsive calculations
+        final isLargeScreen = screenWidth > 1024;
+        final isMediumScreen = screenWidth > 768;
+        final isSmallScreen = screenWidth < 600;
+
+        // Responsive font sizes
+        final headerFontSize = isLargeScreen ? 18.0 : (isMediumScreen ? 16.0 : 14.0);
+        final columnFontSize = isLargeScreen ? 14.0 : (isMediumScreen ? 13.0 : 12.0);
+        final dataFontSize = isLargeScreen ? 14.0 : (isMediumScreen ? 13.0 : 12.0);
+
+        // Responsive dimensions
+        final columnSpacing = isLargeScreen ? 2.0 : (isMediumScreen ? 12.0 : 4.0);
+        final rowHeight = isLargeScreen ? 56.0 : (isMediumScreen ? 48.0 : 40.0);
+        final headingRowHeight = isLargeScreen ? 64.0 : (isMediumScreen ? 56.0 : 48.0);
+        final horizontalMargin = isLargeScreen ? 24.0 : (isMediumScreen ? 20.0 : 16.0);
+        final tableMaxHeight = screenHeight * 0.4; // Use 40% of screen height
+
         // Helper function for safe double conversion
         double _safeDouble(dynamic value) {
           if (value == null) return 0.0;
@@ -1621,20 +1643,6 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                       ),
                     ),
                     SizedBox(width: 12),
-                    OutlinedButton(
-                      onPressed: refreshData,
-                      child: Row(
-                        children: [
-                          Icon(Icons.refresh, size: 16),
-                          SizedBox(width: 4),
-                          Text('Refresh'),
-                        ],
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Color(0xFF109A8A),
-                        side: BorderSide(color: Color(0xFF109A8A)),
-                      ),
-                    ),
                   ],
                 ),
               ],
@@ -1685,107 +1693,327 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
           children: [
             // Header with refresh button
             Container(
-              padding: EdgeInsets.all(12),
+              padding: EdgeInsets.symmetric(
+                horizontal: horizontalMargin,
+                vertical: isLargeScreen ? 20 : 16,
+              ),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(8),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Color(0xFFE5E7EB)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
-                  Text(
-                    'Service Breakdown',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Color(0xFF374151),
+                  Container(
+                    padding: EdgeInsets.all(isLargeScreen ? 10 : 8),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF109A8A).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                        Icons.analytics,
+                        color: Color(0xFF109A8A),
+                        size: isLargeScreen ? 28 : 24
                     ),
                   ),
-                  Spacer(),
-                  OutlinedButton.icon(
+                  SizedBox(width: isLargeScreen ? 16 : 12),
+                  Expanded(
+                    child: Text(
+                      'Service Breakdown',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: headerFontSize,
+                        color: Color(0xFF111827),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: isLargeScreen ? 16 : 12),
+                  ElevatedButton.icon(
                     onPressed: () {
                       refreshData();
                       provider.fetchDetailedBreakdown();
                     },
-                    icon: Icon(Icons.refresh, size: 16),
-                    label: Text('Refresh'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Color(0xFF109A8A),
-                      side: BorderSide(color: Color(0xFF109A8A)),
+                    icon: Icon(
+                        Icons.refresh,
+                        size: isLargeScreen ? 20 : 18
+                    ),
+                    label: Text(
+                      isLargeScreen ? 'Refresh Data' : 'Refresh',
+                      style: TextStyle(
+                        fontSize: isLargeScreen ? 14 : 12,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF109A8A),
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isLargeScreen ? 20 : 16,
+                        vertical: isLargeScreen ? 12 : 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
 
-            SizedBox(height: 20),
+            SizedBox(height: isLargeScreen ? 32 : 24),
 
             // OPD Services Section
             Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Color(0xFFE5E7EB)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 6,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // OPD Header
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: horizontalMargin,
+                      vertical: isLargeScreen ? 20 : 16,
+                    ),
                     decoration: BoxDecoration(
-                      color: Color(0xFFE6F7FF),
-                      border: Border(bottom: BorderSide(color: Color(0xFF109A8A))),
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF109A8A), Color(0xFF0D8576)],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.local_hospital, color: Color(0xFF109A8A), size: 20),
-                        SizedBox(width: 8),
-                        Text(
-                          'OPD SERVICES BREAKDOWN',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF109A8A),
-                            fontSize: isTablet ? 15 : 14,
+                        Container(
+                          padding: EdgeInsets.all(isLargeScreen ? 8 : 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Icon(
+                              Icons.local_hospital,
+                              color: Colors.white,
+                              size: isLargeScreen ? 24 : 20
                           ),
                         ),
-                        Spacer(),
+                        SizedBox(width: isLargeScreen ? 16 : 12),
+                        Expanded(
+                          child: Text(
+                            'OPD SERVICES BREAKDOWN',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: headerFontSize,
+                              letterSpacing: 0.5,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        SizedBox(width: isLargeScreen ? 16 : 12),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isLargeScreen ? 16 : 12,
+                            vertical: isLargeScreen ? 8 : 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '${opdServices.length} Services',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                              fontSize: isLargeScreen ? 14 : 12,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
 
                   // OPD Table
                   Container(
-                    constraints: BoxConstraints(maxHeight: 300), // Limit height with scroll
+                    constraints: BoxConstraints(maxHeight: tableMaxHeight),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
-                          columnSpacing: 20,
-                          headingRowHeight: 50,
-                          dataRowHeight: 40,
+                          columnSpacing: columnSpacing,
+                          horizontalMargin: horizontalMargin,
+                          headingRowHeight: headingRowHeight,
+                          dataRowHeight: rowHeight,
                           headingRowColor: MaterialStateProperty.all(Color(0xFFF9FAFB)),
+                          border: TableBorder(
+                            horizontalInside: BorderSide(color: Color(0xFFF3F4F6)),
+                            verticalInside: BorderSide(color: Color(0xFFF3F4F6)),
+                          ),
                           columns: [
                             DataColumn(
                               label: Container(
-                                width: 250,
-                                child: Text('Service Name', style: TextStyle(fontWeight: FontWeight.bold)),
+                                constraints: BoxConstraints(
+                                  minWidth: isLargeScreen ? 250 : (isMediumScreen ? 200 : 150),
+                                  maxWidth: isLargeScreen ? 250 : 200,
+                                ),
+                                child: Text(
+                                  'SERVICE NAME',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF374151),
+                                    fontSize: columnFontSize,
+                                    letterSpacing: 0.5,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ),
                             DataColumn(
-                              label: Text('Morning', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              label: Container(
+                                constraints: BoxConstraints(
+                                  minWidth: isLargeScreen ? 130 : (isMediumScreen ? 110 : 90),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                        Icons.wb_twilight,
+                                        size: isLargeScreen ? 20 : 16,
+                                        color: Color(0xFF109A8A)
+                                    ),
+                                    SizedBox(height: isLargeScreen ? 6 : 4),
+                                    Text(
+                                      'MORNING',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF109A8A),
+                                        fontSize: columnFontSize,
+                                        letterSpacing: 0.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
                               numeric: true,
                             ),
                             DataColumn(
-                              label: Text('Evening', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              label: Container(
+                                constraints: BoxConstraints(
+                                  minWidth: isLargeScreen ? 130 : (isMediumScreen ? 110 : 90),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                        Icons.nights_stay,
+                                        size: isLargeScreen ? 20 : 16,
+                                        color: Color(0xFF109A8A)
+                                    ),
+                                    SizedBox(height: isLargeScreen ? 6 : 4),
+                                    Text(
+                                      'EVENING',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF109A8A),
+                                        fontSize: columnFontSize,
+                                        letterSpacing: 0.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
                               numeric: true,
                             ),
                             DataColumn(
-                              label: Text('Night', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              label: Container(
+                                constraints: BoxConstraints(
+                                  minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                        Icons.dark_mode,
+                                        size: isLargeScreen ? 20 : 16,
+                                        color: Color(0xFF109A8A)
+                                    ),
+                                    SizedBox(height: isLargeScreen ? 6 : 4),
+                                    Text(
+                                      'NIGHT',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF109A8A),
+                                        fontSize: columnFontSize,
+                                        letterSpacing: 0.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
                               numeric: true,
                             ),
                             DataColumn(
-                              label: Text('Total', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              label: Container(
+                                constraints: BoxConstraints(
+                                  minWidth: isLargeScreen ? 160 : (isMediumScreen ? 140 : 120),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(isLargeScreen ? 6 : 4),
+                                      decoration: BoxDecoration(
+                                        color: Color(0xFF109A8A).withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Icon(
+                                          Icons.calculate,
+                                          size: isLargeScreen ? 20 : 16,
+                                          color: Color(0xFF109A8A)
+                                      ),
+                                    ),
+                                    SizedBox(height: isLargeScreen ? 6 : 4),
+                                    Text(
+                                      'TOTAL',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF109A8A),
+                                        fontSize: columnFontSize,
+                                        letterSpacing: 0.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
                               numeric: true,
                             ),
                           ],
@@ -1796,59 +2024,103 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                 cells: [
                                   DataCell(
                                     Container(
-                                      width: 250,
-                                      child: Text(
-                                        (service['service_name'] as String?) ?? 'Unknown Service',
-                                        overflow: TextOverflow.ellipsis,
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 250 : (isMediumScreen ? 200 : 150),
+                                        maxWidth: isLargeScreen ? 300 : 250,
                                       ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Center(
-                                      child: Text(
-                                        'Rs ${_formatAmount(_safeDouble(service['morning']))}',
-                                        style: TextStyle(
-                                          color: Color(0xFF109A8A),
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Center(
-                                      child: Text(
-                                        'Rs ${_formatAmount(_safeDouble(service['evening']))}',
-                                        style: TextStyle(
-                                          color: Color(0xFF109A8A),
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Center(
-                                      child: Text(
-                                        'Rs ${_formatAmount(_safeDouble(service['night']))}',
-                                        style: TextStyle(
-                                          color: Color(0xFF109A8A),
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Center(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFFE6F7FF),
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
+                                      child: Tooltip(
+                                        message: (service['service_name'] as String?) ?? 'Unknown Service',
                                         child: Text(
-                                          'Rs ${_formatAmount(_safeDouble(service['total']))}',
+                                          (service['service_name'] as String?) ?? 'Unknown Service',
+                                          style: TextStyle(
+                                            color: Color(0xFF374151),
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: dataFontSize,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'Rs ${_formatAmount(_safeDouble(service['morning']))}',
                                           style: TextStyle(
                                             color: Color(0xFF109A8A),
                                             fontWeight: FontWeight.w600,
+                                            fontSize: dataFontSize,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'Rs ${_formatAmount(_safeDouble(service['evening']))}',
+                                          style: TextStyle(
+                                            color: Color(0xFF109A8A),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: dataFontSize,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'Rs ${_formatAmount(_safeDouble(service['night']))}',
+                                          style: TextStyle(
+                                            color: Color(0xFF109A8A),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: dataFontSize,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 160 : (isMediumScreen ? 140 : 120),
+                                      ),
+                                      child: Center(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: isLargeScreen ? 16 : 12,
+                                            vertical: isLargeScreen ? 8 : 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Color(0xFF109A8A).withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(8),
+                                            border: Border.all(color: Color(0xFF109A8A).withOpacity(0.2)),
+                                          ),
+                                          child: Text(
+                                            'Rs ${_formatAmount(_safeDouble(service['total']))}',
+                                            style: TextStyle(
+                                              color: Color(0xFF109A8A),
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: dataFontSize,
+                                            ),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
                                       ),
@@ -1863,78 +2135,174 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                 color: MaterialStateProperty.all(Color(0xFFF0F9FF)),
                                 cells: [
                                   DataCell(
-                                    Text(
-                                      'OPD TOTAL',
-                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 250 : (isMediumScreen ? 200 : 150),
+                                        maxWidth: isLargeScreen ? 300 : 250,
+                                      ),
+                                      child: Text(
+                                        'OPD TOTAL',
+                                        style: TextStyle(
+                                          color: Color(0xFF109A8A),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: dataFontSize,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ),
                                   DataCell(
-                                    Center(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFF109A8A),
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          'Rs ${_formatAmount(opdMorningTotal)}',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                      ),
+                                      child: Center(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: isLargeScreen ? 16 : 12,
+                                            vertical: isLargeScreen ? 10 : 8,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [Color(0xFF109A8A), Color(0xFF0D8576)],
+                                              begin: Alignment.centerLeft,
+                                              end: Alignment.centerRight,
+                                            ),
+                                            borderRadius: BorderRadius.circular(8),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Color(0xFF109A8A).withOpacity(0.3),
+                                                blurRadius: 4,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Text(
+                                            'Rs ${_formatAmount(opdMorningTotal)}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontSize: dataFontSize,
+                                            ),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
                                   DataCell(
-                                    Center(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFF109A8A),
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          'Rs ${_formatAmount(opdEveningTotal)}',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                      ),
+                                      child: Center(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: isLargeScreen ? 16 : 12,
+                                            vertical: isLargeScreen ? 10 : 8,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [Color(0xFF109A8A), Color(0xFF0D8576)],
+                                              begin: Alignment.centerLeft,
+                                              end: Alignment.centerRight,
+                                            ),
+                                            borderRadius: BorderRadius.circular(8),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Color(0xFF109A8A).withOpacity(0.3),
+                                                blurRadius: 4,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Text(
+                                            'Rs ${_formatAmount(opdEveningTotal)}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontSize: dataFontSize,
+                                            ),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
                                   DataCell(
-                                    Center(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFF109A8A),
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          'Rs ${_formatAmount(opdNightTotal)}',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                      ),
+                                      child: Center(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: isLargeScreen ? 16 : 12,
+                                            vertical: isLargeScreen ? 10 : 8,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [Color(0xFF109A8A), Color(0xFF0D8576)],
+                                              begin: Alignment.centerLeft,
+                                              end: Alignment.centerRight,
+                                            ),
+                                            borderRadius: BorderRadius.circular(8),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Color(0xFF109A8A).withOpacity(0.3),
+                                                blurRadius: 4,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Text(
+                                            'Rs ${_formatAmount(opdNightTotal)}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontSize: dataFontSize,
+                                            ),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
                                   DataCell(
-                                    Center(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFF109A8A),
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          'Rs ${_formatAmount(opdGrandTotal)}',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 160 : (isMediumScreen ? 140 : 120),
+                                      ),
+                                      child: Center(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: isLargeScreen ? 20 : 16,
+                                            vertical: isLargeScreen ? 12 : 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [Color(0xFF0D8576), Color(0xFF095E52)],
+                                              begin: Alignment.centerLeft,
+                                              end: Alignment.centerRight,
+                                            ),
+                                            borderRadius: BorderRadius.circular(10),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Color(0xFF095E52).withOpacity(0.4),
+                                                blurRadius: 6,
+                                                offset: Offset(0, 3),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Text(
+                                            'Rs ${_formatAmount(opdGrandTotal)}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontSize: dataFontSize + 1,
+                                            ),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
                                       ),
@@ -1951,74 +2319,254 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
               ),
             ),
 
-            SizedBox(height: 24),
+            SizedBox(height: isLargeScreen ? 32 : 24),
 
             // Expenses Section
             Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Color(0xFFE5E7EB)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 6,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Expenses Header
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: horizontalMargin,
+                      vertical: isLargeScreen ? 20 : 16,
+                    ),
                     decoration: BoxDecoration(
-                      color: Color(0xFFFFF4E6),
-                      border: Border(bottom: BorderSide(color: Color(0xFFD97706))),
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFD97706), Color(0xFFB45309)],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.money_off, color: Color(0xFFD97706), size: 20),
-                        SizedBox(width: 8),
-                        Text(
-                          'EXPENSES BREAKDOWN',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFFD97706),
-                            fontSize: isTablet ? 15 : 14,
+                        Container(
+                          padding: EdgeInsets.all(isLargeScreen ? 8 : 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Icon(
+                              Icons.money_off,
+                              color: Colors.white,
+                              size: isLargeScreen ? 24 : 20
                           ),
                         ),
-                        Spacer(),
+                        SizedBox(width: isLargeScreen ? 16 : 12),
+                        Expanded(
+                          child: Text(
+                            'EXPENSES BREAKDOWN',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: headerFontSize,
+                              letterSpacing: 0.5,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        SizedBox(width: isLargeScreen ? 16 : 12),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isLargeScreen ? 16 : 12,
+                            vertical: isLargeScreen ? 8 : 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '${expenses.length} Items',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                              fontSize: isLargeScreen ? 14 : 12,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
 
                   // Expenses Table
                   Container(
-                    constraints: BoxConstraints(maxHeight: 300), // Limit height with scroll
+                    constraints: BoxConstraints(maxHeight: tableMaxHeight),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
-                          columnSpacing: 20,
-                          headingRowHeight: 50,
-                          dataRowHeight: 40,
+                          columnSpacing: columnSpacing,
+                          horizontalMargin: horizontalMargin,
+                          headingRowHeight: headingRowHeight,
+                          dataRowHeight: rowHeight,
                           headingRowColor: MaterialStateProperty.all(Color(0xFFF9FAFB)),
+                          border: TableBorder(
+                            horizontalInside: BorderSide(color: Color(0xFFF3F4F6)),
+                            verticalInside: BorderSide(color: Color(0xFFF3F4F6)),
+                          ),
                           columns: [
                             DataColumn(
                               label: Container(
-                                width: 250,
-                                child: Text('Expense Item', style: TextStyle(fontWeight: FontWeight.bold)),
+                                constraints: BoxConstraints(
+                                  minWidth: isLargeScreen ? 250 : (isMediumScreen ? 200 : 130),
+                                  maxWidth: isLargeScreen ? 300 : 250,
+                                ),
+                                child: Text(
+                                  'EXPENSE ITEM',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF374151),
+                                    fontSize: columnFontSize,
+                                    letterSpacing: 0.5,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ),
                             DataColumn(
-                              label: Text('Morning', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              label: Container(
+                                constraints: BoxConstraints(
+                                  minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                        Icons.wb_twilight,
+                                        size: isLargeScreen ? 20 : 16,
+                                        color: Color(0xFFD97706)
+                                    ),
+                                    SizedBox(height: isLargeScreen ? 6 : 4),
+                                    Text(
+                                      'MORNING',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFFD97706),
+                                        fontSize: columnFontSize,
+                                        letterSpacing: 0.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
                               numeric: true,
                             ),
                             DataColumn(
-                              label: Text('Evening', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              label: Container(
+                                constraints: BoxConstraints(
+                                  minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                        Icons.nights_stay,
+                                        size: isLargeScreen ? 20 : 16,
+                                        color: Color(0xFFD97706)
+                                    ),
+                                    SizedBox(height: isLargeScreen ? 6 : 4),
+                                    Text(
+                                      'EVENING',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFFD97706),
+                                        fontSize: columnFontSize,
+                                        letterSpacing: 0.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
                               numeric: true,
                             ),
                             DataColumn(
-                              label: Text('Night', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              label: Container(
+                                constraints: BoxConstraints(
+                                  minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                        Icons.dark_mode,
+                                        size: isLargeScreen ? 20 : 16,
+                                        color: Color(0xFFD97706)
+                                    ),
+                                    SizedBox(height: isLargeScreen ? 6 : 4),
+                                    Text(
+                                      'NIGHT',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFFD97706),
+                                        fontSize: columnFontSize,
+                                        letterSpacing: 0.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
                               numeric: true,
                             ),
                             DataColumn(
-                              label: Text('Total', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              label: Container(
+                                constraints: BoxConstraints(
+                                  minWidth: isLargeScreen ? 160 : (isMediumScreen ? 140 : 120),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(isLargeScreen ? 6 : 4),
+                                      decoration: BoxDecoration(
+                                        color: Color(0xFFD97706).withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Icon(
+                                          Icons.calculate,
+                                          size: isLargeScreen ? 20 : 16,
+                                          color: Color(0xFFD97706)
+                                      ),
+                                    ),
+                                    SizedBox(height: isLargeScreen ? 6 : 4),
+                                    Text(
+                                      'TOTAL',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFFD97706),
+                                        fontSize: columnFontSize,
+                                        letterSpacing: 0.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
                               numeric: true,
                             ),
                           ],
@@ -2029,59 +2577,103 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                 cells: [
                                   DataCell(
                                     Container(
-                                      width: 250,
-                                      child: Text(
-                                        (expense['service_name'] as String?) ?? 'Unknown Expense',
-                                        overflow: TextOverflow.ellipsis,
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 250 : (isMediumScreen ? 200 : 130),
+                                        maxWidth: isLargeScreen ? 300 : 250,
                                       ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Center(
-                                      child: Text(
-                                        'Rs ${_formatAmount(_safeDouble(expense['morning']))}',
-                                        style: TextStyle(
-                                          color: Color(0xFFD97706),
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Center(
-                                      child: Text(
-                                        'Rs ${_formatAmount(_safeDouble(expense['evening']))}',
-                                        style: TextStyle(
-                                          color: Color(0xFFD97706),
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Center(
-                                      child: Text(
-                                        'Rs ${_formatAmount(_safeDouble(expense['night']))}',
-                                        style: TextStyle(
-                                          color: Color(0xFFD97706),
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Center(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFFFFF4E6),
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
+                                      child: Tooltip(
+                                        message: (expense['service_name'] as String?) ?? 'Unknown Expense',
                                         child: Text(
-                                          'Rs ${_formatAmount(_safeDouble(expense['total']))}',
+                                          (expense['service_name'] as String?) ?? 'Unknown Expense',
+                                          style: TextStyle(
+                                            color: Color(0xFF374151),
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: dataFontSize,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'Rs ${_formatAmount(_safeDouble(expense['morning']))}',
                                           style: TextStyle(
                                             color: Color(0xFFD97706),
                                             fontWeight: FontWeight.w600,
+                                            fontSize: dataFontSize,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'Rs ${_formatAmount(_safeDouble(expense['evening']))}',
+                                          style: TextStyle(
+                                            color: Color(0xFFD97706),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: dataFontSize,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'Rs ${_formatAmount(_safeDouble(expense['night']))}',
+                                          style: TextStyle(
+                                            color: Color(0xFFD97706),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: dataFontSize,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 160 : (isMediumScreen ? 140 : 120),
+                                      ),
+                                      child: Center(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: isLargeScreen ? 16 : 12,
+                                            vertical: isLargeScreen ? 8 : 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Color(0xFFD97706).withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(8),
+                                            border: Border.all(color: Color(0xFFD97706).withOpacity(0.2)),
+                                          ),
+                                          child: Text(
+                                            'Rs ${_formatAmount(_safeDouble(expense['total']))}',
+                                            style: TextStyle(
+                                              color: Color(0xFFD97706),
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: dataFontSize,
+                                            ),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
                                       ),
@@ -2096,78 +2688,174 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                                 color: MaterialStateProperty.all(Color(0xFFFEF3C7)),
                                 cells: [
                                   DataCell(
-                                    Text(
-                                      'EXPENSES TOTAL',
-                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 300 : (isMediumScreen ? 250 : 180),
+                                        maxWidth: isLargeScreen ? 350 : 300,
+                                      ),
+                                      child: Text(
+                                        'EXPENSES TOTAL',
+                                        style: TextStyle(
+                                          color: Color(0xFFD97706),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: dataFontSize,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ),
                                   DataCell(
-                                    Center(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFFD97706),
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          'Rs ${_formatAmount(expMorningTotal)}',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                      ),
+                                      child: Center(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: isLargeScreen ? 16 : 12,
+                                            vertical: isLargeScreen ? 10 : 8,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [Color(0xFFD97706), Color(0xFFB45309)],
+                                              begin: Alignment.centerLeft,
+                                              end: Alignment.centerRight,
+                                            ),
+                                            borderRadius: BorderRadius.circular(8),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Color(0xFFD97706).withOpacity(0.3),
+                                                blurRadius: 4,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Text(
+                                            'Rs ${_formatAmount(expMorningTotal)}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontSize: dataFontSize,
+                                            ),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
                                   DataCell(
-                                    Center(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFFD97706),
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          'Rs ${_formatAmount(expEveningTotal)}',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                      ),
+                                      child: Center(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: isLargeScreen ? 16 : 12,
+                                            vertical: isLargeScreen ? 10 : 8,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [Color(0xFFD97706), Color(0xFFB45309)],
+                                              begin: Alignment.centerLeft,
+                                              end: Alignment.centerRight,
+                                            ),
+                                            borderRadius: BorderRadius.circular(8),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Color(0xFFD97706).withOpacity(0.3),
+                                                blurRadius: 4,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Text(
+                                            'Rs ${_formatAmount(expEveningTotal)}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontSize: dataFontSize,
+                                            ),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
                                   DataCell(
-                                    Center(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFFD97706),
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          'Rs ${_formatAmount(expNightTotal)}',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 140 : (isMediumScreen ? 120 : 100),
+                                      ),
+                                      child: Center(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: isLargeScreen ? 16 : 12,
+                                            vertical: isLargeScreen ? 10 : 8,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [Color(0xFFD97706), Color(0xFFB45309)],
+                                              begin: Alignment.centerLeft,
+                                              end: Alignment.centerRight,
+                                            ),
+                                            borderRadius: BorderRadius.circular(8),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Color(0xFFD97706).withOpacity(0.3),
+                                                blurRadius: 4,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Text(
+                                            'Rs ${_formatAmount(expNightTotal)}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontSize: dataFontSize,
+                                            ),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
                                   DataCell(
-                                    Center(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFFD97706),
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          'Rs ${_formatAmount(expGrandTotal)}',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        minWidth: isLargeScreen ? 160 : (isMediumScreen ? 140 : 120),
+                                      ),
+                                      child: Center(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: isLargeScreen ? 20 : 16,
+                                            vertical: isLargeScreen ? 12 : 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [Color(0xFFB45309), Color(0xFF92400E)],
+                                              begin: Alignment.centerLeft,
+                                              end: Alignment.centerRight,
+                                            ),
+                                            borderRadius: BorderRadius.circular(10),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Color(0xFF92400E).withOpacity(0.4),
+                                                blurRadius: 6,
+                                                offset: Offset(0, 3),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Text(
+                                            'Rs ${_formatAmount(expGrandTotal)}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontSize: dataFontSize + 1,
+                                            ),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
                                       ),
@@ -2184,7 +2872,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
               ),
             ),
 
-            SizedBox(height: 16),
+            SizedBox(height: isLargeScreen ? 20 : 16),
           ],
         );
       },
@@ -2746,7 +3434,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
-          columnSpacing: 16,
+          columnSpacing: 10,
           headingRowHeight: 60,
           dataRowHeight: 45,
           headingRowColor: MaterialStateProperty.all(Color(0xFFF9FAFB)),
@@ -2768,14 +3456,14 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
             // OPD Revenue Section (Left side) - PRICES
             DataColumn(
               label: Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Color(0xFFE6F7FF),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(6),
-                    topRight: Radius.circular(6),
-                  ),
-                ),
+                // padding: EdgeInsets.all(8),
+                // decoration: BoxDecoration(
+                //   color: Color(0xFFE6F7FF),
+                //   borderRadius: BorderRadius.only(
+                //     topLeft: Radius.circular(6),
+                //     topRight: Radius.circular(6),
+                //   ),
+                // ),
               ),
             ),
             DataColumn(
@@ -2815,14 +3503,6 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
             // Expenses Section (Right side) - PRICES
             DataColumn(
               label: Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Color(0xFFFFF4E6),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(6),
-                    topRight: Radius.circular(6),
-                  ),
-                ),
 
               ),
             ),
@@ -4631,14 +5311,6 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                               SizedBox(height: 4),
                               Row(
                                 children: [
-                                  Text(
-                                    'OPD Service',
-                                    style: TextStyle(
-                                      fontSize: isTablet ? 11 : 10,
-                                      color: Colors.grey[600],
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  ),
                                   if (provider.selectedShiftFilter != 'All')
                                     Padding(
                                       padding: EdgeInsets.only(left: 8),
@@ -4822,7 +5494,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           Text(
                             provider.selectedShiftFilter != 'All'
                                 ? 'Sum of ${provider.selectedShiftFilter} shift'
-                                : 'Sum of OPD services',
+                                : '',
                             style: TextStyle(
                               fontSize: isTablet ? 10 : 9,
                               color: Colors.grey[600],
@@ -4863,7 +5535,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                             Text(
                               provider.selectedShiftFilter != 'All'
                                   ? '${provider.selectedShiftFilter} ${monthData['month_name']}'
-                                  : 'Month ${monthData['month_name']}',
+                                  : '',
                               style: TextStyle(
                                 fontSize: isTablet ? 10 : 9,
                                 color: Colors.grey[600],
@@ -4901,7 +5573,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                           Text(
                             provider.selectedShiftFilter != 'All'
                                 ? '${provider.selectedShiftFilter} Grand Total'
-                                : 'OPD Grand Total',
+                                : '',
                             style: TextStyle(
                               fontSize: isTablet ? 11 : 10,
                               color: Colors.grey[600],
@@ -4922,7 +5594,7 @@ class _ShiftReportWidgetState extends State<ShiftReportWidget> {
                   color: Color(0xFFF3F4F6),
                 ),
                 child: Wrap(
-                  spacing: 16,
+                  spacing: 10,
                   runSpacing: 8,
                   alignment: WrapAlignment.center,
                   children: [

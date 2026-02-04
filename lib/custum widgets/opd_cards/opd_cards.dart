@@ -28,6 +28,7 @@ class OPDCards extends StatelessWidget {
 
     // Dynamic spacing based on screen
     final double horizontalPadding = isMobile ? 16 : (isTablet ? 20 : 24);
+    final double verticalPadding = isMobile ? 16 : (isTablet ?20 : 24);
     final double cardSpacing = isMobile ? 12 : (isTablet ? 16 : 20);
     final double cardWidth = isMobile ? 100 : (isTablet ? 120 : (isDesktop ? 140 : 160));
     final double cardHeight = isMobile ? 120 : (isTablet ? 140 : (isDesktop ? 160 : 180));
@@ -37,6 +38,7 @@ class OPDCards extends StatelessWidget {
 
     return Container(
       width: size.width,
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
