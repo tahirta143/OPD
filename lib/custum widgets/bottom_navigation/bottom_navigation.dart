@@ -1,100 +1,82 @@
-// lib/widgets/bottom_navigation.dart
+import 'package:dot_curved_bottom_nav/dot_curved_bottom_nav.dart';
 import 'package:flutter/material.dart';
-import '../colors/colors.dart';
 
-class BottomNavigation extends StatelessWidget {
+class TealBottomNavigation extends StatefulWidget {
   final int currentIndex;
-  final bool isTablet;
-  final Function(int) onIndexChanged;
+  final ValueChanged<int> onIndexChanged;
+  final ScrollController? scrollController;
+  final bool hideOnScroll;
 
-  const BottomNavigation({
+  const TealBottomNavigation({
     Key? key,
     required this.currentIndex,
-    required this.isTablet,
     required this.onIndexChanged,
+    this.scrollController,
+    this.hideOnScroll = true, // Set default to true for auto-hide
   }) : super(key: key);
 
   @override
+  State<TealBottomNavigation> createState() => _TealBottomNavigationState();
+}
+
+class _TealBottomNavigationState extends State<TealBottomNavigation> {
+  @override
   Widget build(BuildContext context) {
     return Container(
-      height: isTablet ? 80 : 70,
       decoration: BoxDecoration(
-        color: AppColors.cardColor,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 20,
-            spreadRadius: 5,
-            offset: const Offset(0, -5),
-          ),
-        ],
-        borderRadius: const BorderRadius.only(
+        borderRadius: BorderRadius.only(
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),
         ),
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withOpacity(0.2),
+        //     blurRadius: 10,
+        //     spreadRadius: 2,
+        //     offset: Offset(0, -2),
+        //   ),
+        // ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(Icons.dashboard_rounded, 'Home', 0),
-          _buildNavItem(Icons.health_and_safety_rounded, 'Health', 1),
-          _buildFloatingActionButton(),
-          _buildNavItem(Icons.calendar_today_rounded, 'Calendar', 2),
-          _buildNavItem(Icons.person_rounded, 'Profile', 3),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, int index) {
-    final isActive = currentIndex == index;
-    return GestureDetector(
-      onTap: () => onIndexChanged(index),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: isTablet ? 26 : 22,
-            color: isActive ? AppColors.primaryColor : AppColors.textSecondary,
-          ),
-          SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: isTablet ? 12 : 10,
-              fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-              color: isActive ? AppColors.primaryColor : AppColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFloatingActionButton() {
-    return Container(
-      width: isTablet ? 60 : 50,
-      height: isTablet ? 60 : 50,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primaryColor, AppColors.accentColor],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+      child: ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(25),
+          topRight: Radius.circular(25),
         ),
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryColor.withOpacity(0.3),
-            blurRadius: 15,
-            spreadRadius: 3,
-          ),
-        ],
-      ),
-      child: Icon(
-        Icons.add,
-        color: Colors.white,
-        size: isTablet ? 28 : 24,
+        child: DotCurvedBottomNav(
+          scrollController: widget.scrollController,
+          hideOnScroll: widget.hideOnScroll, // Enable hide on scroll
+          indicatorColor: Color(0xFF0F1419),
+          backgroundColor: Color(0xFF109A8A),
+          animationDuration: const Duration(milliseconds: 300),
+          animationCurve: Curves.ease,
+          selectedIndex: widget.currentIndex,
+          indicatorSize: 5,
+          borderRadius: 12, // Set to 0 since parent handles border
+          height: 70 + MediaQuery.of(context).padding.bottom, // Add safe area
+          onTap: widget.onIndexChanged,
+          items: [
+            Icon(
+              Icons.home,
+              color: widget.currentIndex == 0 ? Color(0xFF0F1419) : Colors.white,
+              size: 26,
+            ),
+            Icon(
+              Icons.health_and_safety,
+              color: widget.currentIndex == 1 ? Color(0xFF0F1419) : Colors.white,
+              size: 26,
+            ),
+            Icon(
+              Icons.calendar_today,
+              color: widget.currentIndex == 2 ? Color(0xFF0F1419) : Colors.white,
+              size: 26,
+            ),
+            Icon(
+              Icons.person,
+              color: widget.currentIndex == 3 ? Color(0xFF0F1419) : Colors.white,
+              size: 26,
+            ),
+          ],
+        ),
       ),
     );
   }
